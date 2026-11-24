@@ -397,6 +397,48 @@ input {
   stroke-width: 2;
 }
 
+.viz-pitch-outline {
+  stroke: var(--accent);
+}
+
+.viz-pitch-line {
+  stroke: var(--accent);
+  opacity: 0.7;
+}
+
+.viz-pitch-band {
+  fill: rgba(200, 245, 66, 0.08);
+  animation: band-fade 1.4s ease both;
+}
+
+.viz-pitch-circle {
+  stroke: var(--accent);
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: draw-arc 1.5s ease forwards;
+}
+
+.viz-pitch-circle-b {
+  animation-delay: 0.2s;
+}
+
+.viz-cone {
+  stroke-dasharray: 360;
+  stroke-dashoffset: 360;
+  animation: draw-tri 1.5s ease forwards;
+}
+
+.viz-bubble {
+  stroke: var(--accent);
+  stroke-dasharray: 330;
+  stroke-dashoffset: 330;
+  animation: draw-tri 1.4s ease forwards;
+}
+
+.viz-bubble-core {
+  animation: pop-node 0.45s ease 0.5s both;
+}
+
 .viz-fallback {
   height: 64px;
   display: grid;
@@ -462,8 +504,28 @@ input {
   }
 }
 
+@keyframes draw-arc {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes band-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .viz-tri,
+  .viz-cone,
+  .viz-bubble,
+  .viz-pitch-circle,
+  .viz-pitch-band,
+  .viz-bubble-core,
   .viz-node,
   .viz-orbit-dot,
   .viz-pulse,
@@ -474,7 +536,10 @@ input {
     animation: none !important;
   }
 
-  .viz-tri {
+  .viz-tri,
+  .viz-cone,
+  .viz-bubble,
+  .viz-pitch-circle {
     stroke-dashoffset: 0;
   }
 

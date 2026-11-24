@@ -10,8 +10,14 @@ describe("animationKeyFromHint", () => {
   it("maps known quiz hints to animation keys with exact match only", () => {
     expect(animationKeyFromHint("safety-triangle")).toBe("safety-triangle");
     expect(animationKeyFromHint("scan-cycle")).toBe("scan-cycle");
+    expect(animationKeyFromHint("pitch-zones")).toBe("pitch-zones");
+    expect(animationKeyFromHint("danger-cone")).toBe("danger-cone");
+    expect(animationKeyFromHint("restart-bubble")).toBe("restart-bubble");
+    expect(animationKeyFromHint(" Danger-Cone ")).toBe("danger-cone");
     expect(animationKeyFromHint("timeline: raise → proximity")).toBeNull();
     expect(animationKeyFromHint("prefix-safety-triangle")).toBeNull();
+    expect(animationKeyFromHint(null)).toBeNull();
+    expect(animationKeyFromHint("")).toBeNull();
   });
 });
 
@@ -31,6 +37,58 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("Triangle")).toBeInTheDocument();
     expect(screen.getByText("Original")).toBeInTheDocument();
     expect(document.querySelector("svg.viz-svg")).toBeTruthy();
+  });
+
+  it("renders field pitch-zones SVG with localized zone labels", () => {
+    const visual: VisualPlaceholder = {
+      id: "viz-pitch-zones",
+      kind: "svg_animation",
+      title: { nl: "Zones", en: "Zones" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "pitch-zones",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    render(<ModuleVisual visual={visual} locale="nl" />);
+    expect(screen.getByText("Zones")).toBeInTheDocument();
+    const svg = document.querySelector("svg.viz-pitch");
+    expect(svg).toBeTruthy();
+    expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByText("helft")).toBeInTheDocument();
+    expect(screen.getAllByText("23m")).toHaveLength(2);
+    expect(screen.getAllByText("cirkel")).toHaveLength(2);
+  });
+
+  it("renders danger-cone and restart-bubble SVGs", () => {
+    const cone: VisualPlaceholder = {
+      id: "viz-danger-cone",
+      kind: "svg_animation",
+      title: { nl: "Kegel", en: "Cone" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "danger-cone",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    const { rerender } = render(<ModuleVisual visual={cone} locale="en" />);
+    expect(screen.getByText("direction")).toBeInTheDocument();
+    expect(screen.getByText("distance")).toBeInTheDocument();
+    expect(screen.getByText("speed")).toBeInTheDocument();
+
+    const bubble: VisualPlaceholder = {
+      id: "viz-restart-bubble",
+      kind: "svg_animation",
+      title: { nl: "Bubbel", en: "Bubble" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "restart-bubble",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={bubble} locale="nl" />);
+    expect(screen.getByText("bubbel")).toBeInTheDocument();
+    expect(screen.getByText("herstart")).toBeInTheDocument();
   });
 
   it("renders official link slot without inventing KNHB art", () => {
