@@ -189,7 +189,7 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("observeer")).toBeInTheDocument();
     expect(screen.getByText("besluit")).toBeInTheDocument();
     expect(screen.getByText("communiceer")).toBeInTheDocument();
-    expect(screen.getByText("review")).toBeInTheDocument();
+    expect(screen.getByText("nabespreking")).toBeInTheDocument();
   });
 
   it("renders official link slot without inventing KNHB art", () => {
@@ -204,10 +204,9 @@ describe("ModuleVisual", () => {
       knhb_illustration_placeholder: true,
     };
     render(<ModuleVisual visual={visual} locale="nl" />);
-    expect(screen.getByRole("link", { name: "KNHB" })).toHaveAttribute(
-      "href",
-      "https://www.knhb.nl/",
-    );
+    expect(
+      screen.getByRole("link", { name: /KNHB.*opent in nieuw tabblad/i }),
+    ).toHaveAttribute("href", "https://www.knhb.nl/");
     expect(screen.getByText(/KNHB-illustratie\/interpretatie: plaatshouder/i)).toBeInTheDocument();
   });
 

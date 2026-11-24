@@ -173,6 +173,9 @@ export default function App() {
 
   return (
     <div className="app">
+      <a className="skip-link" href="#main-content">
+        {uiT("skipToContent", locale)}
+      </a>
       <header className="topbar">
         <div>
           <h1 className="brand">{uiT("brand", locale)}</h1>
@@ -182,6 +185,7 @@ export default function App() {
           <button
             type="button"
             aria-pressed={locale === "nl"}
+            aria-label={uiT("langNl", locale)}
             onClick={() => setLocale("nl")}
           >
             NL
@@ -189,6 +193,7 @@ export default function App() {
           <button
             type="button"
             aria-pressed={locale === "en"}
+            aria-label={uiT("langEn", locale)}
             onClick={() => setLocale("en")}
           >
             EN
@@ -196,83 +201,88 @@ export default function App() {
         </div>
       </header>
 
-      {loading && <p className="muted">{uiT("loading", locale)}</p>}
-      {error && <p className="error" role="alert">
-        {error}
-      </p>}
+      <main id="main-content" tabIndex={-1} aria-label={uiT("mainContent", locale)}>
+        {loading && <p className="muted">{uiT("loading", locale)}</p>}
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
 
-      {course && (
-        <>
-          <p className="muted">{t(course.description, locale)}</p>
-          <div className="hero-actions">
-            <button className="btn btn-primary" type="button" onClick={startOrResume}>
-              {hasSession ? uiT("resume", locale) : uiT("start", locale)}
-            </button>
-            {hasSession && (
-              <>
-                <button className="btn" type="button" onClick={endSession}>
-                  {uiT("endSession", locale)}
-                </button>
-                <span className="muted">{uiT("sessionSaved", locale)}</span>
-              </>
-            )}
-          </div>
+        {course && (
+          <>
+            <p className="muted">{t(course.description, locale)}</p>
+            <div className="hero-actions">
+              <button className="btn btn-primary" type="button" onClick={startOrResume}>
+                {hasSession ? uiT("resume", locale) : uiT("start", locale)}
+              </button>
+              {hasSession && (
+                <>
+                  <button className="btn" type="button" onClick={endSession}>
+                    {uiT("endSession", locale)}
+                  </button>
+                  <span className="muted">{uiT("sessionSaved", locale)}</span>
+                </>
+              )}
+            </div>
 
-          <CourseProgressOverview
-            modules={course.modules}
-            progress={progress}
-            selectedId={selectedId}
-            locale={locale}
-            hasSession={hasSession}
-            onSelectModule={(id) => {
-              void openModule(id);
-            }}
-          />
-
-          {selected && (
-            <ModuleDetail
-              module={selected}
-              quiz={quiz}
+            <CourseProgressOverview
+              modules={course.modules}
+              progress={progress}
+              selectedId={selectedId}
               locale={locale}
-              accessToken={accessToken}
               hasSession={hasSession}
-              onGraded={() => {
-                void refreshProgress(accessToken).catch((err) => handleApiFailure(err));
+              onSelectModule={(id) => {
+                void openModule(id);
               }}
             />
-          )}
 
-          <section className="panel" aria-labelledby="attr-heading">
-            <h2 id="attr-heading">{uiT("attribution", locale)}</h2>
-            <p className="muted">{uiT("licenseNote", locale)}</p>
-            <ul className="attribution-list">
-              {course.attributions.map((a) => {
-                const href = safeHttpUrl(a.source_url);
-                return (
-                  <li key={a.source_name}>
-                    <strong>
-                      {href ? (
-                        <a href={href} target="_blank" rel="noopener noreferrer">
-                          {a.source_name}
-                        </a>
-                      ) : (
-                        a.source_name
+            {selected && (
+              <ModuleDetail
+                module={selected}
+                quiz={quiz}
+                locale={locale}
+                accessToken={accessToken}
+                hasSession={hasSession}
+                onGraded={() => {
+                  void refreshProgress(accessToken).catch((err) => handleApiFailure(err));
+                }}
+              />
+            )}
+
+            <section className="panel" aria-labelledby="attr-heading">
+              <h2 id="attr-heading">{uiT("attribution", locale)}</h2>
+              <p className="muted">{uiT("licenseNote", locale)}</p>
+              <ul className="attribution-list">
+                {course.attributions.map((a) => {
+                  const href = safeHttpUrl(a.source_url);
+                  return (
+                    <li key={a.source_name}>
+                      <strong>
+                        {href ? (
+                          <a href={href} target="_blank" rel="noopener noreferrer">
+                            {a.source_name}
+                            <span className="sr-only"> {uiT("opensInNewTab", locale)}</span>
+                          </a>
+                        ) : (
+                          a.source_name
+                        )}
+                      </strong>
+                      <p>{t(a.note, locale)}</p>
+                      {a.knhb_illustration_placeholder && (
+                        <p className="placeholder-flag">{uiT("knhbPlaceholder", locale)}</p>
                       )}
-                    </strong>
-                    <p>{t(a.note, locale)}</p>
-                    {a.knhb_illustration_placeholder && (
-                      <p className="placeholder-flag">{uiT("knhbPlaceholder", locale)}</p>
-                    )}
-                    {a.translation_needed && (
-                      <p className="placeholder-flag">{uiT("translationNeeded", locale)}</p>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        </>
-      )}
+                      {a.translation_needed && (
+                        <p className="placeholder-flag">{uiT("translationNeeded", locale)}</p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          </>
+        )}
+      </main>
     </div>
   );
 }

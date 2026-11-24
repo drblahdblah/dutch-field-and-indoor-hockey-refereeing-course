@@ -113,71 +113,73 @@ export function CourseProgressOverview({
         </p>
       )}
 
-      <ol className="module-pathway">
-        {ordered.map((mod, index) => {
-          const row = progressMap[mod.id];
-          const status = normalizeStatus(row?.status);
-          const isSelected = selectedId === mod.id;
-          const isNext = Boolean(hasSession && nextUp?.id === mod.id);
-          const isDone = Boolean(hasSession && status === "completed");
-          const score =
-            row?.quiz_score != null && row.quiz_total != null
-              ? `${row.quiz_score}/${row.quiz_total}`
-              : null;
+      <nav aria-label={uiT("courseNav", locale)}>
+        <ol className="module-pathway">
+          {ordered.map((mod, index) => {
+            const row = progressMap[mod.id];
+            const status = normalizeStatus(row?.status);
+            const isSelected = selectedId === mod.id;
+            const isNext = Boolean(hasSession && nextUp?.id === mod.id);
+            const isDone = Boolean(hasSession && status === "completed");
+            const score =
+              row?.quiz_score != null && row.quiz_total != null
+                ? `${row.quiz_score}/${row.quiz_total}`
+                : null;
 
-          return (
-            <li key={mod.id}>
-              <button
-                type="button"
-                className={[
-                  "module-row",
-                  "pathway-row",
-                  isNext ? "is-next" : "",
-                  isDone ? "is-done" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                aria-current={isSelected ? "true" : undefined}
-                onClick={() => onSelectModule(mod.id)}
-              >
-                {isNext && (
-                  <span className="sr-only">{uiT("jumpToNext", locale)}: </span>
-                )}
-                <span className="pathway-step" aria-hidden="true">
-                  {isDone ? "✓" : index + 1}
-                </span>
-                <div className="pathway-body">
-                  <div className="module-meta">
-                    <span className="pill">{kindLabel(mod.kind, locale)}</span>
-                    {hasSession ? (
-                      <>
-                        <span className={`status-${status}`}>
-                          {uiT("progress", locale)}:{" "}
-                          {statusLabel(status, locale)}
-                        </span>
-                        {score && (
-                          <span className="quiz-score muted">
-                            {uiT("score", locale)}: {score}
+            return (
+              <li key={mod.id}>
+                <button
+                  type="button"
+                  className={[
+                    "module-row",
+                    "pathway-row",
+                    isNext ? "is-next" : "",
+                    isDone ? "is-done" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  aria-current={isSelected ? "page" : undefined}
+                  onClick={() => onSelectModule(mod.id)}
+                >
+                  {isNext && (
+                    <span className="sr-only">{uiT("jumpToNext", locale)}: </span>
+                  )}
+                  <span className="pathway-step" aria-hidden="true">
+                    {isDone ? "✓" : index + 1}
+                  </span>
+                  <div className="pathway-body">
+                    <div className="module-meta">
+                      <span className="pill">{kindLabel(mod.kind, locale)}</span>
+                      {hasSession ? (
+                        <>
+                          <span className={`status-${status}`}>
+                            {uiT("progress", locale)}:{" "}
+                            {statusLabel(status, locale)}
                           </span>
-                        )}
-                        {isNext && (
-                          <span className="pill next-pill">
-                            {uiT("nextUp", locale)}
-                          </span>
-                        )}
-                      </>
-                    ) : (
-                      <span className="muted">{uiT("progressIdle", locale)}</span>
-                    )}
+                          {score && (
+                            <span className="quiz-score muted">
+                              {uiT("score", locale)}: {score}
+                            </span>
+                          )}
+                          {isNext && (
+                            <span className="pill next-pill">
+                              {uiT("nextUp", locale)}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="muted">{uiT("progressIdle", locale)}</span>
+                      )}
+                    </div>
+                    <strong>{t(mod.title, locale)}</strong>
+                    <div className="muted">{t(mod.summary, locale)}</div>
                   </div>
-                  <strong>{t(mod.title, locale)}</strong>
-                  <div className="muted">{t(mod.summary, locale)}</div>
-                </div>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
     </section>
   );
 }

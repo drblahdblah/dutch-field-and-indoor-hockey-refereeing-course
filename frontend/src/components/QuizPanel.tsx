@@ -125,8 +125,15 @@ export function QuizPanel({
           </div>
         );
       })}
-      <button className="btn btn-primary" type="button" disabled={busy} onClick={submit}>
-        {uiT("submit", locale)}
+      <button
+        className="btn btn-primary"
+        type="button"
+        disabled={busy}
+        aria-busy={busy || undefined}
+        aria-label={busy ? uiT("submitting", locale) : undefined}
+        onClick={submit}
+      >
+        {busy ? uiT("submitting", locale) : uiT("submit", locale)}
       </button>
       {result && (
         <p className="muted">
