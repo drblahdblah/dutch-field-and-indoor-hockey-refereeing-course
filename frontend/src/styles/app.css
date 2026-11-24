@@ -175,6 +175,15 @@ input {
   font-size: 0.95rem;
 }
 
+.course-complete {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-left: 3px solid var(--ok);
+  color: var(--ok);
+  font-weight: 600;
+  background: rgba(110, 231, 168, 0.08);
+}
+
 .linkish {
   border: 0;
   background: transparent;
@@ -186,6 +195,23 @@ input {
   text-underline-offset: 0.15em;
   padding: 0.55rem 0.25rem;
   min-height: 44px;
+}
+
+.linkish:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .module-pathway {
@@ -262,8 +288,17 @@ input {
   background: rgba(200, 245, 66, 0.08);
 }
 
+.module-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .pathway-row.is-next {
   border-color: rgba(200, 245, 66, 0.4);
+}
+
+.pathway-row.is-done .pathway-body strong {
+  color: var(--ok);
 }
 
 .module-meta {

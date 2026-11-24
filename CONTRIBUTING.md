@@ -42,5 +42,7 @@ pip install -r requirements.txt
 pytest
 
 # frontend
-cd frontend && npm install && npm test
+cd frontend && npm install && npm test && npm run build
 ```
+
+GitHub Actions (`.github/workflows/ci.yml`) runs backend pytest, frontend test + build, and compose config validation on pull requests and pushes to `main`.

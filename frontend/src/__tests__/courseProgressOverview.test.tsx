@@ -75,7 +75,9 @@ describe("CourseProgressOverview", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText(/Next up/i).length).toBeGreaterThanOrEqual(1);
 
-    fireEvent.click(screen.getByRole("button", { name: /^Field EN$/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Go to next module:.*Field EN/i }),
+    );
     expect(onSelect).toHaveBeenCalledWith("mod-b");
   });
 
@@ -128,5 +130,43 @@ describe("CourseProgressOverview", () => {
     expect(fieldIdx).toBeGreaterThan(introIdx);
     expect(screen.queryByText(/^Next up$/i)).not.toBeInTheDocument();
     expect(screen.getByText(/2 of 2 modules completed/i)).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /Course path complete/i,
+    );
+    expect(screen.getByRole("progressbar").getAttribute("aria-describedby")).toBeTruthy();
+    const doneSteps = document.querySelectorAll(".pathway-row.is-done .pathway-step");
+    expect(doneSteps.length).toBe(2);
+    expect([...doneSteps].every((el) => el.textContent === "✓")).toBe(true);
+  });
+
+  it("prefixes the next module name for assistive tech without dropping status", () => {
+    const progress: ProgressOut[] = [
+      {
+        module_id: "mod-a",
+        status: "completed",
+        quiz_score: 4,
+        quiz_total: 4,
+        last_question_id: null,
+        completed_at: "2026-01-01T00:00:00Z",
+        updated_at: "2026-01-01T00:00:00Z",
+      },
+    ];
+
+    render(
+      <CourseProgressOverview
+        modules={modules}
+        progress={progress}
+        selectedId={null}
+        locale="en"
+        hasSession
+        onSelectModule={() => undefined}
+      />,
+    );
+
+    const nextRow = screen.getByRole("button", {
+      name: /Go to next module:.*Field EN/i,
+    });
+    expect(nextRow).toHaveAccessibleName(/Progress: not started/i);
+    expect(nextRow).toHaveAccessibleName(/Field EN/i);
   });
 });
