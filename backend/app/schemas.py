@@ -143,11 +143,10 @@ class SessionCreatedOut(SessionOut):
 
 
 class ProgressUpdate(BaseModel):
+    """Client may mark instructional progress only — quiz scores come from submit."""
+
     module_id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-    status: Literal["not_started", "in_progress", "completed"] = "in_progress"
-    quiz_score: int | None = Field(default=None, ge=0, le=1000)
-    quiz_total: int | None = Field(default=None, ge=0, le=1000)
-    last_question_id: str | None = Field(default=None, max_length=64)
+    status: Literal["not_started", "in_progress"] = "in_progress"
 
 
 class ProgressOut(BaseModel):

@@ -1,13 +1,16 @@
 import type {
   CourseOutline,
+  ProgressOut,
   Quiz,
   QuizSubmitResult,
   SessionCreatedOut,
   SessionProgressOut,
 } from "./types";
+import { ApiError } from "./errors";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 const SESSION_TOKEN_KEY = "umpire-course-access-token";
+const LEGACY_SESSION_ID_KEY = "umpire-course-session-id";
 
 export function getStoredAccessToken(): string | null {
   return localStorage.getItem(SESSION_TOKEN_KEY);
@@ -15,10 +18,12 @@ export function getStoredAccessToken(): string | null {
 
 export function storeAccessToken(token: string): void {
   localStorage.setItem(SESSION_TOKEN_KEY, token);
+  localStorage.removeItem(LEGACY_SESSION_ID_KEY);
 }
 
 export function clearAccessToken(): void {
   localStorage.removeItem(SESSION_TOKEN_KEY);
+  localStorage.removeItem(LEGACY_SESSION_ID_KEY);
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -29,16 +34,18 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
     headers,
+    credentials: "include",
   });
   if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`${res.status}: ${detail || res.statusText}`);
+    // Drain body for debugging in console only — never return it to UI.
+    await res.text().catch(() => "");
+    throw new ApiError(res.status);
   }
   return res.json() as Promise<T>;
 }
 
-function authHeaders(token: string): Record<string, string> {
-  return { Authorization: `Bearer ${token}` };
+function authHeaders(token: string | null | undefined): Record<string, string> {
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 export const api = {
@@ -50,19 +57,18 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ display_name: displayName ?? null, locale }),
     }),
-  getProgress: (token: string) =>
+  getProgress: (token?: string | null) =>
     request<SessionProgressOut>("/api/progress/session", {
       headers: authHeaders(token),
     }),
   updateProgress: (
-    token: string,
     body: {
       module_id: string;
-      status: "not_started" | "in_progress" | "completed";
-      last_question_id?: string;
+      status: "not_started" | "in_progress";
     },
+    token?: string | null,
   ) =>
-    request("/api/progress/session", {
+    request<ProgressOut>("/api/progress/session", {
       method: "PUT",
       headers: authHeaders(token),
       body: JSON.stringify(body),
@@ -74,13 +80,13 @@ export const api = {
       selected_option_id?: string;
       written_answer?: string;
     }>,
-    accessToken?: string | null,
+    options?: { saveProgress?: boolean; accessToken?: string | null },
   ) =>
     request<QuizSubmitResult>(`/api/quizzes/${quizId}/submit`, {
       method: "POST",
-      headers: accessToken ? authHeaders(accessToken) : undefined,
+      headers: authHeaders(options?.accessToken),
       body: JSON.stringify({
-        save_progress: Boolean(accessToken),
+        save_progress: Boolean(options?.saveProgress),
         answers,
       }),
     }),

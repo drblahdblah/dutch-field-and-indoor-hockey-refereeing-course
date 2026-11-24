@@ -64,7 +64,7 @@ export type SessionCreatedOut = SessionOut & {
 
 export type ProgressOut = {
   module_id: string;
-  status: string;
+  status: "not_started" | "in_progress" | "completed" | string;
   quiz_score: number | null;
   quiz_total: number | null;
   last_question_id: string | null;

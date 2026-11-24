@@ -75,10 +75,13 @@ npm test
 
 ## Security notes (v0)
 
-- Progress read/write and quiz progress save require `Authorization: Bearer <access_token>`.
+- Progress read/write and quiz progress save require a session capability token via `Authorization: Bearer <access_token>` **or** the httpOnly `course_access_token` cookie (set on session create; works with the Vite `/api` proxy).
+- Quiz scores and `completed` status are set only by graded `POST /api/quizzes/.../submit` — clients cannot forge scores on `PUT /api/progress/session`.
 - CORS allowlist is env-driven (`COURSE_CORS_ORIGINS`); wildcard origins are rejected when credentials are used.
 - Input validation covers locale, display name length, module ids, and quiz answer payloads.
 - GET course/quiz paths never include `correct_option_id`, `accepted_answers`, or feedback maps.
+- Submit reveals `correct_option_id` only for questions the learner actually attempted.
+- The SPA may also keep a bearer copy in `localStorage` as a Vite/dev fallback; prefer the httpOnly cookie in production deployments behind a same-origin proxy.
 
 ## i18n notes
 

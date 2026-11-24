@@ -60,6 +60,22 @@ def test_quiz_submit_grades_and_explains(client):
     assert wrong["correct_option_id"] == "b"
 
 
+def test_quiz_submit_omits_key_for_unanswered(client):
+    res = client.post(
+        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        json={
+            "answers": [
+                {"question_id": "q1-raised-ball"},
+                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
+            ]
+        },
+    )
+    assert res.status_code == 200
+    unanswered = next(r for r in res.json()["results"] if r["question_id"] == "q1-raised-ball")
+    assert unanswered["correct"] is False
+    assert unanswered["correct_option_id"] is None
+
+
 def test_quiz_submit_rejects_unknown_question(client):
     res = client.post(
         "/api/quizzes/quiz-dangerous-play-basics/submit",
@@ -76,6 +92,7 @@ def test_progress_requires_bearer_token(client):
     assert created.status_code == 201
     body = created.json()
     assert body["access_token"]
+    assert "course_access_token" in created.cookies
     token = body["access_token"]
 
     denied = client.get(f"/api/progress/sessions/{body['id']}")
@@ -84,6 +101,111 @@ def test_progress_requires_bearer_token(client):
     ok = client.get("/api/progress/session", headers=_auth_headers(token))
     assert ok.status_code == 200
     assert ok.json()["session"]["id"] == body["id"]
+
+
+def test_invalid_bearer_rejected(client):
+    res = client.get(
+        "/api/progress/session",
+        headers={"Authorization": "Bearer not-a-real-token"},
+    )
+    assert res.status_code == 401
+
+    basic = client.get(
+        "/api/progress/session",
+        headers={"Authorization": "Basic abc"},
+    )
+    assert basic.status_code == 401
+
+    empty = client.get(
+        "/api/progress/session",
+        headers={"Authorization": "Bearer "},
+    )
+    assert empty.status_code == 401
+
+
+def test_save_progress_auth_failure_still_returns_grades(client):
+    missing = client.post(
+        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-raised-ball", "selected_option_id": "b"},
+                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
+            ],
+        },
+    )
+    assert missing.status_code == 200
+    assert missing.json()["progress_saved"] is False
+    assert missing.json()["score"] == 2
+
+    bad = client.post(
+        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        headers=_auth_headers("bogus"),
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-raised-ball", "selected_option_id": "b"},
+                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
+            ],
+        },
+    )
+    assert bad.status_code == 200
+    assert bad.json()["progress_saved"] is False
+
+
+def test_completed_module_not_demoted_on_worse_resubmit(client):
+    created = client.post("/api/progress/sessions", json={"locale": "nl"})
+    token = created.json()["access_token"]
+    headers = _auth_headers(token)
+
+    perfect = client.post(
+        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        headers=headers,
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-raised-ball", "selected_option_id": "b"},
+                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
+            ],
+        },
+    )
+    assert perfect.json()["progress_saved"] is True
+
+    worse = client.post(
+        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        headers=headers,
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-raised-ball", "selected_option_id": "a"},
+                {"question_id": "q2-advantage-keyword", "written_answer": "nope"},
+            ],
+        },
+    )
+    assert worse.status_code == 200
+    assert worse.json()["score"] == 0
+
+    progress = client.get("/api/progress/session", headers=headers)
+    row = next(p for p in progress.json()["progress"] if p["module_id"] == "mod-field-danger")
+    assert row["status"] == "completed"
+    assert row["quiz_score"] == 2
+    assert row["completed_at"] is not None
+
+
+def test_progress_put_rejects_client_quiz_scores(client):
+    created = client.post("/api/progress/sessions", json={"locale": "nl"})
+    token = created.json()["access_token"]
+    res = client.put(
+        "/api/progress/session",
+        headers=_auth_headers(token),
+        json={
+            "module_id": "mod-field-danger",
+            "status": "completed",
+            "quiz_score": 99,
+            "quiz_total": 99,
+        },
+    )
+    assert res.status_code == 422
 
 
 def test_session_progress_roundtrip(client):
@@ -99,6 +221,7 @@ def test_session_progress_roundtrip(client):
     )
     assert updated.status_code == 200
     assert updated.json()["status"] == "in_progress"
+    assert updated.json()["quiz_score"] is None
 
     bad_module = client.put(
         "/api/progress/session",
@@ -127,6 +250,15 @@ def test_session_progress_roundtrip(client):
     modules = {p["module_id"]: p for p in progress.json()["progress"]}
     assert modules["mod-field-danger"]["status"] == "completed"
     assert modules["mod-field-danger"]["quiz_score"] == 2
+
+
+def test_cookie_auth_works_without_bearer(client):
+    created = client.post("/api/progress/sessions", json={"locale": "en"})
+    assert created.status_code == 201
+    # TestClient keeps cookies from Set-Cookie
+    progress = client.get("/api/progress/session")
+    assert progress.status_code == 200
+    assert progress.json()["session"]["locale"] == "en"
 
 
 def test_indoor_quiz_submit(client):

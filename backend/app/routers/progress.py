@@ -1,9 +1,10 @@
-"""Session + module progress persistence (bearer-token gated)."""
+"""Session + module progress persistence (bearer/cookie gated)."""
 
 import secrets
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.data.course_seed import get_course_outline
@@ -17,9 +18,17 @@ from app.schemas import (
     SessionOut,
     SessionProgressOut,
 )
-from app.security import generate_access_token, hash_access_token, require_session
+from app.security import (
+    SESSION_COOKIE_NAME,
+    generate_access_token,
+    hash_access_token,
+    require_session,
+)
 
 router = APIRouter(prefix="/api/progress", tags=["progress"])
+
+# 30 days — browser cookie lifetime for resume via Vite proxy same-origin.
+SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 30
 
 
 def _session_out(session: UserSession) -> SessionOut:
@@ -49,7 +58,11 @@ def _known_module_ids() -> set[str]:
 
 
 @router.post("/sessions", response_model=SessionCreatedOut, status_code=201)
-def create_session(payload: SessionCreate, db: Session = Depends(get_db)) -> SessionCreatedOut:
+def create_session(
+    payload: SessionCreate,
+    response: Response,
+    db: Session = Depends(get_db),
+) -> SessionCreatedOut:
     access_token = generate_access_token()
     session = UserSession(
         id=secrets.token_urlsafe(16),
@@ -60,6 +73,14 @@ def create_session(payload: SessionCreate, db: Session = Depends(get_db)) -> Ses
     db.add(session)
     db.commit()
     db.refresh(session)
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=access_token,
+        httponly=True,
+        samesite="lax",
+        max_age=SESSION_COOKIE_MAX_AGE,
+        path="/api",
+    )
     base = _session_out(session)
     return SessionCreatedOut(**base.model_dump(), access_token=access_token)
 
@@ -95,17 +116,27 @@ def upsert_progress(
         row = ModuleProgress(session_id=session.id, module_id=payload.module_id)
         db.add(row)
 
-    row.status = payload.status
-    if payload.quiz_score is not None:
-        row.quiz_score = payload.quiz_score
-    if payload.quiz_total is not None:
-        row.quiz_total = payload.quiz_total
-    if payload.last_question_id is not None:
-        row.last_question_id = payload.last_question_id
-    if payload.status == "completed":
-        row.completed_at = datetime.now(timezone.utc)
+    # Never accept client-supplied quiz scores; completion is set by quiz submit only.
+    if row.status != "completed":
+        row.status = payload.status
     session.updated_at = datetime.now(timezone.utc)
 
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        row = (
+            db.query(ModuleProgress)
+            .filter(
+                ModuleProgress.session_id == session.id,
+                ModuleProgress.module_id == payload.module_id,
+            )
+            .one()
+        )
+        if row.status != "completed":
+            row.status = payload.status
+        session.updated_at = datetime.now(timezone.utc)
+        db.commit()
+
     db.refresh(row)
     return _progress_out(row)

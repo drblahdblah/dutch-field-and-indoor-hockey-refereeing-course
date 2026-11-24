@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import hashlib
-import hmac
 import secrets
 from typing import Annotated
 
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Cookie, Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -15,6 +14,7 @@ from app.models import UserSession
 
 SESSION_TOKEN_BYTES = 32
 BEARER_PREFIX = "Bearer "
+SESSION_COOKIE_NAME = "course_access_token"
 
 
 def generate_access_token() -> str:
@@ -25,17 +25,9 @@ def hash_access_token(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
-def tokens_match(presented: str, stored_hash: str) -> bool:
-    return hmac.compare_digest(hash_access_token(presented), stored_hash)
-
-
-def extract_bearer_token(authorization: str | None) -> str:
+def extract_bearer_token(authorization: str | None) -> str | None:
     if not authorization:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing Authorization bearer token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        return None
     if not authorization.startswith(BEARER_PREFIX):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -47,6 +39,21 @@ def extract_bearer_token(authorization: str | None) -> str:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Empty bearer token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return token
+
+
+def resolve_presented_token(
+    authorization: str | None,
+    cookie_token: str | None,
+) -> str:
+    bearer = extract_bearer_token(authorization)
+    token = bearer or (cookie_token.strip() if cookie_token else None)
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing session token (Authorization Bearer or cookie)",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return token
@@ -73,7 +80,8 @@ def get_session_for_token(
 
 def require_session(
     authorization: Annotated[str | None, Header()] = None,
+    course_access_token: Annotated[str | None, Cookie()] = None,
     db: Session = Depends(get_db),
 ) -> UserSession:
-    token = extract_bearer_token(authorization)
+    token = resolve_presented_token(authorization, course_access_token)
     return get_session_for_token(token, db)
