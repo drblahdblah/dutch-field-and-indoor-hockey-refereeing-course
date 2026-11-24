@@ -24,6 +24,7 @@ def test_course_outline_bilingual_and_strips_answers(client):
     assert body["title"]["nl"]
     assert body["title"]["en"]
     assert len(body["modules"]) >= 3
+    assert "quiz-intro-umpire-role" in body["quizzes"]
     assert "quiz-dangerous-play-basics" in body["quizzes"]
     assert "quiz-indoor-context-basics" in body["quizzes"]
     assert any(a.get("knhb_illustration_placeholder") for a in body["attributions"])
@@ -35,6 +36,88 @@ def test_course_outline_bilingual_and_strips_answers(client):
             assert "feedback_incorrect" not in q
 
 
+def test_full_intro_module_has_sections_and_visuals(client):
+    res = client.get("/api/course/modules/mod-intro-role")
+    assert res.status_code == 200
+    module = res.json()
+    assert module["content_status"] == "full"
+    assert module["quiz_id"] == "quiz-intro-umpire-role"
+    assert len(module["sections"]) >= 4
+    assert len(module["visuals"]) >= 2
+    assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
+    assert all(len(s["paragraphs"]) >= 1 for s in module["sections"])
+    visual_ids = {v["id"] for v in module["visuals"]}
+    for section in module["sections"]:
+        if section["visual_id"]:
+            assert section["visual_id"] in visual_ids
+    assert any(v["kind"] == "svg_animation" for v in module["visuals"])
+    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+
+
+def test_intro_quiz_grades_mc_and_written_with_explanations(client):
+    res = client.post(
+        "/api/quizzes/quiz-intro-umpire-role/submit",
+        json={
+            "answers": [
+                {"question_id": "q1-priority-order", "selected_option_id": "a"},
+                {"question_id": "q2-scan-partner", "selected_option_id": "b"},
+                {"question_id": "q3-safety-keyword", "written_answer": "safety"},
+                {"question_id": "q4-calm-communication", "written_answer": "loud"},
+            ]
+        },
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["total"] == 4
+    assert body["score"] == 2
+    by_id = {r["question_id"]: r for r in body["results"]}
+    assert by_id["q1-priority-order"]["correct"] is False
+    assert by_id["q1-priority-order"]["explanation"]["nl"]
+    assert by_id["q1-priority-order"]["explanation"]["en"]
+    assert by_id["q1-priority-order"]["visualization_hint"] == "safety-triangle"
+    assert by_id["q1-priority-order"]["correct_option_id"] == "b"
+    assert by_id["q2-scan-partner"]["correct"] is True
+    assert by_id["q3-safety-keyword"]["correct"] is True
+    assert by_id["q4-calm-communication"]["correct"] is False
+
+
+def test_intro_quiz_progress_save_and_resume(client):
+    created = client.post("/api/progress/sessions", json={"locale": "nl"})
+    token = created.json()["access_token"]
+    headers = _auth_headers(token)
+
+    opened = client.put(
+        "/api/progress/session",
+        headers=headers,
+        json={"module_id": "mod-intro-role", "status": "in_progress"},
+    )
+    assert opened.status_code == 200
+
+    submit = client.post(
+        "/api/quizzes/quiz-intro-umpire-role/submit",
+        headers=headers,
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-priority-order", "selected_option_id": "b"},
+                {"question_id": "q2-scan-partner", "selected_option_id": "b"},
+                {"question_id": "q3-safety-keyword", "written_answer": "Safety"},
+                {"question_id": "q4-calm-communication", "written_answer": "calm"},
+            ],
+        },
+    )
+    assert submit.status_code == 200
+    assert submit.json()["progress_saved"] is True
+    assert submit.json()["score"] == 4
+
+    progress = client.get("/api/progress/session", headers=headers)
+    assert progress.status_code == 200
+    row = next(p for p in progress.json()["progress"] if p["module_id"] == "mod-intro-role")
+    assert row["status"] == "completed"
+    assert row["quiz_score"] == 4
+    assert row["quiz_total"] == 4
+
+
 def test_quiz_get_hides_answers(client):
     res = client.get("/api/course/quizzes/quiz-dangerous-play-basics")
     assert res.status_code == 200
@@ -42,6 +125,42 @@ def test_quiz_get_hides_answers(client):
     for q in quiz["questions"]:
         assert "correct_option_id" not in q
         assert "accepted_answers" not in q
+
+
+def test_written_prompts_do_not_spoil_accepted_answers(client):
+    """Public prompts must not embed answer keys (PR #1 answer-strip spirit)."""
+    from app.data.course_seed import get_course_outline
+
+    course = get_course_outline()
+    public = client.get("/api/course").json()
+    for quiz_id, quiz in course.quizzes.items():
+        public_questions = {
+            q["id"]: q for q in public["quizzes"][quiz_id]["questions"]
+        }
+        for question in quiz.questions:
+            if question.type != "written" or not question.accepted_answers:
+                continue
+            prompt_blob = (
+                public_questions[question.id]["prompt"]["nl"]
+                + " "
+                + public_questions[question.id]["prompt"]["en"]
+            ).lower()
+            for answer in question.accepted_answers:
+                token = answer.strip().lower().rstrip("!.")
+                assert token not in prompt_blob, (
+                    f"{quiz_id}/{question.id} prompt leaks accepted answer {token!r}"
+                )
+
+
+def test_intro_quiz_get_hides_answers(client):
+    res = client.get("/api/course/quizzes/quiz-intro-umpire-role")
+    assert res.status_code == 200
+    quiz = res.json()
+    assert len(quiz["questions"]) == 4
+    for q in quiz["questions"]:
+        assert "correct_option_id" not in q
+        assert "accepted_answers" not in q
+        assert "feedback_correct" not in q
 
 
 def test_quiz_submit_grades_and_explains(client):

@@ -292,6 +292,130 @@ input {
   color: var(--danger);
 }
 
+.pill.content-full {
+  border-color: rgba(110, 231, 168, 0.45);
+  color: var(--ok);
+}
+
+.pill.content-stub {
+  color: var(--ink-muted);
+}
+
+.learning-sections {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.learning-section {
+  padding: 1rem 0 0.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.learning-section h4 {
+  font-family: var(--font-display);
+  margin: 0 0 0.65rem;
+  font-size: 1.15rem;
+}
+
+.module-visual {
+  margin: 1rem 0 0.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: rgba(200, 245, 66, 0.04);
+}
+
+.module-visual.is-compact {
+  padding: 0.65rem 0.75rem;
+  margin-top: 0.65rem;
+}
+
+.module-visual figcaption strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.module-visual figcaption p {
+  margin: 0 0 0.75rem;
+}
+
+.viz-svg {
+  width: min(100%, 280px);
+  height: auto;
+  color: var(--accent);
+  display: block;
+}
+
+.viz-label {
+  fill: var(--ink-muted);
+  font-size: 11px;
+  font-family: var(--font-body);
+}
+
+.viz-tri {
+  stroke-dasharray: 420;
+  stroke-dashoffset: 420;
+  animation: draw-tri 1.6s ease forwards;
+}
+
+.viz-node {
+  fill: var(--accent);
+  opacity: 0;
+  animation: pop-node 0.4s ease forwards;
+}
+
+.viz-node-a {
+  animation-delay: 0.35s;
+}
+
+.viz-node-b {
+  animation-delay: 0.55s;
+}
+
+.viz-node-c {
+  animation-delay: 0.75s;
+}
+
+.viz-orbit {
+  stroke: var(--accent);
+  opacity: 0.55;
+}
+
+.viz-orbit-dot {
+  transform-origin: 130px 80px;
+  animation: orbit-spin 4.5s linear infinite;
+}
+
+.viz-orbit-dot circle {
+  fill: var(--accent);
+}
+
+.viz-core {
+  fill: rgba(200, 245, 66, 0.35);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.viz-fallback {
+  height: 64px;
+  display: grid;
+  place-items: center;
+}
+
+.viz-pulse {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.official-slot {
+  display: grid;
+  gap: 0.4rem;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -300,6 +424,62 @@ input {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes draw-tri {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes pop-node {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viz-tri,
+  .viz-node,
+  .viz-orbit-dot,
+  .viz-pulse,
+  .brand,
+  .tagline,
+  .hero-actions,
+  .panel {
+    animation: none !important;
+  }
+
+  .viz-tri {
+    stroke-dashoffset: 0;
+  }
+
+  .viz-node {
+    opacity: 1;
   }
 }
 

@@ -81,15 +81,16 @@ export default function App() {
   }, [locale]);
 
   useEffect(() => {
+    setQuiz(null);
     const module = course?.modules.find((m) => m.id === selectedId);
     if (!module?.quiz_id) {
-      setQuiz(null);
       return;
     }
+    const quizId = module.quiz_id;
     let cancelled = false;
     (async () => {
       try {
-        const q = await api.quiz(module.quiz_id!);
+        const q = await api.quiz(quizId);
         if (!cancelled) setQuiz(q);
       } catch (err) {
         if (!cancelled) handleApiFailure(err);

@@ -2,23 +2,23 @@
 
 Browser-based course for Netherlands referees (field + indoor), bilingual **NL / EN** from day one, building toward professional standard (e.g. Hoofdklasse).
 
-This repository is a **v0 scaffold**: module stubs, graded quizzes with explanations, session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
+This repository ships a **first full bilingual learning module** (umpire role) plus remaining stubs: graded quizzes with explanations, original CSS/SVG visuals (no copyrighted KNHB art), session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
 
 ## Architecture
 
 ```
-frontend/          React + Vite SPA (i18n UI, modules, quiz)
+frontend/          React + Vite SPA (i18n UI, modules, quiz, SVG viz)
 backend/           FastAPI + SQLAlchemy + SQLite
-  app/data/        Bilingual course seed (modules, quiz, attributions)
+  app/data/        Bilingual course seed (full intro module + stubs)
   app/routers/     /api/course, /api/progress, /api/quizzes
   app/services/    Quiz grading
-  app/security.py  Bearer session tokens for progress
+  app/security.py  Bearer/cookie session tokens for progress
 docker-compose.yml Optional local stack
 ```
 
-- **Course content** is seeded in Python (`backend/app/data/course_seed.py`) and served via `GET /api/course` with **answer keys stripped**.
-- **Quizzes** expose prompts on GET; grading + bilingual feedback via `POST /api/quizzes/{id}/submit` (solutions only after submit).
-- **Progress** requires a bearer `access_token` issued once at `POST /api/progress/sessions`. The SPA stores the token in `localStorage` to resume.
+- **Course content** is seeded in Python (`backend/app/data/`) and served via `GET /api/course` with **answer keys stripped**. Full modules include `sections` + `visuals` (`content_status: full`).
+- **Quizzes** expose prompts on GET; grading + bilingual feedback via `POST /api/quizzes/{id}/submit` (solutions only after submit). Feedback may include visualization hooks rendered as original SVG animations.
+- **Progress** requires a bearer `access_token` issued once at `POST /api/progress/sessions` (or the httpOnly cookie). The SPA can resume with cookie/session auth.
 
 ## Requirements
 

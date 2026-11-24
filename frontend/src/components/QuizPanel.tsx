@@ -3,6 +3,7 @@ import { api } from "../api/client";
 import { ApiError } from "../api/errors";
 import type { Quiz, QuizSubmitResult } from "../api/types";
 import { t, uiT, type Locale } from "../i18n/messages";
+import { QuizVizHook } from "./ModuleVisual";
 
 type Props = {
   quiz: Quiz;
@@ -34,18 +35,28 @@ export function QuizPanel({
           ? { question_id: q.id, selected_option_id: selections[q.id] }
           : { question_id: q.id, written_answer: written[q.id] ?? "" },
       );
-      const graded = await api.submitQuiz(quiz.id, answers, {
-        saveProgress: hasSession,
-        accessToken,
-      });
+      // Backend already fail-opens grading when save auth fails (HTTP 200).
+      // If the client still sees 401, retry once without progress save so feedback shows.
+      let graded: QuizSubmitResult;
+      try {
+        graded = await api.submitQuiz(quiz.id, answers, {
+          saveProgress: hasSession,
+          accessToken,
+        });
+      } catch (firstErr) {
+        if (hasSession && firstErr instanceof ApiError && firstErr.isUnauthorized) {
+          graded = await api.submitQuiz(quiz.id, answers, {
+            saveProgress: false,
+            accessToken: null,
+          });
+        } else {
+          throw firstErr;
+        }
+      }
       setResult(graded);
       onGraded?.();
-    } catch (err) {
-      if (err instanceof ApiError) {
-        setError(uiT("error", locale));
-      } else {
-        setError(uiT("error", locale));
-      }
+    } catch {
+      setError(uiT("error", locale));
     } finally {
       setBusy(false);
     }
@@ -60,15 +71,16 @@ export function QuizPanel({
       <h2 id="quiz-heading">{t(quiz.title, locale)}</h2>
       {quiz.questions.map((q, index) => {
         const feedback = byQuestion[q.id];
+        const promptText = t(q.prompt, locale);
         return (
           <div className="question" key={q.id}>
             <p>
               <strong>
-                {index + 1}. {t(q.prompt, locale)}
+                {index + 1}. {promptText}
               </strong>
             </p>
             {q.type === "multiple_choice" && q.options ? (
-              <div className="options" role="radiogroup" aria-label={t(q.prompt, locale)}>
+              <div className="options" role="radiogroup" aria-label={promptText}>
                 {q.options.map((opt) => (
                   <label className="option" key={opt.id}>
                     <input
@@ -89,6 +101,7 @@ export function QuizPanel({
                 className="written-input"
                 value={written[q.id] ?? ""}
                 placeholder={uiT("writtenPlaceholder", locale)}
+                aria-label={promptText}
                 onChange={(e) =>
                   setWritten((prev) => ({ ...prev, [q.id]: e.target.value }))
                 }
@@ -101,9 +114,7 @@ export function QuizPanel({
                 </strong>
                 <p>{t(feedback.explanation, locale)}</p>
                 {feedback.visualization_hint && (
-                  <span className="viz-hint">
-                    viz: {feedback.visualization_hint}
-                  </span>
+                  <QuizVizHook hint={feedback.visualization_hint} locale={locale} />
                 )}
               </div>
             )}
