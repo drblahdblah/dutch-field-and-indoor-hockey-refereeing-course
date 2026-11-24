@@ -155,6 +155,7 @@ def test_full_field_module_has_sections_and_visuals(client):
             assert section["visual_id"] in visual_ids
     assert any(v["kind"] == "svg_animation" for v in module["visuals"])
     assert any(v["animation_key"] == "danger-cone" for v in module["visuals"])
+    assert any(v["animation_key"] == "field-attack" for v in module["visuals"])
     assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
 
 
@@ -580,6 +581,7 @@ def test_full_indoor_module_has_sections_and_visuals(client):
     assert any(v["animation_key"] == "court-boards" for v in module["visuals"])
     assert any(v["animation_key"] == "lift-limit" for v in module["visuals"])
     assert any(v["animation_key"] == "board-play" for v in module["visuals"])
+    assert any(v["animation_key"] == "indoor-rebound" for v in module["visuals"])
     assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
 
 
@@ -603,7 +605,7 @@ def test_indoor_quiz_grades_mc_and_written_with_explanations(client):
     assert by_id["q1-board-anticipation"]["correct"] is False
     assert by_id["q1-board-anticipation"]["explanation"]["nl"]
     assert by_id["q1-board-anticipation"]["explanation"]["en"]
-    assert by_id["q1-board-anticipation"]["visualization_hint"] == "court-boards"
+    assert by_id["q1-board-anticipation"]["visualization_hint"] == "court-boards"  # option a
     assert by_id["q1-board-anticipation"]["correct_option_id"] == "c"
     assert by_id["q2-lift-emphasis"]["correct"] is True
     assert by_id["q2-lift-emphasis"]["correct_option_id"] == "d"
@@ -650,7 +652,7 @@ def test_indoor_quiz_progress_save_and_resume(client):
     assert row["quiz_total"] == 4
 
 
-# Keep in sync with frontend ModuleVisual KNOWN_ANIMATION_KEYS.
+# Keep in sync with frontend visuals/animationKeys.ts KNOWN_ANIMATION_KEYS.
 _SPA_ANIMATION_KEYS = frozenset(
     {
         "safety-triangle",
@@ -668,6 +670,9 @@ _SPA_ANIMATION_KEYS = frozenset(
         "translation-slot",
         "attribution-chain",
         "capstone-weave",
+        "field-attack",
+        "indoor-rebound",
+        "match-pressure",
     }
 )
 
@@ -714,6 +719,7 @@ def test_full_pathway_module_has_sections_and_visuals(client):
             assert section["visual_id"] in visual_ids
     assert any(v["kind"] == "svg_animation" for v in module["visuals"])
     assert any(v["animation_key"] == "match-cadence" for v in module["visuals"])
+    assert any(v["animation_key"] == "match-pressure" for v in module["visuals"])
     assert any(v["animation_key"] == "partner-handoff" for v in module["visuals"])
     assert any(v["animation_key"] == "consistency-loop" for v in module["visuals"])
     assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
@@ -739,7 +745,7 @@ def test_pathway_quiz_grades_mc_and_written_with_explanations(client):
     assert by_id["q1-match-management"]["correct"] is False
     assert by_id["q1-match-management"]["explanation"]["nl"]
     assert by_id["q1-match-management"]["explanation"]["en"]
-    assert by_id["q1-match-management"]["visualization_hint"] == "match-cadence"
+    assert by_id["q1-match-management"]["visualization_hint"] == "match-pressure"
     assert by_id["q1-match-management"]["correct_option_id"] == "c"
     assert by_id["q2-collaboration"]["correct"] is True
     assert by_id["q2-collaboration"]["correct_option_id"] == "d"
@@ -901,6 +907,9 @@ def test_full_capstone_module_has_sections_and_visuals(client):
         if section["visual_id"]:
             assert section["visual_id"] in visual_ids
     assert any(v["animation_key"] == "capstone-weave" for v in module["visuals"])
+    assert any(v["animation_key"] == "field-attack" for v in module["visuals"])
+    assert any(v["animation_key"] == "indoor-rebound" for v in module["visuals"])
+    assert any(v["animation_key"] == "match-pressure" for v in module["visuals"])
     assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
     assert len(module["interpretation_references"]) >= 1
     for ref in module["interpretation_references"]:
@@ -930,12 +939,12 @@ def test_capstone_quiz_grades_mc_and_written_with_explanations(client):
     assert by_id["q1-field-danger-priority"]["correct"] is False
     assert by_id["q1-field-danger-priority"]["explanation"]["nl"]
     assert by_id["q1-field-danger-priority"]["explanation"]["en"]
-    assert by_id["q1-field-danger-priority"]["visualization_hint"] == "danger-cone"
+    assert by_id["q1-field-danger-priority"]["visualization_hint"] == "field-attack"
     assert by_id["q1-field-danger-priority"]["correct_option_id"] == "b"
     assert by_id["q2-indoor-lift-boards"]["correct"] is True
-    assert by_id["q2-indoor-lift-boards"]["visualization_hint"] == "lift-limit"
+    assert by_id["q2-indoor-lift-boards"]["visualization_hint"] == "indoor-rebound"
     assert by_id["q3-pathway-management"]["correct"] is True
-    assert by_id["q3-pathway-management"]["visualization_hint"] == "match-cadence"
+    assert by_id["q3-pathway-management"]["visualization_hint"] == "match-pressure"
     assert by_id["q4-interpretation-source"]["correct"] is True
     assert by_id["q4-interpretation-source"]["visualization_hint"] == "source-stack"
     assert by_id["q5-safety-keyword"]["correct"] is True

@@ -82,6 +82,25 @@ FIELD_VISUALS: list[VisualPlaceholder] = [
         animation_key="restart-bubble",
     ),
     VisualPlaceholder(
+        id="viz-field-attack",
+        kind="svg_animation",
+        title=LocalizedText(
+            nl="Scenario: aanval richting cirkel",
+            en="Scenario: attack toward the circle",
+        ),
+        caption=LocalizedText(
+            nl=(
+                "Originele scenario-SVG: aanvalspad + gevaarskegel in de "
+                "23m/cirkel. Geen KNHB-kunst of officiële veldmaat."
+            ),
+            en=(
+                "Original scenario SVG: attack path + danger cone in the "
+                "23m/circle. No KNHB art or official pitch diagram."
+            ),
+        ),
+        animation_key="field-attack",
+    ),
+    VisualPlaceholder(
         id="viz-knhb-field-interpretations-slot",
         kind="official_link_slot",
         title=LocalizedText(
@@ -635,7 +654,7 @@ FIELD_MODULE = ModuleStub(
                     ),
                 ),
             ],
-            visual_id="viz-knhb-field-interpretations-slot",
+            visual_id="viz-field-attack",
         ),
         LearningSection(
             id="sec-field-practice-next",
@@ -659,6 +678,7 @@ FIELD_MODULE = ModuleStub(
                     ),
                 ),
             ],
+            visual_id="viz-knhb-field-interpretations-slot",
         ),
     ],
     visuals=FIELD_VISUALS,

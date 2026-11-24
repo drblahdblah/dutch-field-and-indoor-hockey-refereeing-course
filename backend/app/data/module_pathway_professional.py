@@ -80,6 +80,25 @@ PATHWAY_VISUALS: list[VisualPlaceholder] = [
         animation_key="consistency-loop",
     ),
     VisualPlaceholder(
+        id="viz-match-pressure",
+        kind="svg_animation",
+        title=LocalizedText(
+            nl="Scenario: oplopende wedstrijddruk",
+            en="Scenario: rising match pressure",
+        ),
+        caption=LocalizedText(
+            nl=(
+                "Originele scenario-SVG: vóór → tijdens → ná met oplopende "
+                "druk. Pedagogisch model — geen KNHB-protocolplaatje."
+            ),
+            en=(
+                "Original scenario SVG: before → during → after with rising "
+                "pressure. Pedagogical model — not a KNHB protocol chart."
+            ),
+        ),
+        animation_key="match-pressure",
+    ),
+    VisualPlaceholder(
         id="viz-knhb-pathway-slot",
         kind="official_link_slot",
         title=LocalizedText(
@@ -166,7 +185,7 @@ PATHWAY_QUIZ = Quiz(
                         "concrete steps — this is the frame only."
                     ),
                 ),
-                visualization_hint="match-cadence",
+                visualization_hint="match-pressure",
             ),
             feedback_incorrect={
                 "a": QuizFeedback(
@@ -180,7 +199,7 @@ PATHWAY_QUIZ = Quiz(
                             "professional match management."
                         ),
                     ),
-                    visualization_hint="match-cadence",
+                    visualization_hint="match-pressure",
                 ),
                 "b": QuizFeedback(
                     explanation=LocalizedText(
@@ -202,7 +221,7 @@ PATHWAY_QUIZ = Quiz(
                     nl="Herlees het wedstrijdritme: vóór → tijdens → ná.",
                     en="Revisit match cadence: before → during → after.",
                 ),
-                visualization_hint="match-cadence",
+                visualization_hint="match-pressure",
             ),
         ),
         QuizQuestion(
@@ -470,8 +489,8 @@ PATHWAY_MODULE = ModuleStub(
         LearningSection(
             id="sec-match-management",
             title=LocalizedText(
-                nl="Match management: ritme vóór, tijdens, ná",
-                en="Match management: cadence before, during, after",
+                nl="Scenario: match management onder oplopende druk",
+                en="Scenario: match management under rising pressure",
             ),
             paragraphs=[
                 LocalizedText(
@@ -503,7 +522,7 @@ PATHWAY_MODULE = ModuleStub(
                     ),
                 ),
             ],
-            visual_id="viz-match-cadence",
+            visual_id="viz-match-pressure",
         ),
         LearningSection(
             id="sec-collaboration",
