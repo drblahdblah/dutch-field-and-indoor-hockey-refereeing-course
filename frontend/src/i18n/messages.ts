@@ -47,6 +47,15 @@ const ui = {
   kindField: { nl: "Veld", en: "Field" },
   kindIndoor: { nl: "Zaal", en: "Indoor" },
   kindShared: { nl: "Algemeen", en: "Shared" },
+  contentFull: { nl: "Volledige module", en: "Full module" },
+  contentStub: { nl: "Stub", en: "Stub" },
+  learningContent: { nl: "Leerstof", en: "Learning content" },
+  learningObjectives: { nl: "Leerdoelen", en: "Learning objectives" },
+  instruction: { nl: "Instructie", en: "Instruction" },
+  vizUnavailable: {
+    nl: "Geen gekoppelde visualisatie voor deze feedback.",
+    en: "No linked visualization for this feedback.",
+  },
 } as const satisfies Record<string, Localized>;
 
 export type UiKey = keyof typeof ui;

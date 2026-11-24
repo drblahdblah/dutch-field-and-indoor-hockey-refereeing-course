@@ -27,6 +27,7 @@ htmlcov/
 node_modules/
 frontend/dist/
 frontend/coverage/
+*.tsbuildinfo
 *.local
 .npm
 .pnpm-store/

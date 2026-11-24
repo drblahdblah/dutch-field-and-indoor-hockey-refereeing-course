@@ -1,9 +1,9 @@
 """Pydantic request/response schemas."""
 
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any, Literal, Self
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class LocalizedText(BaseModel):
@@ -34,8 +34,10 @@ class QuizOption(BaseModel):
 
 class QuizFeedback(BaseModel):
     explanation: LocalizedText
-    """Room for viz/animations in answer feedback (client may render)."""
-    visualization_hint: str | None = None
+    visualization_hint: str | None = Field(
+        default=None,
+        description="Room for viz/animations in answer feedback (client may render).",
+    )
 
 
 class QuizQuestion(BaseModel):
@@ -44,12 +46,29 @@ class QuizQuestion(BaseModel):
     prompt: LocalizedText
     options: list[QuizOption] | None = None
     correct_option_id: str | None = None
-    """For written questions: accepted answer keys (normalized)."""
-    accepted_answers: list[str] | None = None
+    accepted_answers: list[str] | None = Field(
+        default=None,
+        description="For written questions: accepted answer keys (normalized).",
+    )
     feedback_correct: QuizFeedback
     feedback_incorrect: dict[str, QuizFeedback] | None = None
-    """Fallback when option-specific feedback is missing."""
-    feedback_incorrect_default: QuizFeedback | None = None
+    feedback_incorrect_default: QuizFeedback | None = Field(
+        default=None,
+        description="Fallback when option-specific feedback is missing.",
+    )
+
+    @model_validator(mode="after")
+    def validate_question_shape(self) -> Self:
+        if self.type == "multiple_choice":
+            if not self.options:
+                raise ValueError("multiple_choice questions require options")
+            option_ids = {opt.id for opt in self.options}
+            if not self.correct_option_id or self.correct_option_id not in option_ids:
+                raise ValueError("correct_option_id must match one of the options")
+        elif self.type == "written":
+            if not self.accepted_answers:
+                raise ValueError("written questions require accepted_answers")
+        return self
 
 
 class Quiz(BaseModel):
@@ -73,6 +92,47 @@ class QuizPublic(BaseModel):
     questions: list[QuizQuestionPublic]
 
 
+class VisualPlaceholder(BaseModel):
+    """Original CSS/SVG viz or an attributed slot linking to official FIH/KNHB material.
+
+    Never embed copyrighted KNHB illustrations — use official_source_url + note.
+    """
+
+    id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    kind: Literal["svg_animation", "official_link_slot"]
+    title: LocalizedText
+    caption: LocalizedText
+    animation_key: str | None = Field(
+        default=None,
+        max_length=64,
+        description="Stable key the SPA uses to pick an original animation (svg_animation only).",
+    )
+    official_source_url: str | None = None
+    official_source_name: str | None = None
+    knhb_illustration_placeholder: bool = False
+
+    @model_validator(mode="after")
+    def validate_visual_kind(self) -> Self:
+        if self.kind == "svg_animation" and not self.animation_key:
+            raise ValueError("svg_animation visuals require animation_key")
+        if self.kind == "official_link_slot" and not self.official_source_url:
+            raise ValueError("official_link_slot visuals require official_source_url")
+        return self
+
+
+class LearningSection(BaseModel):
+    """Instructional block inside a full module (not a stub outline line)."""
+
+    id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    title: LocalizedText
+    paragraphs: list[LocalizedText] = Field(min_length=1)
+    visual_id: str | None = Field(
+        default=None,
+        max_length=64,
+        pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+    )
+
+
 class ModuleStub(BaseModel):
     id: str
     kind: Literal["field", "indoor", "shared"]
@@ -80,9 +140,27 @@ class ModuleStub(BaseModel):
     summary: LocalizedText
     learning_objectives: list[LocalizedText]
     instruction_outline: list[LocalizedText]
+    content_status: Literal["stub", "full"] = Field(
+        default="stub",
+        description="stub = outline only; full = sections + visuals + learning prose.",
+    )
+    sections: list[LearningSection] = Field(default_factory=list)
+    visuals: list[VisualPlaceholder] = Field(default_factory=list)
     quiz_id: str | None = None
     further_reading: list[FurtherReading] = Field(default_factory=list)
     order: int
+
+    @model_validator(mode="after")
+    def validate_full_module(self) -> Self:
+        visual_ids = {v.id for v in self.visuals}
+        for section in self.sections:
+            if section.visual_id and section.visual_id not in visual_ids:
+                raise ValueError(
+                    f"section {section.id} references unknown visual_id {section.visual_id}"
+                )
+        if self.content_status == "full" and not self.sections:
+            raise ValueError("full modules require at least one learning section")
+        return self
 
 
 class CourseOutline(BaseModel):

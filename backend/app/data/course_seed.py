@@ -1,9 +1,10 @@
-"""Minimal bilingual course outline + sample quiz (v0 stubs).
+"""Bilingual course outline: one full module + remaining stubs.
 
 Do NOT invent copyrighted FIH/KNHB rule text or illustrations.
 Attribution hooks and official-source links only.
 """
 
+from app.data.module_intro_role import INTRO_MODULE, INTRO_QUIZ
 from app.schemas import (
     Attribution,
     CourseOutline,
@@ -352,12 +353,12 @@ INDOOR_QUIZ = Quiz(
             type="written",
             prompt=LocalizedText(
                 nl=(
-                    "Welk Engels woord gebruikt deze cursus voor het overdekte "
-                    "hockeyformat (één woord: indoor)?"
+                    "Welk Engels woord gebruikt deze cursus voor zaalhockey "
+                    "(het overdekte format)? (één woord)"
                 ),
                 en=(
-                    "Which English word does this course use for the indoor "
-                    "hockey format? (one word: indoor)"
+                    "Which English word does this course use for hall/covered "
+                    "hockey (zaalhockey)? (one word)"
                 ),
             ),
             accepted_answers=["indoor"],
@@ -378,50 +379,7 @@ INDOOR_QUIZ = Quiz(
 )
 
 MODULES: list[ModuleStub] = [
-    ModuleStub(
-        id="mod-intro-role",
-        kind="shared",
-        title=LocalizedText(
-            nl="Introductie: rol van de scheidsrechter",
-            en="Introduction: the umpire’s role",
-        ),
-        summary=LocalizedText(
-            nl="Veiligheid, consistentie en communicatie als basis.",
-            en="Safety, consistency and communication as foundations.",
-        ),
-        learning_objectives=[
-            LocalizedText(
-                nl="Beschrijven van de primaire verantwoordelijkheden van de scheidsrechter.",
-                en="Describe the umpire’s primary responsibilities.",
-            ),
-            LocalizedText(
-                nl="Onderscheiden van veld- en zaalhockeycontext op hoog niveau.",
-                en="Distinguish field vs indoor context at a high level.",
-            ),
-        ],
-        instruction_outline=[
-            LocalizedText(
-                nl="[Instructie-stub] Positionering, blikrichting, teamwork met collega.",
-                en="[Instruction stub] Positioning, scanning, teamwork with partner.",
-            ),
-            LocalizedText(
-                nl="[Instructie-stub] Communicatie met spelers en coaches.",
-                en="[Instruction stub] Communicating with players and coaches.",
-            ),
-        ],
-        quiz_id=None,
-        further_reading=[
-            FurtherReading(
-                title=LocalizedText(
-                    nl="FIH Rules of Hockey (officieel)",
-                    en="FIH Rules of Hockey (official)",
-                ),
-                url="https://www.fih.hockey/inside-fih/our-official-documents/rules-of-hockey",
-                attribution=OFFICIAL_ATTRIBUTIONS[0],
-            ),
-        ],
-        order=1,
-    ),
+    INTRO_MODULE,
     ModuleStub(
         id="mod-field-danger",
         kind="field",
@@ -455,6 +413,7 @@ MODULES: list[ModuleStub] = [
                 ),
             ),
         ],
+        content_status="stub",
         quiz_id="quiz-dangerous-play-basics",
         further_reading=[
             FurtherReading(
@@ -491,6 +450,7 @@ MODULES: list[ModuleStub] = [
                 en="[Instruction stub] Boards, lifting, decision tempo.",
             ),
         ],
+        content_status="stub",
         quiz_id="quiz-indoor-context-basics",
         further_reading=[
             FurtherReading(
@@ -527,6 +487,7 @@ MODULES: list[ModuleStub] = [
                 en="[Instruction stub] Mentoring, video review, fitness, game management.",
             ),
         ],
+        content_status="stub",
         quiz_id=None,
         further_reading=[],
         order=4,
@@ -543,16 +504,19 @@ def get_course_outline() -> CourseOutline:
         ),
         description=LocalizedText(
             nl=(
-                "v0-scaffold: modules, quiz met feedback, voortgang. "
+                "Eerste volledige module (intro rol) plus verdere stubs; "
+                "quiz met feedback en sessievoortgang. "
                 + KNHB_RULES_NOTE.nl
             ),
             en=(
-                "v0 scaffold: modules, quiz with feedback, progress. "
+                "First full module (intro role) plus further stubs; "
+                "quiz with feedback and session progress. "
                 + KNHB_RULES_NOTE.en
             ),
         ),
         modules=MODULES,
         quizzes={
+            INTRO_QUIZ.id: INTRO_QUIZ,
             SAMPLE_QUIZ.id: SAMPLE_QUIZ,
             INDOOR_QUIZ.id: INDOOR_QUIZ,
         },

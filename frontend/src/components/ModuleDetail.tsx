@@ -1,6 +1,7 @@
-import type { ModuleStub, Quiz } from "../api/types";
+import type { ModuleStub, Quiz, VisualPlaceholder } from "../api/types";
 import { safeHttpUrl } from "../api/urls";
 import { t, uiT, type Locale } from "../i18n/messages";
+import { ModuleVisual } from "./ModuleVisual";
 import { QuizPanel } from "./QuizPanel";
 
 type Props = {
@@ -18,6 +19,10 @@ function kindLabel(kind: ModuleStub["kind"], locale: Locale): string {
   return uiT("kindShared", locale);
 }
 
+function visualMap(module: ModuleStub): Record<string, VisualPlaceholder> {
+  return Object.fromEntries(module.visuals.map((v) => [v.id, v]));
+}
+
 export function ModuleDetail({
   module,
   quiz,
@@ -26,27 +31,61 @@ export function ModuleDetail({
   hasSession,
   onGraded,
 }: Props) {
+  const isFull = module.content_status === "full";
+  const byVisualId = visualMap(module);
+  const matchedQuiz =
+    quiz && module.quiz_id && quiz.id === module.quiz_id ? quiz : null;
+
   return (
     <article className="panel" aria-labelledby="module-heading">
       <p className="module-meta">
         <span className="pill">{kindLabel(module.kind, locale)}</span>
+        <span className={`pill content-${module.content_status}`}>
+          {isFull ? uiT("contentFull", locale) : uiT("contentStub", locale)}
+        </span>
       </p>
       <h2 id="module-heading">{t(module.title, locale)}</h2>
       <p>{t(module.summary, locale)}</p>
 
-      <h3>{locale === "nl" ? "Leerdoelen" : "Learning objectives"}</h3>
+      <h3>{uiT("learningObjectives", locale)}</h3>
       <ul className="objectives">
         {module.learning_objectives.map((obj, i) => (
           <li key={i}>{t(obj, locale)}</li>
         ))}
       </ul>
 
-      <h3>{locale === "nl" ? "Instructie" : "Instruction"}</h3>
-      <ul className="instructions">
-        {module.instruction_outline.map((line, i) => (
-          <li key={i}>{t(line, locale)}</li>
-        ))}
-      </ul>
+      {isFull && module.sections.length > 0 ? (
+        <div className="learning-sections">
+          <h3>{uiT("learningContent", locale)}</h3>
+          {module.sections.map((section) => {
+            const visual = section.visual_id
+              ? byVisualId[section.visual_id]
+              : undefined;
+            return (
+              <section
+                key={section.id}
+                className="learning-section"
+                aria-labelledby={`section-${section.id}`}
+              >
+                <h4 id={`section-${section.id}`}>{t(section.title, locale)}</h4>
+                {section.paragraphs.map((para, i) => (
+                  <p key={i}>{t(para, locale)}</p>
+                ))}
+                {visual && <ModuleVisual visual={visual} locale={locale} />}
+              </section>
+            );
+          })}
+        </div>
+      ) : (
+        <>
+          <h3>{uiT("instruction", locale)}</h3>
+          <ul className="instructions">
+            {module.instruction_outline.map((line, i) => (
+              <li key={i}>{t(line, locale)}</li>
+            ))}
+          </ul>
+        </>
+      )}
 
       {module.further_reading.length > 0 && (
         <>
@@ -73,9 +112,10 @@ export function ModuleDetail({
         </>
       )}
 
-      {quiz && (
+      {matchedQuiz && (
         <QuizPanel
-          quiz={quiz}
+          key={matchedQuiz.id}
+          quiz={matchedQuiz}
           locale={locale}
           accessToken={accessToken}
           hasSession={hasSession}
