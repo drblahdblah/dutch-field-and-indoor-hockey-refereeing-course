@@ -26,10 +26,13 @@ def test_course_outline_bilingual_and_strips_answers(client):
     assert len(body["modules"]) >= 3
     assert "quiz-intro-umpire-role" in body["quizzes"]
     assert "quiz-field-rules-core" in body["quizzes"]
-    assert "quiz-indoor-context-basics" in body["quizzes"]
+    assert "quiz-indoor-rules-core" in body["quizzes"]
+    assert "quiz-indoor-context-basics" not in body["quizzes"]
     module_ids = {m["id"] for m in body["modules"]}
     assert "mod-intro-role" in module_ids
     assert "mod-field-rules-core" in module_ids
+    assert "mod-indoor-rules-core" in module_ids
+    assert "mod-indoor-basics" not in module_ids
     assert any(a.get("knhb_illustration_placeholder") for a in body["attributions"])
     for quiz in body["quizzes"].values():
         for q in quiz["questions"]:
@@ -544,18 +547,92 @@ def test_rate_limit_ignores_spoofed_xff_by_default(client, monkeypatch):
     assert spoofed.status_code == 429
 
 
-def test_indoor_quiz_submit(client):
+def test_full_indoor_module_has_sections_and_visuals(client):
+    res = client.get("/api/course/modules/mod-indoor-rules-core")
+    assert res.status_code == 200
+    module = res.json()
+    assert module["content_status"] == "full"
+    assert module["kind"] == "indoor"
+    assert module["quiz_id"] == "quiz-indoor-rules-core"
+    assert len(module["sections"]) >= 4
+    assert len(module["visuals"]) >= 3
+    assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
+    visual_ids = {v["id"] for v in module["visuals"]}
+    for section in module["sections"]:
+        if section["visual_id"]:
+            assert section["visual_id"] in visual_ids
+    assert any(v["kind"] == "svg_animation" for v in module["visuals"])
+    assert any(v["animation_key"] == "court-boards" for v in module["visuals"])
+    assert any(v["animation_key"] == "lift-limit" for v in module["visuals"])
+    assert any(v["animation_key"] == "board-play" for v in module["visuals"])
+    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+
+
+def test_indoor_quiz_grades_mc_and_written_with_explanations(client):
     res = client.post(
-        "/api/quizzes/quiz-indoor-context-basics/submit",
+        "/api/quizzes/quiz-indoor-rules-core/submit",
         json={
             "answers": [
-                {"question_id": "q1-indoor-space", "selected_option_id": "b"},
-                {"question_id": "q2-indoor-keyword", "written_answer": "Indoor"},
+                {"question_id": "q1-board-anticipation", "selected_option_id": "a"},
+                {"question_id": "q2-lift-emphasis", "selected_option_id": "d"},
+                {"question_id": "q3-boards-keyword", "written_answer": "boards"},
+                {"question_id": "q4-indoor-keyword", "written_answer": "nope"},
             ]
         },
     )
     assert res.status_code == 200
-    assert res.json()["score"] == 2
+    body = res.json()
+    assert body["total"] == 4
+    assert body["score"] == 2
+    by_id = {r["question_id"]: r for r in body["results"]}
+    assert by_id["q1-board-anticipation"]["correct"] is False
+    assert by_id["q1-board-anticipation"]["explanation"]["nl"]
+    assert by_id["q1-board-anticipation"]["explanation"]["en"]
+    assert by_id["q1-board-anticipation"]["visualization_hint"] == "court-boards"
+    assert by_id["q1-board-anticipation"]["correct_option_id"] == "c"
+    assert by_id["q2-lift-emphasis"]["correct"] is True
+    assert by_id["q2-lift-emphasis"]["correct_option_id"] == "d"
+    assert by_id["q3-boards-keyword"]["correct"] is True
+    assert by_id["q4-indoor-keyword"]["correct"] is False
+
+
+def test_indoor_quiz_progress_save_and_resume(client):
+    created = client.post("/api/progress/sessions", json={"locale": "nl"})
+    token = created.json()["access_token"]
+    headers = _auth_headers(token)
+
+    opened = client.put(
+        "/api/progress/session",
+        headers=headers,
+        json={"module_id": "mod-indoor-rules-core", "status": "in_progress"},
+    )
+    assert opened.status_code == 200
+
+    submit = client.post(
+        "/api/quizzes/quiz-indoor-rules-core/submit",
+        headers=headers,
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-board-anticipation", "selected_option_id": "c"},
+                {"question_id": "q2-lift-emphasis", "selected_option_id": "d"},
+                {"question_id": "q3-boards-keyword", "written_answer": "Boards"},
+                {"question_id": "q4-indoor-keyword", "written_answer": "Indoor!"},
+            ],
+        },
+    )
+    assert submit.status_code == 200
+    assert submit.json()["progress_saved"] is True
+    assert submit.json()["score"] == 4
+
+    progress = client.get("/api/progress/session", headers=headers)
+    assert progress.status_code == 200
+    row = next(
+        p for p in progress.json()["progress"] if p["module_id"] == "mod-indoor-rules-core"
+    )
+    assert row["status"] == "completed"
+    assert row["quiz_score"] == 4
+    assert row["quiz_total"] == 4
 
 
 def test_invalid_locale_rejected(client):

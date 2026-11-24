@@ -13,6 +13,9 @@ describe("animationKeyFromHint", () => {
     expect(animationKeyFromHint("pitch-zones")).toBe("pitch-zones");
     expect(animationKeyFromHint("danger-cone")).toBe("danger-cone");
     expect(animationKeyFromHint("restart-bubble")).toBe("restart-bubble");
+    expect(animationKeyFromHint("court-boards")).toBe("court-boards");
+    expect(animationKeyFromHint("lift-limit")).toBe("lift-limit");
+    expect(animationKeyFromHint("board-play")).toBe("board-play");
     expect(animationKeyFromHint(" Danger-Cone ")).toBe("danger-cone");
     expect(animationKeyFromHint("timeline: raise → proximity")).toBeNull();
     expect(animationKeyFromHint("prefix-safety-triangle")).toBeNull();
@@ -89,6 +92,55 @@ describe("ModuleVisual", () => {
     rerender(<ModuleVisual visual={bubble} locale="nl" />);
     expect(screen.getByText("bubbel")).toBeInTheDocument();
     expect(screen.getByText("herstart")).toBeInTheDocument();
+  });
+
+  it("renders indoor court-boards, lift-limit, and board-play SVGs", () => {
+    const court: VisualPlaceholder = {
+      id: "viz-court-boards",
+      kind: "svg_animation",
+      title: { nl: "Zaal", en: "Court" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "court-boards",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    const { rerender } = render(<ModuleVisual visual={court} locale="nl" />);
+    const svg = document.querySelector("svg.viz-court");
+    expect(svg).toBeTruthy();
+    expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByText("helft")).toBeInTheDocument();
+    expect(screen.getAllByText("banden")).toHaveLength(2);
+    expect(screen.getAllByText("cirkel")).toHaveLength(2);
+
+    const lift: VisualPlaceholder = {
+      id: "viz-lift-limit",
+      kind: "svg_animation",
+      title: { nl: "Lift", en: "Lift" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "lift-limit",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={lift} locale="en" />);
+    expect(screen.getByText("flat")).toBeInTheDocument();
+    expect(screen.getByText("raised")).toBeInTheDocument();
+
+    const board: VisualPlaceholder = {
+      id: "viz-board-play",
+      kind: "svg_animation",
+      title: { nl: "Band", en: "Board" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "board-play",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={board} locale="nl" />);
+    expect(screen.getByText("banden")).toBeInTheDocument();
+    expect(screen.getByText("rebound")).toBeInTheDocument();
+    expect(screen.getByText("herstel")).toBeInTheDocument();
   });
 
   it("renders official link slot without inventing KNHB art", () => {

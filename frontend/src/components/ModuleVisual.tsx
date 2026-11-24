@@ -25,6 +25,11 @@ const SVG_LABELS = {
   speed: { nl: "snelheid", en: "speed" },
   bubble: { nl: "bubbel", en: "bubble" },
   restart: { nl: "herstart", en: "restart" },
+  boards: { nl: "banden", en: "boards" },
+  flat: { nl: "plat", en: "flat" },
+  raised: { nl: "omhoog", en: "raised" },
+  rebound: { nl: "rebound", en: "rebound" },
+  recovery: { nl: "herstel", en: "recovery" },
 } as const;
 
 function SafetyTriangleSvg({ locale }: { locale: Locale }) {
@@ -178,12 +183,130 @@ function RestartBubbleSvg({ locale }: { locale: Locale }) {
   );
 }
 
+function CourtBoardsSvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg viz-court" viewBox="0 0 260 160" aria-hidden="true">
+      <rect
+        className="viz-court-board viz-court-board-left"
+        x="12"
+        y="16"
+        width="10"
+        height="128"
+        rx="2"
+      />
+      <rect
+        className="viz-court-board viz-court-board-right"
+        x="238"
+        y="16"
+        width="10"
+        height="128"
+        rx="2"
+      />
+      <rect
+        className="viz-court-outline"
+        x="22"
+        y="16"
+        width="216"
+        height="128"
+        rx="3"
+        fill="none"
+        strokeWidth="2.5"
+      />
+      <line className="viz-court-line" x1="130" y1="16" x2="130" y2="144" strokeWidth="2" />
+      <path
+        className="viz-court-circle viz-court-circle-a"
+        d="M 54 48 A 32 32 0 0 1 54 112"
+        fill="none"
+        strokeWidth="2"
+      />
+      <path
+        className="viz-court-circle viz-court-circle-b"
+        d="M 206 48 A 32 32 0 0 0 206 112"
+        fill="none"
+        strokeWidth="2"
+      />
+      <text x="130" y="14" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.half, locale)}
+      </text>
+      <text x="42" y="38" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.boards, locale)}
+      </text>
+      <text x="218" y="38" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.boards, locale)}
+      </text>
+      <text x="48" y="86" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.circle, locale)}
+      </text>
+      <text x="212" y="86" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.circle, locale)}
+      </text>
+    </svg>
+  );
+}
+
+function LiftLimitSvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg" viewBox="0 0 260 170" aria-hidden="true">
+      <line className="viz-lift-ground" x1="40" y1="130" x2="220" y2="130" strokeWidth="2.5" />
+      <circle className="viz-node viz-node-a viz-lift-flat" cx="90" cy="130" r="8" />
+      <path
+        className="viz-lift-arc"
+        d="M 150 130 Q 185 70 220 50"
+        fill="none"
+        strokeWidth="2.5"
+      />
+      <circle className="viz-node viz-node-b viz-lift-raised" cx="220" cy="50" r="8" />
+      <text x="90" y="152" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.flat, locale)}
+      </text>
+      <text x="220" y="36" textAnchor="end" className="viz-label">
+        {t(SVG_LABELS.raised, locale)}
+      </text>
+      <text x="130" y="100" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.ball, locale)}
+      </text>
+    </svg>
+  );
+}
+
+function BoardPlaySvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg" viewBox="0 0 260 160" aria-hidden="true">
+      <rect className="viz-court-board" x="28" y="24" width="10" height="112" rx="2" />
+      <path
+        className="viz-board-path"
+        d="M 200 120 L 48 80 L 160 40"
+        fill="none"
+        strokeWidth="2.5"
+      />
+      <circle className="viz-node viz-node-a" cx="200" cy="120" r="7" />
+      <circle className="viz-core viz-board-impact" cx="48" cy="80" r="9" />
+      <circle className="viz-node viz-node-b" cx="160" cy="40" r="7" />
+      <text x="200" y="142" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.ball, locale)}
+      </text>
+      <text x="18" y="84" textAnchor="start" className="viz-label">
+        {t(SVG_LABELS.boards, locale)}
+      </text>
+      <text x="168" y="28" textAnchor="start" className="viz-label">
+        {t(SVG_LABELS.rebound, locale)}
+      </text>
+      <text x="130" y="108" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.recovery, locale)}
+      </text>
+    </svg>
+  );
+}
+
 function pickAnimation(key: string | null | undefined, locale: Locale) {
   if (key === "safety-triangle") return <SafetyTriangleSvg locale={locale} />;
   if (key === "scan-cycle") return <ScanCycleSvg locale={locale} />;
   if (key === "pitch-zones") return <PitchZonesSvg locale={locale} />;
   if (key === "danger-cone") return <DangerConeSvg locale={locale} />;
   if (key === "restart-bubble") return <RestartBubbleSvg locale={locale} />;
+  if (key === "court-boards") return <CourtBoardsSvg locale={locale} />;
+  if (key === "lift-limit") return <LiftLimitSvg locale={locale} />;
+  if (key === "board-play") return <BoardPlaySvg locale={locale} />;
   return (
     <div className="viz-fallback" aria-hidden="true">
       <span className="viz-pulse" />
@@ -226,6 +349,9 @@ const KNOWN_ANIMATION_KEYS = new Set([
   "pitch-zones",
   "danger-cone",
   "restart-bubble",
+  "court-boards",
+  "lift-limit",
+  "board-play",
 ]);
 
 /** Resolve a quiz visualization_hint to a known animation key or null. */

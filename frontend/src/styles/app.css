@@ -439,6 +439,62 @@ input {
   animation: pop-node 0.45s ease 0.5s both;
 }
 
+.viz-court-outline {
+  stroke: var(--accent);
+}
+
+.viz-court-line {
+  stroke: var(--accent);
+  opacity: 0.7;
+}
+
+.viz-court-board {
+  fill: rgba(200, 245, 66, 0.35);
+  animation: band-fade 1.2s ease both;
+}
+
+.viz-court-board-right {
+  animation-delay: 0.15s;
+}
+
+.viz-court-circle {
+  stroke: var(--accent);
+  stroke-dasharray: 110;
+  stroke-dashoffset: 110;
+  animation: draw-arc 1.5s ease forwards;
+}
+
+.viz-court-circle-b {
+  animation-delay: 0.2s;
+}
+
+.viz-lift-ground {
+  stroke: var(--accent);
+  opacity: 0.85;
+}
+
+.viz-lift-arc {
+  stroke: var(--accent);
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: draw-tri 1.4s ease forwards;
+}
+
+.viz-lift-raised {
+  animation: pop-node 0.45s ease 0.55s both;
+}
+
+.viz-board-path {
+  stroke: var(--accent);
+  stroke-dasharray: 280;
+  stroke-dashoffset: 280;
+  animation: draw-tri 1.5s ease forwards;
+}
+
+.viz-board-impact {
+  animation: pop-node 0.45s ease 0.45s both;
+}
+
 .viz-fallback {
   height: 64px;
   display: grid;
@@ -526,6 +582,12 @@ input {
   .viz-pitch-circle,
   .viz-pitch-band,
   .viz-bubble-core,
+  .viz-court-board,
+  .viz-court-circle,
+  .viz-lift-arc,
+  .viz-lift-raised,
+  .viz-board-path,
+  .viz-board-impact,
   .viz-node,
   .viz-orbit-dot,
   .viz-pulse,
@@ -539,7 +601,10 @@ input {
   .viz-tri,
   .viz-cone,
   .viz-bubble,
-  .viz-pitch-circle {
+  .viz-pitch-circle,
+  .viz-court-circle,
+  .viz-lift-arc,
+  .viz-board-path {
     stroke-dashoffset: 0;
   }
 
