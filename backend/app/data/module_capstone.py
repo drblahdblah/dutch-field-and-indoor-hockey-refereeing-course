@@ -78,7 +78,7 @@ CAPSTONE_VISUALS: list[VisualPlaceholder] = [
             nl="Originele cursusvisual voor veldscenario's in de capstone.",
             en="Original course visual for field scenarios in the capstone.",
         ),
-        animation_key="danger-cone",
+        animation_key="field-attack",
     ),
     VisualPlaceholder(
         id="viz-scenario-indoor",
@@ -91,20 +91,20 @@ CAPSTONE_VISUALS: list[VisualPlaceholder] = [
             nl="Originele cursusvisual voor zaalscenario's in de capstone.",
             en="Original course visual for indoor scenarios in the capstone.",
         ),
-        animation_key="lift-limit",
+        animation_key="indoor-rebound",
     ),
     VisualPlaceholder(
         id="viz-scenario-pathway",
         kind="svg_animation",
         title=LocalizedText(
-            nl="Pathway-scenario: matchritme",
-            en="Pathway scenario: match cadence",
+            nl="Pathway-scenario: oplopende wedstrijddruk",
+            en="Pathway scenario: rising match pressure",
         ),
         caption=LocalizedText(
             nl="Originele cursusvisual voor professioneel matchmanagement.",
             en="Original course visual for professional match management.",
         ),
-        animation_key="match-cadence",
+        animation_key="match-pressure",
     ),
     VisualPlaceholder(
         id="viz-scenario-interp",
@@ -231,7 +231,7 @@ CAPSTONE_QUIZ = Quiz(
                         "Dangerous play calls for intervention."
                     ),
                 ),
-                visualization_hint="danger-cone",
+                visualization_hint="field-attack",
             ),
             feedback_incorrect={
                 "a": QuizFeedback(
@@ -239,7 +239,7 @@ CAPSTONE_QUIZ = Quiz(
                         nl="Nee — flow mag veiligheid niet overrulen.",
                         en="No — flow must not override safety.",
                     ),
-                    visualization_hint="danger-cone",
+                    visualization_hint="field-attack",
                 ),
                 "c": QuizFeedback(
                     explanation=LocalizedText(
@@ -253,7 +253,7 @@ CAPSTONE_QUIZ = Quiz(
                         nl="Nee — voordeel stopt bij gevaar.",
                         en="No — advantage stops when danger appears.",
                     ),
-                    visualization_hint="danger-cone",
+                    visualization_hint="field-attack",
                 ),
             },
             feedback_incorrect_default=QuizFeedback(
@@ -261,7 +261,7 @@ CAPSTONE_QUIZ = Quiz(
                     nl="Kies veiligheid eerst bij gevaarlijk spel.",
                     en="Choose safety first on dangerous play.",
                 ),
-                visualization_hint="danger-cone",
+                visualization_hint="field-attack",
             ),
         ),
         QuizQuestion(
@@ -329,7 +329,7 @@ CAPSTONE_QUIZ = Quiz(
                         "logic."
                     ),
                 ),
-                visualization_hint="lift-limit",
+                visualization_hint="indoor-rebound",
             ),
             feedback_incorrect={
                 "a": QuizFeedback(
@@ -337,21 +337,21 @@ CAPSTONE_QUIZ = Quiz(
                         nl="Nee — zaal ≠ veld; context verschilt.",
                         en="No — indoor ≠ outdoor; context differs.",
                     ),
-                    visualization_hint="court-boards",
+                    visualization_hint="indoor-rebound",
                 ),
                 "b": QuizFeedback(
                     explanation=LocalizedText(
                         nl="Nee — lift blijft een veiligheidsfactor.",
                         en="No — lift remains a safety factor.",
                     ),
-                    visualization_hint="lift-limit",
+                    visualization_hint="indoor-rebound",
                 ),
                 "d": QuizFeedback(
                     explanation=LocalizedText(
                         nl="Nee — bandcontact is normaal in zaal.",
                         en="No — board contact is normal indoors.",
                     ),
-                    visualization_hint="board-play",
+                    visualization_hint="indoor-rebound",
                 ),
             },
             feedback_incorrect_default=QuizFeedback(
@@ -359,7 +359,7 @@ CAPSTONE_QUIZ = Quiz(
                     nl="Kies de korte besliscyclus met lift + banden.",
                     en="Choose the short cycle with lift + boards.",
                 ),
-                visualization_hint="lift-limit",
+                visualization_hint="indoor-rebound",
             ),
         ),
         QuizQuestion(
@@ -423,7 +423,7 @@ CAPSTONE_QUIZ = Quiz(
                         "during and after — not a single moment."
                     ),
                 ),
-                visualization_hint="match-cadence",
+                visualization_hint="match-pressure",
             ),
             feedback_incorrect={
                 "a": QuizFeedback(
@@ -431,7 +431,7 @@ CAPSTONE_QUIZ = Quiz(
                         nl="Nee — management loopt door tijdens de match.",
                         en="No — management continues during the match.",
                     ),
-                    visualization_hint="match-cadence",
+                    visualization_hint="match-pressure",
                 ),
                 "b": QuizFeedback(
                     explanation=LocalizedText(
@@ -453,7 +453,7 @@ CAPSTONE_QUIZ = Quiz(
                     nl="Kies vóór / tijdens / ná als managementritme.",
                     en="Choose before / during / after as the management rhythm.",
                 ),
-                visualization_hint="match-cadence",
+                visualization_hint="match-pressure",
             ),
         ),
         QuizQuestion(

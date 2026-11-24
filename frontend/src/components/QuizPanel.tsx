@@ -114,7 +114,11 @@ export function QuizPanel({
                 </strong>
                 <p>{t(feedback.explanation, locale)}</p>
                 {feedback.visualization_hint && (
-                  <QuizVizHook hint={feedback.visualization_hint} locale={locale} />
+                  <QuizVizHook
+                    hint={feedback.visualization_hint}
+                    locale={locale}
+                    correct={feedback.correct}
+                  />
                 )}
               </div>
             )}

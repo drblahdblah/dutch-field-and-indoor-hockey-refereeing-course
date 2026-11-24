@@ -22,7 +22,7 @@
 1. Define a `Quiz` in a seed module (or `course_seed.py`).
 2. Use `multiple_choice` and/or `written` questions.
 3. Provide `feedback_correct` and per-option `feedback_incorrect` (plus a default).
-4. Optional `visualization_hint` values should match known SPA animation keys (e.g. `safety-triangle`, `danger-cone`, `pitch-zones`, `court-boards`, `lift-limit`, `board-play`, `match-cadence`, `partner-handoff`, `consistency-loop`, `source-stack`, `translation-slot`, `attribution-chain`, `capstone-weave`) or stay free-form (UI shows a muted fallback).
+4. Optional `visualization_hint` values should match known SPA animation keys (e.g. `safety-triangle`, `danger-cone`, `pitch-zones`, `court-boards`, `lift-limit`, `board-play`, `match-cadence`, `partner-handoff`, `consistency-loop`, `source-stack`, `translation-slot`, `attribution-chain`, `capstone-weave`, `field-attack`, `indoor-rebound`, `match-pressure`) or stay free-form (UI shows a muted fallback). Keys live in `frontend/src/components/visuals/animationKeys.ts`.
 5. Register the quiz in `CourseOutline.quizzes` and link via `ModuleStub.quiz_id`.
 6. Answers are graded by `POST /api/quizzes/{quiz_id}/submit` — keep correct keys off the public GET payload (`CourseOutlinePublic` / `QuizPublic`). **Never** put accepted answers inside public `prompt` text.
 7. Progress APIs require session auth (Bearer and/or httpOnly cookie from `POST /api/progress/sessions`).

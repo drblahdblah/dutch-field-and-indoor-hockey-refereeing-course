@@ -82,6 +82,25 @@ INDOOR_VISUALS: list[VisualPlaceholder] = [
         animation_key="board-play",
     ),
     VisualPlaceholder(
+        id="viz-indoor-rebound",
+        kind="svg_animation",
+        title=LocalizedText(
+            nl="Scenario: rebound van de band",
+            en="Scenario: rebound off the boards",
+        ),
+        caption=LocalizedText(
+            nl=(
+                "Originele scenario-SVG: bandcontact → rebound → mogelijke "
+                "lift. Geen KNHB-kunst of officiële zaalmaat."
+            ),
+            en=(
+                "Original scenario SVG: board contact → rebound → possible "
+                "lift. No KNHB art or official court diagram."
+            ),
+        ),
+        animation_key="indoor-rebound",
+    ),
+    VisualPlaceholder(
         id="viz-knhb-indoor-interpretations-slot",
         kind="official_link_slot",
         title=LocalizedText(
@@ -172,7 +191,7 @@ INDOOR_QUIZ = Quiz(
                         "decision frame only."
                     ),
                 ),
-                visualization_hint="board-play",
+                visualization_hint="indoor-rebound",
             ),
             feedback_incorrect={
                 "a": QuizFeedback(
@@ -208,7 +227,7 @@ INDOOR_QUIZ = Quiz(
                             "not; assess context. See official sources."
                         ),
                     ),
-                    visualization_hint="board-play",
+                    visualization_hint="indoor-rebound",
                 ),
             },
             feedback_incorrect_default=QuizFeedback(
@@ -216,7 +235,7 @@ INDOOR_QUIZ = Quiz(
                     nl="Herlees het bandenscan-kader en link naar FIH Indoor Rules.",
                     en="Revisit the board-scan frame and link to FIH Indoor Rules.",
                 ),
-                visualization_hint="board-play",
+                visualization_hint="indoor-rebound",
             ),
         ),
         QuizQuestion(
@@ -551,8 +570,8 @@ INDOOR_MODULE = ModuleStub(
         LearningSection(
             id="sec-board-play",
             title=LocalizedText(
-                nl="Bandenspel: scan bal → band → herstel",
-                en="Board play: scan ball → board → recovery",
+                nl="Scenario: rebound van de band (scan → herstel)",
+                en="Scenario: rebound off the boards (scan → recovery)",
             ),
             paragraphs=[
                 LocalizedText(
@@ -582,7 +601,7 @@ INDOOR_MODULE = ModuleStub(
                     ),
                 ),
             ],
-            visual_id="viz-board-play",
+            visual_id="viz-indoor-rebound",
         ),
         LearningSection(
             id="sec-indoor-tempo",

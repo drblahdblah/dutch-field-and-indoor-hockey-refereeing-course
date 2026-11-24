@@ -3,24 +3,18 @@ import { describe, expect, it } from "vitest";
 import type { VisualPlaceholder } from "../api/types";
 import {
   ModuleVisual,
+  QuizVizHook,
   animationKeyFromHint,
 } from "../components/ModuleVisual";
+import { KNOWN_ANIMATION_KEYS } from "../components/visuals/animationKeys";
 
 describe("animationKeyFromHint", () => {
   it("maps known quiz hints to animation keys with exact match only", () => {
-    expect(animationKeyFromHint("safety-triangle")).toBe("safety-triangle");
-    expect(animationKeyFromHint("scan-cycle")).toBe("scan-cycle");
-    expect(animationKeyFromHint("pitch-zones")).toBe("pitch-zones");
-    expect(animationKeyFromHint("danger-cone")).toBe("danger-cone");
-    expect(animationKeyFromHint("restart-bubble")).toBe("restart-bubble");
-    expect(animationKeyFromHint("court-boards")).toBe("court-boards");
-    expect(animationKeyFromHint("lift-limit")).toBe("lift-limit");
-    expect(animationKeyFromHint("board-play")).toBe("board-play");
-    expect(animationKeyFromHint("match-cadence")).toBe("match-cadence");
-    expect(animationKeyFromHint("partner-handoff")).toBe("partner-handoff");
-    expect(animationKeyFromHint("consistency-loop")).toBe("consistency-loop");
-    expect(animationKeyFromHint("capstone-weave")).toBe("capstone-weave");
+    for (const key of KNOWN_ANIMATION_KEYS) {
+      expect(animationKeyFromHint(key)).toBe(key);
+    }
     expect(animationKeyFromHint(" Danger-Cone ")).toBe("danger-cone");
+    expect(animationKeyFromHint(" Field-Attack ")).toBe("field-attack");
     expect(animationKeyFromHint("timeline: raise → proximity")).toBeNull();
     expect(animationKeyFromHint("prefix-safety-triangle")).toBeNull();
     expect(animationKeyFromHint(null)).toBeNull();
@@ -283,5 +277,68 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("indoor")).toBeInTheDocument();
     expect(screen.getByText("pathway")).toBeInTheDocument();
     expect(screen.getByText("interpretation")).toBeInTheDocument();
+  });
+
+  it("renders enriched scenario SVGs for field, indoor, and pathway", () => {
+    const attack: VisualPlaceholder = {
+      id: "viz-field-attack",
+      kind: "svg_animation",
+      title: { nl: "Aanval", en: "Attack" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "field-attack",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    const { rerender } = render(<ModuleVisual visual={attack} locale="en" />);
+    expect(document.querySelector("svg.viz-field-attack")).toBeTruthy();
+    expect(screen.getByText("attack")).toBeInTheDocument();
+    expect(screen.getByText("danger")).toBeInTheDocument();
+
+    const rebound: VisualPlaceholder = {
+      id: "viz-indoor-rebound",
+      kind: "svg_animation",
+      title: { nl: "Rebound", en: "Rebound" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "indoor-rebound",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={rebound} locale="nl" />);
+    expect(document.querySelector("svg.viz-indoor-rebound")).toBeTruthy();
+    expect(screen.getByText("rebound")).toBeInTheDocument();
+    expect(screen.getByText("omhoog")).toBeInTheDocument();
+
+    const pressure: VisualPlaceholder = {
+      id: "viz-match-pressure",
+      kind: "svg_animation",
+      title: { nl: "Druk", en: "Pressure" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "match-pressure",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={pressure} locale="en" />);
+    expect(document.querySelector("svg.viz-match-pressure")).toBeTruthy();
+    expect(screen.getByText("pressure")).toBeInTheDocument();
+    expect(screen.getByText("before")).toBeInTheDocument();
+  });
+
+  it("tints QuizVizHook compact visuals by graded outcome", () => {
+    const { rerender } = render(
+      <QuizVizHook hint="field-attack" locale="en" correct />,
+    );
+    const ok = document.querySelector(".module-visual.is-ok");
+    expect(ok).toBeTruthy();
+    expect(ok).toHaveAttribute("data-outcome", "ok");
+    expect(document.querySelector("svg.viz-field-attack")).toBeTruthy();
+
+    rerender(<QuizVizHook hint="indoor-rebound" locale="nl" correct={false} />);
+    const bad = document.querySelector(".module-visual.is-bad");
+    expect(bad).toBeTruthy();
+    expect(bad).toHaveAttribute("data-outcome", "bad");
+    expect(document.querySelector("svg.viz-indoor-rebound")).toBeTruthy();
   });
 });
