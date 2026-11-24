@@ -1,26 +1,45 @@
 import { useEffect, useState } from "react";
-import { api } from "./api/client";
+import {
+  api,
+  clearAccessToken,
+  getStoredAccessToken,
+  hasStoredSessionFlag,
+  storeAccessToken,
+} from "./api/client";
+import { ApiError } from "./api/errors";
+import { safeHttpUrl } from "./api/urls";
 import type { CourseOutline, ProgressOut, Quiz } from "./api/types";
 import { ModuleDetail } from "./components/ModuleDetail";
 import { t, uiT, type Locale } from "./i18n/messages";
 
-const SESSION_KEY = "umpire-course-session-id";
-
 export default function App() {
   const [locale, setLocale] = useState<Locale>("nl");
   const [course, setCourse] = useState<CourseOutline | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(
-    () => localStorage.getItem(SESSION_KEY),
+  const [accessToken, setAccessToken] = useState<string | null>(() =>
+    getStoredAccessToken(),
   );
+  const [hasSession, setHasSession] = useState<boolean>(() => hasStoredSessionFlag());
   const [progress, setProgress] = useState<ProgressOut[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function refreshProgress(id: string) {
-    const data = await api.getProgress(id);
+  function handleApiFailure(err: unknown) {
+    if (err instanceof ApiError && err.isUnauthorized) {
+      clearAccessToken();
+      setAccessToken(null);
+      setHasSession(false);
+      setProgress([]);
+    }
+    setError(uiT("error", locale));
+  }
+
+  async function refreshProgress(token?: string | null): Promise<ProgressOut[]> {
+    const data = await api.getProgress(token);
     setProgress(data.progress);
+    setHasSession(true);
+    return data.progress;
   }
 
   useEffect(() => {
@@ -30,17 +49,23 @@ export default function App() {
         const outline = await api.course();
         if (cancelled) return;
         setCourse(outline);
-        if (sessionId) {
-          try {
-            await refreshProgress(sessionId);
-          } catch {
-            localStorage.removeItem(SESSION_KEY);
-            setSessionId(null);
+        try {
+          await refreshProgress(accessToken);
+        } catch (err) {
+          if (err instanceof ApiError && err.isUnauthorized) {
+            clearAccessToken();
+            if (!cancelled) {
+              setAccessToken(null);
+              setHasSession(false);
+            }
+          } else if (!cancelled) {
+            // Keep token on transient errors; show safe message.
+            setError(uiT("error", locale));
           }
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : uiT("error", locale));
+          setError(uiT("error", locale));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -67,9 +92,7 @@ export default function App() {
         const q = await api.quiz(module.quiz_id!);
         if (!cancelled) setQuiz(q);
       } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : uiT("error", locale));
-        }
+        if (!cancelled) handleApiFailure(err);
       }
     })();
     return () => {
@@ -80,37 +103,60 @@ export default function App() {
   async function startOrResume() {
     setError(null);
     try {
-      if (sessionId) {
-        await refreshProgress(sessionId);
+      if (hasSession) {
+        const latest = await refreshProgress(accessToken);
         const firstIncomplete =
           course?.modules.find(
             (m) =>
-              progress.find((p) => p.module_id === m.id)?.status !== "completed",
+              latest.find((p) => p.module_id === m.id)?.status !== "completed",
           ) ?? course?.modules[0];
         setSelectedId(firstIncomplete?.id ?? null);
         return;
       }
       const session = await api.createSession(undefined, locale);
-      localStorage.setItem(SESSION_KEY, session.id);
-      setSessionId(session.id);
+      // Cookie is primary. Only persist bearer when the API returns one (dev expose).
+      storeAccessToken(session.access_token);
+      setAccessToken(session.access_token);
+      setHasSession(true);
       setProgress([]);
       setSelectedId(course?.modules[0]?.id ?? null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : uiT("error", locale));
+      handleApiFailure(err);
     }
   }
 
   async function openModule(moduleId: string) {
     setSelectedId(moduleId);
-    if (!sessionId) return;
+    if (!hasSession) return;
     try {
-      await api.updateProgress(sessionId, {
-        module_id: moduleId,
-        status: "in_progress",
-      });
-      await refreshProgress(sessionId);
+      await api.updateProgress(
+        { module_id: moduleId, status: "in_progress" },
+        accessToken,
+      );
+      await refreshProgress(accessToken);
     } catch (err) {
-      setError(err instanceof Error ? err.message : uiT("error", locale));
+      handleApiFailure(err);
+    }
+  }
+
+  async function endSession() {
+    setError(null);
+    try {
+      if (hasSession) {
+        await api.revokeSession(accessToken);
+      }
+    } catch (err) {
+      // Still clear local state even if revoke fails (e.g. already expired).
+      if (!(err instanceof ApiError && err.isUnauthorized)) {
+        setError(uiT("error", locale));
+      }
+    } finally {
+      clearAccessToken();
+      setAccessToken(null);
+      setHasSession(false);
+      setProgress([]);
+      setSelectedId(null);
+      setQuiz(null);
     }
   }
 
@@ -143,17 +189,24 @@ export default function App() {
       </header>
 
       {loading && <p className="muted">{uiT("loading", locale)}</p>}
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error" role="alert">
+        {error}
+      </p>}
 
       {course && (
         <>
           <p className="muted">{t(course.description, locale)}</p>
           <div className="hero-actions">
             <button className="btn btn-primary" type="button" onClick={startOrResume}>
-              {sessionId ? uiT("resume", locale) : uiT("start", locale)}
+              {hasSession ? uiT("resume", locale) : uiT("start", locale)}
             </button>
-            {sessionId && (
-              <span className="muted">{uiT("sessionSaved", locale)}</span>
+            {hasSession && (
+              <>
+                <button className="btn" type="button" onClick={endSession}>
+                  {uiT("endSession", locale)}
+                </button>
+                <span className="muted">{uiT("sessionSaved", locale)}</span>
+              </>
             )}
           </div>
 
@@ -196,31 +249,38 @@ export default function App() {
               module={selected}
               quiz={quiz}
               locale={locale}
-              sessionId={sessionId}
-              onGraded={() => sessionId && refreshProgress(sessionId)}
+              accessToken={accessToken}
+              hasSession={hasSession}
+              onGraded={() => {
+                void refreshProgress(accessToken).catch((err) => handleApiFailure(err));
+              }}
             />
           )}
 
           <section className="panel" aria-labelledby="attr-heading">
             <h2 id="attr-heading">{uiT("attribution", locale)}</h2>
+            <p className="muted">{uiT("licenseNote", locale)}</p>
             <ul className="attribution-list">
-              {course.attributions.map((a) => (
-                <li key={a.source_name}>
-                  <strong>
-                    {a.source_url ? (
-                      <a href={a.source_url} target="_blank" rel="noreferrer">
-                        {a.source_name}
-                      </a>
-                    ) : (
-                      a.source_name
+              {course.attributions.map((a) => {
+                const href = safeHttpUrl(a.source_url);
+                return (
+                  <li key={a.source_name}>
+                    <strong>
+                      {href ? (
+                        <a href={href} target="_blank" rel="noopener noreferrer">
+                          {a.source_name}
+                        </a>
+                      ) : (
+                        a.source_name
+                      )}
+                    </strong>
+                    <p>{t(a.note, locale)}</p>
+                    {a.knhb_illustration_placeholder && (
+                      <p className="placeholder-flag">{uiT("knhbPlaceholder", locale)}</p>
                     )}
-                  </strong>
-                  <p>{t(a.note, locale)}</p>
-                  {a.knhb_illustration_placeholder && (
-                    <p className="placeholder-flag">{uiT("knhbPlaceholder", locale)}</p>
-                  )}
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         </>

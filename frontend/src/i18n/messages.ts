@@ -34,9 +34,15 @@ const ui = {
     nl: "Sessie opgeslagen — je kunt later hervatten.",
     en: "Session saved — you can resume later.",
   },
+  endSession: { nl: "Sessie beëindigen", en: "End session" },
+
   knhbPlaceholder: {
     nl: "KNHB-illustratie/interpretatie: plaatshouder — link officiële bron; EN-vertaling volgt.",
     en: "KNHB illustration/interpretation: placeholder — link official source; EN translation TBD.",
+  },
+  licenseNote: {
+    nl: "Software: MIT. Officiële FIH/KNHB-regeltekst en illustraties blijven eigendom van hun rechthebbenden — hier alleen links/placeholders.",
+    en: "Software: MIT. Official FIH/KNHB rule text and illustrations remain with their rights holders — links/placeholders only here.",
   },
   kindField: { nl: "Veld", en: "Field" },
   kindIndoor: { nl: "Zaal", en: "Indoor" },

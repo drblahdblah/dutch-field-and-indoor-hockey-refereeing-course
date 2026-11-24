@@ -49,3 +49,6 @@ temp/
 /backend/data/
 *.db
 !backend/app/data/
+
+# Accidental nested clones / bogus checkouts
+drblahdblah/

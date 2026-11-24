@@ -21,7 +21,8 @@
 3. Provide `feedback_correct` and per-option `feedback_incorrect` (plus a default).
 4. Optional `visualization_hint` strings are rendered as stubs; replace later with real viz/animations.
 5. Register the quiz in `CourseOutline.quizzes` and link via `ModuleStub.quiz_id`.
-6. Answers are graded by `POST /api/quizzes/{quiz_id}/submit` — keep correct keys off the public GET payload.
+6. Answers are graded by `POST /api/quizzes/{quiz_id}/submit` — keep correct keys off the public GET payload (`CourseOutlinePublic` / `QuizPublic`). Never put answer keys in `GET /api/course` or `GET /api/course/quizzes/{id}`.
+7. Progress APIs require the bearer token returned once from `POST /api/progress/sessions`.
 
 ## i18n
 

@@ -2,7 +2,7 @@
 
 Browser-based course for Netherlands referees (field + indoor), bilingual **NL / EN** from day one, building toward professional standard (e.g. Hoofdklasse).
 
-This repository is a **v0 scaffold**: module stubs, one sample graded quiz with explanations, session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
+This repository is a **v0 scaffold**: module stubs, graded quizzes with explanations, session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
 
 ## Architecture
 
@@ -12,12 +12,13 @@ backend/           FastAPI + SQLAlchemy + SQLite
   app/data/        Bilingual course seed (modules, quiz, attributions)
   app/routers/     /api/course, /api/progress, /api/quizzes
   app/services/    Quiz grading
+  app/security.py  Bearer session tokens for progress
 docker-compose.yml Optional local stack
 ```
 
-- **Course content** is seeded in Python (`backend/app/data/course_seed.py`) and served via `GET /api/course`.
-- **Quizzes** expose prompts on GET; grading + bilingual feedback via `POST /api/quizzes/{id}/submit`.
-- **Progress** is backend-persisted per session (`POST/GET/PUT /api/progress/sessions...`). The SPA stores the session id in `localStorage` to resume.
+- **Course content** is seeded in Python (`backend/app/data/course_seed.py`) and served via `GET /api/course` with **answer keys stripped**.
+- **Quizzes** expose prompts on GET; grading + bilingual feedback via `POST /api/quizzes/{id}/submit` (solutions only after submit).
+- **Progress** requires a bearer `access_token` issued once at `POST /api/progress/sessions`. The SPA stores the token in `localStorage` to resume.
 
 ## Requirements
 
@@ -72,6 +73,21 @@ cd frontend
 npm test
 ```
 
+## Security notes (v0)
+
+- Progress read/write and quiz progress save require a session capability token via `Authorization: Bearer <access_token>` **or** the httpOnly `course_access_token` cookie (set on session create; works with the Vite `/api` proxy).
+- Sessions have a TTL (`COURSE_SESSION_TTL_SECONDS`, default 30 days) and can be revoked with `DELETE /api/progress/session`.
+- Production (`COURSE_ENVIRONMENT=production`): cookie is `Secure`; JSON omits `access_token` (cookie-only). Dev may expose a bearer for TestClient / debugging.
+- Cookie `SameSite` is configurable (`COURSE_COOKIE_SAMESITE`); `none` requires Secure.
+- Per-IP rate limits apply to session create and quiz submit (`COURSE_RATE_LIMIT_*`). Default uses the direct peer IP (not client-supplied `X-Forwarded-For`); set `COURSE_TRUST_PROXY=true` only behind a trusted proxy. Limits are in-process (single worker); use edge limiting for multi-worker/prod scale.
+- Quiz scores and `completed` status are set only by graded `POST /api/quizzes/.../submit` — clients cannot forge scores on `PUT /api/progress/session`.
+- CORS allowlist is env-driven (`COURSE_CORS_ORIGINS`); wildcard origins are rejected when credentials are used.
+- Input validation covers locale, display name length, module ids, and quiz answer payloads.
+- GET course/quiz paths never include `correct_option_id`, `accepted_answers`, or feedback maps.
+- Submit reveals `correct_option_id` only for questions the learner actually attempted.
+- Non-Bearer `Authorization` headers fall through to cookie auth instead of hard-failing.
+- SPA uses `credentials: "include"` (httpOnly cookie is the resume path). A bearer is stored in `localStorage` only when the API returns `access_token` (development); production omits it.
+
 ## i18n notes
 
 - All learner-facing course strings are `{ nl, en }` pairs in the seed and API.
@@ -79,9 +95,10 @@ npm test
 - Structure is ready for more locales: extend `LocalizedText`, seed data, and UI dictionaries.
 - **KNHB interpretations**: NL source links/placeholders only; mark `translation_needed` / `knhb_illustration_placeholder` — do not invent EN legal text or claim assets you do not have.
 
-## Attribution
+## Attribution & license
 
-Official sources are linked, not copied:
+- Software: **[MIT](./LICENSE)** — see also **[NOTICE](./NOTICE)** for the boundary with FIH/KNHB materials.
+- Official sources are linked, not copied:
 
 | Source | Notes |
 |--------|--------|
@@ -94,46 +111,6 @@ See also in-app **Sources & attribution** and fields on `Attribution` in the API
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-## License
+## Remote
 
-[MIT](./LICENSE)
-
-## Push to GitHub (first time)
-
-There is no linked remote yet. Create an empty repo under **drblahdblah**, then push this local `main`.
-
-### Option A — GitHub CLI (if authenticated as drblahdblah)
-
-```bash
-cd dutch-field-and-indoor-hockey-refereeing-course
-gh auth login   # if needed
-gh repo create drblahdblah/dutch-field-and-indoor-hockey-refereeing-course \
-  --public --source=. --remote=origin --push
-```
-
-### Option B — Manual (github.com UI)
-
-1. Sign in as **drblahdblah** on GitHub.
-2. Create an **empty** repository named  
-   `dutch-field-and-indoor-hockey-refereeing-course`  
-   (no README/license — this repo already has them).
-3. From this directory:
-
-```bash
-git remote add origin https://github.com/drblahdblah/dutch-field-and-indoor-hockey-refereeing-course.git
-git push -u origin main
-```
-
-SSH alternative:
-
-```bash
-git remote add origin git@github.com:drblahdblah/dutch-field-and-indoor-hockey-refereeing-course.git
-git push -u origin main
-```
-
-Target URL: https://github.com/drblahdblah/dutch-field-and-indoor-hockey-refereeing-course
-
-## Handoff
-
-A short project handoff also lives at the Cursor Project store path  
-`docs/repo-init-handoff.md` (mirrored summary of this init).
+Canonical remote: `origin` → https://github.com/drblahdblah/dutch-field-and-indoor-hockey-refereeing-course

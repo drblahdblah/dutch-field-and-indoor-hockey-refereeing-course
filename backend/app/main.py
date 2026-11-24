@@ -1,5 +1,6 @@
 """FastAPI application entrypoint."""
 
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -13,7 +14,7 @@ from app.schemas import HealthOut
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    init_db()
+    await asyncio.to_thread(init_db)
     yield
 
 
@@ -23,8 +24,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
 
 app.include_router(course.router)

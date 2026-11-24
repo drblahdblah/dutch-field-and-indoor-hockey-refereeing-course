@@ -1,4 +1,5 @@
 import type { ModuleStub, Quiz } from "../api/types";
+import { safeHttpUrl } from "../api/urls";
 import { t, uiT, type Locale } from "../i18n/messages";
 import { QuizPanel } from "./QuizPanel";
 
@@ -6,7 +7,8 @@ type Props = {
   module: ModuleStub;
   quiz: Quiz | null;
   locale: Locale;
-  sessionId: string | null;
+  accessToken: string | null;
+  hasSession: boolean;
   onGraded?: () => void;
 };
 
@@ -16,7 +18,14 @@ function kindLabel(kind: ModuleStub["kind"], locale: Locale): string {
   return uiT("kindShared", locale);
 }
 
-export function ModuleDetail({ module, quiz, locale, sessionId, onGraded }: Props) {
+export function ModuleDetail({
+  module,
+  quiz,
+  locale,
+  accessToken,
+  hasSession,
+  onGraded,
+}: Props) {
   return (
     <article className="panel" aria-labelledby="module-heading">
       <p className="module-meta">
@@ -43,16 +52,23 @@ export function ModuleDetail({ module, quiz, locale, sessionId, onGraded }: Prop
         <>
           <h3>{uiT("furtherReading", locale)}</h3>
           <ul>
-            {module.further_reading.map((item) => (
-              <li key={item.url}>
-                <a href={item.url} target="_blank" rel="noreferrer">
-                  {t(item.title, locale)}
-                </a>
-                {item.attribution.knhb_illustration_placeholder && (
-                  <div className="placeholder-flag">{uiT("knhbPlaceholder", locale)}</div>
-                )}
-              </li>
-            ))}
+            {module.further_reading.map((item) => {
+              const href = safeHttpUrl(item.url);
+              return (
+                <li key={item.url}>
+                  {href ? (
+                    <a href={href} target="_blank" rel="noopener noreferrer">
+                      {t(item.title, locale)}
+                    </a>
+                  ) : (
+                    <span>{t(item.title, locale)}</span>
+                  )}
+                  {item.attribution.knhb_illustration_placeholder && (
+                    <div className="placeholder-flag">{uiT("knhbPlaceholder", locale)}</div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </>
       )}
@@ -61,7 +77,8 @@ export function ModuleDetail({ module, quiz, locale, sessionId, onGraded }: Prop
         <QuizPanel
           quiz={quiz}
           locale={locale}
-          sessionId={sessionId}
+          accessToken={accessToken}
+          hasSession={hasSession}
           onGraded={onGraded}
         />
       )}

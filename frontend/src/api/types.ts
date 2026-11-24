@@ -56,11 +56,17 @@ export type SessionOut = {
   locale: string;
   created_at: string;
   updated_at: string;
+  expires_at: string;
+};
+
+export type SessionCreatedOut = SessionOut & {
+  /** Present only when the API exposes bearer tokens (dev). Prefer httpOnly cookie. */
+  access_token: string | null;
 };
 
 export type ProgressOut = {
   module_id: string;
-  status: string;
+  status: "not_started" | "in_progress" | "completed" | string;
   quiz_score: number | null;
   quiz_total: number | null;
   last_question_id: string | null;

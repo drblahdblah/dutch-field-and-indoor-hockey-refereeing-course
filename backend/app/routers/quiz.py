@@ -2,13 +2,15 @@
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.data.course_seed import get_course_outline
 from app.database import get_db
 from app.models import ModuleProgress, UserSession
-from app.schemas import QuizSubmitRequest, QuizSubmitResult
+from app.rate_limit import enforce_quiz_submit_limit
+from app.schemas import Quiz, QuizAnswerResult, QuizSubmitRequest, QuizSubmitResult
+from app.security import get_session_for_token, resolve_presented_token
 from app.services.quiz_grader import grade_quiz
 
 router = APIRouter(prefix="/api/quizzes", tags=["quizzes"])
@@ -18,47 +20,37 @@ router = APIRouter(prefix="/api/quizzes", tags=["quizzes"])
 def submit_quiz(
     quiz_id: str,
     payload: QuizSubmitRequest,
+    request: Request,
+    authorization: str | None = Header(default=None),
+    course_access_token: str | None = Cookie(default=None),
     db: Session = Depends(get_db),
 ) -> QuizSubmitResult:
+    enforce_quiz_submit_limit(request)
     course = get_course_outline()
     quiz = course.quizzes.get(quiz_id)
     if not quiz:
         raise HTTPException(status_code=404, detail=f"Quiz not found: {quiz_id}")
 
+    known_ids = {q.id for q in quiz.questions}
+    for answer in payload.answers:
+        if answer.question_id not in known_ids:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unknown question_id: {answer.question_id}",
+            )
+
     score, results = grade_quiz(quiz, payload.answers)
     progress_saved = False
 
-    if payload.session_id:
-        session = db.get(UserSession, payload.session_id)
-        if not session:
-            raise HTTPException(status_code=404, detail="Session not found")
-
-        module = next((m for m in course.modules if m.quiz_id == quiz_id), None)
-        if module:
-            row = (
-                db.query(ModuleProgress)
-                .filter(
-                    ModuleProgress.session_id == payload.session_id,
-                    ModuleProgress.module_id == module.id,
-                )
-                .one_or_none()
-            )
-            if row is None:
-                row = ModuleProgress(
-                    session_id=payload.session_id,
-                    module_id=module.id,
-                )
-                db.add(row)
-            row.quiz_score = score
-            row.quiz_total = len(quiz.questions)
-            row.status = "completed" if score == len(quiz.questions) else "in_progress"
-            if row.status == "completed":
-                row.completed_at = datetime.now(timezone.utc)
-            if results:
-                row.last_question_id = results[-1].question_id
-            session.updated_at = datetime.now(timezone.utc)
-            db.commit()
-            progress_saved = True
+    if payload.save_progress:
+        # Auth failure must not hide graded feedback — save is best-effort.
+        try:
+            token = resolve_presented_token(authorization, course_access_token)
+            session = get_session_for_token(token, db)
+            progress_saved = _persist_quiz_progress(db, session, quiz_id, quiz, score, results)
+        except HTTPException as exc:
+            if exc.status_code != 401:
+                raise
 
     return QuizSubmitResult(
         quiz_id=quiz_id,
@@ -67,3 +59,45 @@ def submit_quiz(
         results=results,
         progress_saved=progress_saved,
     )
+
+
+def _persist_quiz_progress(
+    db: Session,
+    session: UserSession,
+    quiz_id: str,
+    quiz: Quiz,
+    score: int,
+    results: list[QuizAnswerResult],
+) -> bool:
+    module = next((m for m in get_course_outline().modules if m.quiz_id == quiz_id), None)
+    if not module:
+        return False
+
+    row = (
+        db.query(ModuleProgress)
+        .filter(
+            ModuleProgress.session_id == session.id,
+            ModuleProgress.module_id == module.id,
+        )
+        .one_or_none()
+    )
+    if row is None:
+        row = ModuleProgress(session_id=session.id, module_id=module.id)
+        db.add(row)
+
+    total = len(quiz.questions)
+    previous_score = row.quiz_score or 0
+    row.quiz_total = total
+    # Keep the best score; never demote an already-completed module.
+    row.quiz_score = max(previous_score, score)
+    if score == total or row.status == "completed":
+        row.status = "completed"
+        if row.completed_at is None:
+            row.completed_at = datetime.now(timezone.utc)
+    else:
+        row.status = "in_progress"
+    if results:
+        row.last_question_id = results[-1].question_id
+    session.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    return True

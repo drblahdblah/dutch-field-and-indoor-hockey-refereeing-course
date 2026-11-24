@@ -1,16 +1,24 @@
 import { useState } from "react";
 import { api } from "../api/client";
+import { ApiError } from "../api/errors";
 import type { Quiz, QuizSubmitResult } from "../api/types";
 import { t, uiT, type Locale } from "../i18n/messages";
 
 type Props = {
   quiz: Quiz;
   locale: Locale;
-  sessionId: string | null;
+  accessToken: string | null;
+  hasSession: boolean;
   onGraded?: () => void;
 };
 
-export function QuizPanel({ quiz, locale, sessionId, onGraded }: Props) {
+export function QuizPanel({
+  quiz,
+  locale,
+  accessToken,
+  hasSession,
+  onGraded,
+}: Props) {
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [written, setWritten] = useState<Record<string, string>>({});
   const [result, setResult] = useState<QuizSubmitResult | null>(null);
@@ -26,11 +34,18 @@ export function QuizPanel({ quiz, locale, sessionId, onGraded }: Props) {
           ? { question_id: q.id, selected_option_id: selections[q.id] }
           : { question_id: q.id, written_answer: written[q.id] ?? "" },
       );
-      const graded = await api.submitQuiz(quiz.id, answers, sessionId);
+      const graded = await api.submitQuiz(quiz.id, answers, {
+        saveProgress: hasSession,
+        accessToken,
+      });
       setResult(graded);
       onGraded?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : uiT("error", locale));
+      if (err instanceof ApiError) {
+        setError(uiT("error", locale));
+      } else {
+        setError(uiT("error", locale));
+      }
     } finally {
       setBusy(false);
     }
@@ -103,7 +118,11 @@ export function QuizPanel({ quiz, locale, sessionId, onGraded }: Props) {
           {uiT("score", locale)}: {result.score}/{result.total}
         </p>
       )}
-      {error && <p className="error">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
     </section>
   );
 }

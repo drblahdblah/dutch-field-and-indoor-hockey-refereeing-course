@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class LocalizedText(BaseModel):
@@ -28,7 +28,7 @@ class FurtherReading(BaseModel):
 
 
 class QuizOption(BaseModel):
-    id: str
+    id: str = Field(min_length=1, max_length=32)
     text: LocalizedText
 
 
@@ -58,6 +58,21 @@ class Quiz(BaseModel):
     questions: list[QuizQuestion]
 
 
+class QuizQuestionPublic(BaseModel):
+    """Learner-facing question — no answer keys or feedback payloads."""
+
+    id: str
+    type: Literal["multiple_choice", "written"]
+    prompt: LocalizedText
+    options: list[QuizOption] | None = None
+
+
+class QuizPublic(BaseModel):
+    id: str
+    title: LocalizedText
+    questions: list[QuizQuestionPublic]
+
+
 class ModuleStub(BaseModel):
     id: str
     kind: Literal["field", "indoor", "shared"]
@@ -71,6 +86,8 @@ class ModuleStub(BaseModel):
 
 
 class CourseOutline(BaseModel):
+    """Internal / seed shape — includes full quizzes with answer keys."""
+
     id: str
     title: LocalizedText
     description: LocalizedText
@@ -79,9 +96,36 @@ class CourseOutline(BaseModel):
     attributions: list[Attribution]
 
 
+class CourseOutlinePublic(BaseModel):
+    """API course outline — quizzes are stripped of solutions."""
+
+    id: str
+    title: LocalizedText
+    description: LocalizedText
+    modules: list[ModuleStub]
+    quizzes: dict[str, QuizPublic]
+    attributions: list[Attribution]
+
+
 class SessionCreate(BaseModel):
-    display_name: str | None = None
-    locale: str = "nl"
+    display_name: str | None = Field(default=None, max_length=120)
+    locale: str = Field(default="nl", max_length=16)
+
+    @field_validator("display_name")
+    @classmethod
+    def strip_display_name(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        cleaned = value.strip()
+        return cleaned or None
+
+    @field_validator("locale")
+    @classmethod
+    def validate_locale(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if normalized not in {"nl", "en"}:
+            raise ValueError("locale must be 'nl' or 'en'")
+        return normalized
 
 
 class SessionOut(BaseModel):
@@ -90,19 +134,25 @@ class SessionOut(BaseModel):
     locale: str
     created_at: datetime
     updated_at: datetime
+    expires_at: datetime
+
+
+class SessionCreatedOut(SessionOut):
+    """Creation response. access_token is omitted in production (cookie-only)."""
+
+    access_token: str | None = None
 
 
 class ProgressUpdate(BaseModel):
-    module_id: str
-    status: Literal["not_started", "in_progress", "completed"] = "in_progress"
-    quiz_score: int | None = None
-    quiz_total: int | None = None
-    last_question_id: str | None = None
+    """Client may mark instructional progress only — quiz scores come from submit."""
+
+    module_id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    status: Literal["not_started", "in_progress"] = "in_progress"
 
 
 class ProgressOut(BaseModel):
     module_id: str
-    status: str
+    status: Literal["not_started", "in_progress", "completed"]
     quiz_score: int | None
     quiz_total: int | None
     last_question_id: str | None
@@ -116,9 +166,9 @@ class SessionProgressOut(BaseModel):
 
 
 class QuizAnswerRequest(BaseModel):
-    question_id: str
-    selected_option_id: str | None = None
-    written_answer: str | None = None
+    question_id: str = Field(min_length=1, max_length=64)
+    selected_option_id: str | None = Field(default=None, max_length=32)
+    written_answer: str | None = Field(default=None, max_length=500)
 
 
 class QuizAnswerResult(BaseModel):
@@ -126,12 +176,14 @@ class QuizAnswerResult(BaseModel):
     correct: bool
     explanation: LocalizedText
     visualization_hint: str | None = None
+    """Revealed only after submit grading — never on GET quiz/course paths."""
     correct_option_id: str | None = None
 
 
 class QuizSubmitRequest(BaseModel):
-    session_id: str | None = None
-    answers: list[QuizAnswerRequest]
+    answers: list[QuizAnswerRequest] = Field(min_length=1, max_length=100)
+    """Optional: when set with a valid bearer token, progress is persisted."""
+    save_progress: bool = False
 
 
 class QuizSubmitResult(BaseModel):

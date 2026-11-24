@@ -27,28 +27,57 @@ def _pick_incorrect_feedback(question: QuizQuestion, option_id: str | None) -> Q
     )
 
 
+def _was_attempted(question: QuizQuestion, answer: QuizAnswerRequest) -> bool:
+    if question.type == "multiple_choice":
+        return bool(answer.selected_option_id)
+    return bool((answer.written_answer or "").strip())
+
+
 def grade_question(question: QuizQuestion, answer: QuizAnswerRequest) -> QuizAnswerResult:
+    attempted = _was_attempted(question, answer)
+
     if question.type == "multiple_choice":
         selected = answer.selected_option_id
         correct = selected is not None and selected == question.correct_option_id
-        feedback = question.feedback_correct if correct else _pick_incorrect_feedback(question, selected)
+        if not attempted:
+            feedback = QuizFeedback(
+                explanation=LocalizedText(
+                    nl="Geen antwoord ingediend voor deze vraag.",
+                    en="No answer submitted for this question.",
+                )
+            )
+            reveal = None
+        else:
+            feedback = (
+                question.feedback_correct if correct else _pick_incorrect_feedback(question, selected)
+            )
+            # Reveal the key only after the learner attempted the question.
+            reveal = question.correct_option_id
         return QuizAnswerResult(
             question_id=question.id,
             correct=correct,
             explanation=feedback.explanation,
             visualization_hint=feedback.visualization_hint,
-            correct_option_id=question.correct_option_id,
+            correct_option_id=reveal,
         )
 
     # written
     written = answer.written_answer or ""
     accepted = {_normalize_written(a) for a in (question.accepted_answers or [])}
-    correct = _normalize_written(written) in accepted
-    feedback = (
-        question.feedback_correct
-        if correct
-        else _pick_incorrect_feedback(question, None)
-    )
+    correct = attempted and _normalize_written(written) in accepted
+    if not attempted:
+        feedback = QuizFeedback(
+            explanation=LocalizedText(
+                nl="Geen antwoord ingediend voor deze vraag.",
+                en="No answer submitted for this question.",
+            )
+        )
+    else:
+        feedback = (
+            question.feedback_correct
+            if correct
+            else _pick_incorrect_feedback(question, None)
+        )
     return QuizAnswerResult(
         question_id=question.id,
         correct=correct,
