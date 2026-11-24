@@ -10,19 +10,40 @@ import { ApiError } from "./errors";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 const SESSION_TOKEN_KEY = "umpire-course-access-token";
+const SESSION_FLAG_KEY = "umpire-course-has-session";
 const LEGACY_SESSION_ID_KEY = "umpire-course-session-id";
 
+/**
+ * Bearer in localStorage is a last-resort Vite/dev fallback.
+ * Prefer the httpOnly cookie (credentials: include). Only persist a bearer
+ * when the API returns one (development / COURSE_EXPOSE_ACCESS_TOKEN=true).
+ */
 export function getStoredAccessToken(): string | null {
   return localStorage.getItem(SESSION_TOKEN_KEY);
 }
 
-export function storeAccessToken(token: string): void {
-  localStorage.setItem(SESSION_TOKEN_KEY, token);
+export function hasStoredSessionFlag(): boolean {
+  return localStorage.getItem(SESSION_FLAG_KEY) === "1" || Boolean(getStoredAccessToken());
+}
+
+export function markSessionPresent(): void {
+  localStorage.setItem(SESSION_FLAG_KEY, "1");
+  localStorage.removeItem(LEGACY_SESSION_ID_KEY);
+}
+
+export function storeAccessToken(token: string | null | undefined): void {
+  markSessionPresent();
+  if (token) {
+    localStorage.setItem(SESSION_TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(SESSION_TOKEN_KEY);
+  }
   localStorage.removeItem(LEGACY_SESSION_ID_KEY);
 }
 
 export function clearAccessToken(): void {
   localStorage.removeItem(SESSION_TOKEN_KEY);
+  localStorage.removeItem(SESSION_FLAG_KEY);
   localStorage.removeItem(LEGACY_SESSION_ID_KEY);
 }
 
@@ -37,14 +58,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     credentials: "include",
   });
   if (!res.ok) {
-    // Drain body for debugging in console only — never return it to UI.
     await res.text().catch(() => "");
     throw new ApiError(res.status);
+  }
+  if (res.status === 204) {
+    return undefined as T;
   }
   return res.json() as Promise<T>;
 }
 
 function authHeaders(token: string | null | undefined): Record<string, string> {
+  // Only send Authorization when we actually have a bearer; otherwise rely on cookie.
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -72,6 +96,11 @@ export const api = {
       method: "PUT",
       headers: authHeaders(token),
       body: JSON.stringify(body),
+    }),
+  revokeSession: (token?: string | null) =>
+    request<void>("/api/progress/session", {
+      method: "DELETE",
+      headers: authHeaders(token),
     }),
   submitQuiz: (
     quizId: string,

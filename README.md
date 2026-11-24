@@ -76,12 +76,17 @@ npm test
 ## Security notes (v0)
 
 - Progress read/write and quiz progress save require a session capability token via `Authorization: Bearer <access_token>` **or** the httpOnly `course_access_token` cookie (set on session create; works with the Vite `/api` proxy).
+- Sessions have a TTL (`COURSE_SESSION_TTL_SECONDS`, default 30 days) and can be revoked with `DELETE /api/progress/session`.
+- Production (`COURSE_ENVIRONMENT=production`): cookie is `Secure`; JSON omits `access_token` (cookie-only). Dev may expose a bearer for TestClient / debugging.
+- Cookie `SameSite` is configurable (`COURSE_COOKIE_SAMESITE`); `none` requires Secure.
+- Per-IP rate limits apply to session create and quiz submit (`COURSE_RATE_LIMIT_*`). Default uses the direct peer IP (not client-supplied `X-Forwarded-For`); set `COURSE_TRUST_PROXY=true` only behind a trusted proxy. Limits are in-process (single worker); use edge limiting for multi-worker/prod scale.
 - Quiz scores and `completed` status are set only by graded `POST /api/quizzes/.../submit` — clients cannot forge scores on `PUT /api/progress/session`.
 - CORS allowlist is env-driven (`COURSE_CORS_ORIGINS`); wildcard origins are rejected when credentials are used.
 - Input validation covers locale, display name length, module ids, and quiz answer payloads.
 - GET course/quiz paths never include `correct_option_id`, `accepted_answers`, or feedback maps.
 - Submit reveals `correct_option_id` only for questions the learner actually attempted.
-- The SPA may also keep a bearer copy in `localStorage` as a Vite/dev fallback; prefer the httpOnly cookie in production deployments behind a same-origin proxy.
+- Non-Bearer `Authorization` headers fall through to cookie auth instead of hard-failing.
+- SPA uses `credentials: "include"` (httpOnly cookie is the resume path). A bearer is stored in `localStorage` only when the API returns `access_token` (development); production omits it.
 
 ## i18n notes
 

@@ -34,6 +34,8 @@ const ui = {
     nl: "Sessie opgeslagen — je kunt later hervatten.",
     en: "Session saved — you can resume later.",
   },
+  endSession: { nl: "Sessie beëindigen", en: "End session" },
+
   knhbPlaceholder: {
     nl: "KNHB-illustratie/interpretatie: plaatshouder — link officiële bron; EN-vertaling volgt.",
     en: "KNHB illustration/interpretation: placeholder — link official source; EN translation TBD.",

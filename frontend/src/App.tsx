@@ -3,6 +3,7 @@ import {
   api,
   clearAccessToken,
   getStoredAccessToken,
+  hasStoredSessionFlag,
   storeAccessToken,
 } from "./api/client";
 import { ApiError } from "./api/errors";
@@ -17,9 +18,7 @@ export default function App() {
   const [accessToken, setAccessToken] = useState<string | null>(() =>
     getStoredAccessToken(),
   );
-  const [hasSession, setHasSession] = useState<boolean>(
-    () => Boolean(getStoredAccessToken()),
-  );
+  const [hasSession, setHasSession] = useState<boolean>(() => hasStoredSessionFlag());
   const [progress, setProgress] = useState<ProgressOut[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -115,7 +114,7 @@ export default function App() {
         return;
       }
       const session = await api.createSession(undefined, locale);
-      // Prefer httpOnly cookie (set by API); keep bearer in storage as Vite/dev fallback.
+      // Cookie is primary. Only persist bearer when the API returns one (dev expose).
       storeAccessToken(session.access_token);
       setAccessToken(session.access_token);
       setHasSession(true);
@@ -137,6 +136,27 @@ export default function App() {
       await refreshProgress(accessToken);
     } catch (err) {
       handleApiFailure(err);
+    }
+  }
+
+  async function endSession() {
+    setError(null);
+    try {
+      if (hasSession) {
+        await api.revokeSession(accessToken);
+      }
+    } catch (err) {
+      // Still clear local state even if revoke fails (e.g. already expired).
+      if (!(err instanceof ApiError && err.isUnauthorized)) {
+        setError(uiT("error", locale));
+      }
+    } finally {
+      clearAccessToken();
+      setAccessToken(null);
+      setHasSession(false);
+      setProgress([]);
+      setSelectedId(null);
+      setQuiz(null);
     }
   }
 
@@ -181,7 +201,12 @@ export default function App() {
               {hasSession ? uiT("resume", locale) : uiT("start", locale)}
             </button>
             {hasSession && (
-              <span className="muted">{uiT("sessionSaved", locale)}</span>
+              <>
+                <button className="btn" type="button" onClick={endSession}>
+                  {uiT("endSession", locale)}
+                </button>
+                <span className="muted">{uiT("sessionSaved", locale)}</span>
+              </>
             )}
           </div>
 

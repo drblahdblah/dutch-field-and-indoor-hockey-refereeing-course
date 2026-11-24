@@ -3,13 +3,15 @@
 import secrets
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.data.course_seed import get_course_outline
 from app.database import get_db
 from app.models import ModuleProgress, UserSession
+from app.rate_limit import enforce_session_create_limit
 from app.schemas import (
     ProgressOut,
     ProgressUpdate,
@@ -19,16 +21,15 @@ from app.schemas import (
     SessionProgressOut,
 )
 from app.security import (
-    SESSION_COOKIE_NAME,
+    clear_session_cookie,
     generate_access_token,
     hash_access_token,
     require_session,
+    session_expiry,
+    set_session_cookie,
 )
 
 router = APIRouter(prefix="/api/progress", tags=["progress"])
-
-# 30 days — browser cookie lifetime for resume via Vite proxy same-origin.
-SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 30
 
 
 def _session_out(session: UserSession) -> SessionOut:
@@ -38,13 +39,17 @@ def _session_out(session: UserSession) -> SessionOut:
         locale=session.locale,
         created_at=session.created_at,
         updated_at=session.updated_at,
+        expires_at=session.expires_at,
     )
 
 
 def _progress_out(row: ModuleProgress) -> ProgressOut:
+    status = row.status
+    if status not in {"not_started", "in_progress", "completed"}:
+        status = "in_progress"
     return ProgressOut(
         module_id=row.module_id,
-        status=row.status,
+        status=status,  # type: ignore[arg-type]
         quiz_score=row.quiz_score,
         quiz_total=row.quiz_total,
         last_question_id=row.last_question_id,
@@ -60,29 +65,27 @@ def _known_module_ids() -> set[str]:
 @router.post("/sessions", response_model=SessionCreatedOut, status_code=201)
 def create_session(
     payload: SessionCreate,
+    request: Request,
     response: Response,
     db: Session = Depends(get_db),
 ) -> SessionCreatedOut:
+    enforce_session_create_limit(request)
     access_token = generate_access_token()
+    now = datetime.now(timezone.utc)
     session = UserSession(
         id=secrets.token_urlsafe(16),
         token_hash=hash_access_token(access_token),
         display_name=payload.display_name,
         locale=payload.locale or "nl",
+        expires_at=session_expiry(now),
     )
     db.add(session)
     db.commit()
     db.refresh(session)
-    response.set_cookie(
-        key=SESSION_COOKIE_NAME,
-        value=access_token,
-        httponly=True,
-        samesite="lax",
-        max_age=SESSION_COOKIE_MAX_AGE,
-        path="/api",
-    )
+    set_session_cookie(response, access_token)
     base = _session_out(session)
-    return SessionCreatedOut(**base.model_dump(), access_token=access_token)
+    exposed = access_token if settings.should_expose_access_token else None
+    return SessionCreatedOut(**base.model_dump(), access_token=exposed)
 
 
 @router.get("/session", response_model=SessionProgressOut)
@@ -140,3 +143,18 @@ def upsert_progress(
 
     db.refresh(row)
     return _progress_out(row)
+
+
+@router.delete("/session", status_code=204)
+def revoke_session(
+    response: Response,
+    session: UserSession = Depends(require_session),
+    db: Session = Depends(get_db),
+) -> None:
+    """Revoke the current session and clear the cookie."""
+    session.revoked_at = datetime.now(timezone.utc)
+    # Rotate hash so the old bearer/cookie cannot be reused even if TTL remains.
+    session.token_hash = hash_access_token(generate_access_token())
+    session.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    clear_session_cookie(response)

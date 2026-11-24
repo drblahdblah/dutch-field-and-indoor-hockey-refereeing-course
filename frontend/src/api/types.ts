@@ -56,10 +56,12 @@ export type SessionOut = {
   locale: string;
   created_at: string;
   updated_at: string;
+  expires_at: string;
 };
 
 export type SessionCreatedOut = SessionOut & {
-  access_token: string;
+  /** Present only when the API exposes bearer tokens (dev). Prefer httpOnly cookie. */
+  access_token: string | null;
 };
 
 export type ProgressOut = {

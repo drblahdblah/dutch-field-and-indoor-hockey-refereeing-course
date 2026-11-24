@@ -2,14 +2,15 @@
 
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Cookie, Depends, Header, HTTPException
+from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.data.course_seed import get_course_outline
 from app.database import get_db
 from app.models import ModuleProgress, UserSession
+from app.rate_limit import enforce_quiz_submit_limit
 from app.schemas import Quiz, QuizAnswerResult, QuizSubmitRequest, QuizSubmitResult
-from app.security import resolve_presented_token, get_session_for_token
+from app.security import get_session_for_token, resolve_presented_token
 from app.services.quiz_grader import grade_quiz
 
 router = APIRouter(prefix="/api/quizzes", tags=["quizzes"])
@@ -19,10 +20,12 @@ router = APIRouter(prefix="/api/quizzes", tags=["quizzes"])
 def submit_quiz(
     quiz_id: str,
     payload: QuizSubmitRequest,
+    request: Request,
     authorization: str | None = Header(default=None),
     course_access_token: str | None = Cookie(default=None),
     db: Session = Depends(get_db),
 ) -> QuizSubmitResult:
+    enforce_quiz_submit_limit(request)
     course = get_course_outline()
     quiz = course.quizzes.get(quiz_id)
     if not quiz:

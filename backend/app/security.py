@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import Cookie, Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.database import get_db
 from app.models import UserSession
 
@@ -25,23 +27,22 @@ def hash_access_token(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
+def session_expiry(now: datetime | None = None) -> datetime:
+    base = now or datetime.now(timezone.utc)
+    return base + timedelta(seconds=settings.session_ttl_seconds)
+
+
 def extract_bearer_token(authorization: str | None) -> str | None:
+    """Return a Bearer token, or None if header absent/non-Bearer.
+
+    Non-Bearer schemes intentionally fall through so a valid cookie can still auth.
+    """
     if not authorization:
         return None
     if not authorization.startswith(BEARER_PREFIX):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authorization must use Bearer scheme",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        return None
     token = authorization[len(BEARER_PREFIX) :].strip()
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Empty bearer token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return token
+    return token or None
 
 
 def resolve_presented_token(
@@ -57,6 +58,12 @@ def resolve_presented_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     return token
+
+
+def _as_aware(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
 
 
 def get_session_for_token(
@@ -75,6 +82,19 @@ def get_session_for_token(
             detail="Invalid session token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if session.revoked_at is not None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session revoked",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    now = datetime.now(timezone.utc)
+    if _as_aware(session.expires_at) <= now:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     return session
 
 
@@ -85,3 +105,25 @@ def require_session(
 ) -> UserSession:
     token = resolve_presented_token(authorization, course_access_token)
     return get_session_for_token(token, db)
+
+
+def set_session_cookie(response, access_token: str) -> None:
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=access_token,
+        httponly=True,
+        secure=settings.cookie_secure_enabled,
+        samesite=settings.cookie_samesite_value,
+        max_age=settings.session_ttl_seconds,
+        path="/api",
+    )
+
+
+def clear_session_cookie(response) -> None:
+    response.delete_cookie(
+        key=SESSION_COOKIE_NAME,
+        path="/api",
+        httponly=True,
+        secure=settings.cookie_secure_enabled,
+        samesite=settings.cookie_samesite_value,
+    )

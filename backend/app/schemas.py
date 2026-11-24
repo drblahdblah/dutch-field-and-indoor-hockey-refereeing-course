@@ -134,12 +134,13 @@ class SessionOut(BaseModel):
     locale: str
     created_at: datetime
     updated_at: datetime
+    expires_at: datetime
 
 
 class SessionCreatedOut(SessionOut):
-    """Returned once at creation — includes the bearer access token."""
+    """Creation response. access_token is omitted in production (cookie-only)."""
 
-    access_token: str
+    access_token: str | None = None
 
 
 class ProgressUpdate(BaseModel):
@@ -151,7 +152,7 @@ class ProgressUpdate(BaseModel):
 
 class ProgressOut(BaseModel):
     module_id: str
-    status: str
+    status: Literal["not_started", "in_progress", "completed"]
     quiz_score: int | None
     quiz_total: int | None
     last_question_id: str | None

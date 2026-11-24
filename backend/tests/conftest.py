@@ -8,10 +8,12 @@ from sqlalchemy.pool import StaticPool
 
 from app.database import Base, get_db
 from app.main import app
+from app.rate_limit import limiter
 
 
 @pytest.fixture()
 def client():
+    limiter.reset()
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
@@ -32,3 +34,4 @@ def client():
         yield test_client
     app.dependency_overrides.clear()
     Base.metadata.drop_all(bind=engine)
+    limiter.reset()

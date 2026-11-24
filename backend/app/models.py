@@ -23,6 +23,8 @@ class UserSession(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utcnow, onupdate=utcnow
     )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     progress: Mapped[list["ModuleProgress"]] = relationship(
         back_populates="session", cascade="all, delete-orphan"
