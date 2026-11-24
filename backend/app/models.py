@@ -16,6 +16,7 @@ class UserSession(Base):
     __tablename__ = "user_sessions"
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
     display_name: Mapped[str | None] = mapped_column(String(120), nullable=True)
     locale: Mapped[str] = mapped_column(String(16), default="nl")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

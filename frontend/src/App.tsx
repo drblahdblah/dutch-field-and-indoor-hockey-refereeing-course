@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-import { api } from "./api/client";
+import {
+  api,
+  clearAccessToken,
+  getStoredAccessToken,
+  storeAccessToken,
+} from "./api/client";
 import type { CourseOutline, ProgressOut, Quiz } from "./api/types";
 import { ModuleDetail } from "./components/ModuleDetail";
 import { t, uiT, type Locale } from "./i18n/messages";
 
-const SESSION_KEY = "umpire-course-session-id";
-
 export default function App() {
   const [locale, setLocale] = useState<Locale>("nl");
   const [course, setCourse] = useState<CourseOutline | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(
-    () => localStorage.getItem(SESSION_KEY),
+  const [accessToken, setAccessToken] = useState<string | null>(() =>
+    getStoredAccessToken(),
   );
   const [progress, setProgress] = useState<ProgressOut[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -18,8 +21,8 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  async function refreshProgress(id: string) {
-    const data = await api.getProgress(id);
+  async function refreshProgress(token: string) {
+    const data = await api.getProgress(token);
     setProgress(data.progress);
   }
 
@@ -30,12 +33,12 @@ export default function App() {
         const outline = await api.course();
         if (cancelled) return;
         setCourse(outline);
-        if (sessionId) {
+        if (accessToken) {
           try {
-            await refreshProgress(sessionId);
+            await refreshProgress(accessToken);
           } catch {
-            localStorage.removeItem(SESSION_KEY);
-            setSessionId(null);
+            clearAccessToken();
+            setAccessToken(null);
           }
         }
       } catch (err) {
@@ -80,8 +83,8 @@ export default function App() {
   async function startOrResume() {
     setError(null);
     try {
-      if (sessionId) {
-        await refreshProgress(sessionId);
+      if (accessToken) {
+        await refreshProgress(accessToken);
         const firstIncomplete =
           course?.modules.find(
             (m) =>
@@ -91,8 +94,8 @@ export default function App() {
         return;
       }
       const session = await api.createSession(undefined, locale);
-      localStorage.setItem(SESSION_KEY, session.id);
-      setSessionId(session.id);
+      storeAccessToken(session.access_token);
+      setAccessToken(session.access_token);
       setProgress([]);
       setSelectedId(course?.modules[0]?.id ?? null);
     } catch (err) {
@@ -102,13 +105,13 @@ export default function App() {
 
   async function openModule(moduleId: string) {
     setSelectedId(moduleId);
-    if (!sessionId) return;
+    if (!accessToken) return;
     try {
-      await api.updateProgress(sessionId, {
+      await api.updateProgress(accessToken, {
         module_id: moduleId,
         status: "in_progress",
       });
-      await refreshProgress(sessionId);
+      await refreshProgress(accessToken);
     } catch (err) {
       setError(err instanceof Error ? err.message : uiT("error", locale));
     }
@@ -150,9 +153,9 @@ export default function App() {
           <p className="muted">{t(course.description, locale)}</p>
           <div className="hero-actions">
             <button className="btn btn-primary" type="button" onClick={startOrResume}>
-              {sessionId ? uiT("resume", locale) : uiT("start", locale)}
+              {accessToken ? uiT("resume", locale) : uiT("start", locale)}
             </button>
-            {sessionId && (
+            {accessToken && (
               <span className="muted">{uiT("sessionSaved", locale)}</span>
             )}
           </div>
@@ -196,19 +199,20 @@ export default function App() {
               module={selected}
               quiz={quiz}
               locale={locale}
-              sessionId={sessionId}
-              onGraded={() => sessionId && refreshProgress(sessionId)}
+              accessToken={accessToken}
+              onGraded={() => accessToken && refreshProgress(accessToken)}
             />
           )}
 
           <section className="panel" aria-labelledby="attr-heading">
             <h2 id="attr-heading">{uiT("attribution", locale)}</h2>
+            <p className="muted">{uiT("licenseNote", locale)}</p>
             <ul className="attribution-list">
               {course.attributions.map((a) => (
                 <li key={a.source_name}>
                   <strong>
                     {a.source_url ? (
-                      <a href={a.source_url} target="_blank" rel="noreferrer">
+                      <a href={a.source_url} target="_blank" rel="noopener noreferrer">
                         {a.source_name}
                       </a>
                     ) : (

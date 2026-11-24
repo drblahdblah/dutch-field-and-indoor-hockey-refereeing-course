@@ -38,6 +38,10 @@ const ui = {
     nl: "KNHB-illustratie/interpretatie: plaatshouder — link officiële bron; EN-vertaling volgt.",
     en: "KNHB illustration/interpretation: placeholder — link official source; EN translation TBD.",
   },
+  licenseNote: {
+    nl: "Software: MIT. Officiële FIH/KNHB-regeltekst en illustraties blijven eigendom van hun rechthebbenden — hier alleen links/placeholders.",
+    en: "Software: MIT. Official FIH/KNHB rule text and illustrations remain with their rights holders — links/placeholders only here.",
+  },
   kindField: { nl: "Veld", en: "Field" },
   kindIndoor: { nl: "Zaal", en: "Indoor" },
   kindShared: { nl: "Algemeen", en: "Shared" },

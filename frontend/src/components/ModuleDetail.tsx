@@ -6,7 +6,7 @@ type Props = {
   module: ModuleStub;
   quiz: Quiz | null;
   locale: Locale;
-  sessionId: string | null;
+  accessToken: string | null;
   onGraded?: () => void;
 };
 
@@ -16,7 +16,7 @@ function kindLabel(kind: ModuleStub["kind"], locale: Locale): string {
   return uiT("kindShared", locale);
 }
 
-export function ModuleDetail({ module, quiz, locale, sessionId, onGraded }: Props) {
+export function ModuleDetail({ module, quiz, locale, accessToken, onGraded }: Props) {
   return (
     <article className="panel" aria-labelledby="module-heading">
       <p className="module-meta">
@@ -45,7 +45,7 @@ export function ModuleDetail({ module, quiz, locale, sessionId, onGraded }: Prop
           <ul>
             {module.further_reading.map((item) => (
               <li key={item.url}>
-                <a href={item.url} target="_blank" rel="noreferrer">
+                <a href={item.url} target="_blank" rel="noopener noreferrer">
                   {t(item.title, locale)}
                 </a>
                 {item.attribution.knhb_illustration_placeholder && (
@@ -61,7 +61,7 @@ export function ModuleDetail({ module, quiz, locale, sessionId, onGraded }: Prop
         <QuizPanel
           quiz={quiz}
           locale={locale}
-          sessionId={sessionId}
+          accessToken={accessToken}
           onGraded={onGraded}
         />
       )}

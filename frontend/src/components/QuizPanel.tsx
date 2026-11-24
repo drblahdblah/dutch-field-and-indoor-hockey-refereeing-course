@@ -6,11 +6,11 @@ import { t, uiT, type Locale } from "../i18n/messages";
 type Props = {
   quiz: Quiz;
   locale: Locale;
-  sessionId: string | null;
+  accessToken: string | null;
   onGraded?: () => void;
 };
 
-export function QuizPanel({ quiz, locale, sessionId, onGraded }: Props) {
+export function QuizPanel({ quiz, locale, accessToken, onGraded }: Props) {
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [written, setWritten] = useState<Record<string, string>>({});
   const [result, setResult] = useState<QuizSubmitResult | null>(null);
@@ -26,7 +26,7 @@ export function QuizPanel({ quiz, locale, sessionId, onGraded }: Props) {
           ? { question_id: q.id, selected_option_id: selections[q.id] }
           : { question_id: q.id, written_answer: written[q.id] ?? "" },
       );
-      const graded = await api.submitQuiz(quiz.id, answers, sessionId);
+      const graded = await api.submitQuiz(quiz.id, answers, accessToken);
       setResult(graded);
       onGraded?.();
     } catch (err) {

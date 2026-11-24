@@ -58,6 +58,10 @@ export type SessionOut = {
   updated_at: string;
 };
 
+export type SessionCreatedOut = SessionOut & {
+  access_token: string;
+};
+
 export type ProgressOut = {
   module_id: string;
   status: string;

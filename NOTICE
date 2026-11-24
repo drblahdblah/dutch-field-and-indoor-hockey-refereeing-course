@@ -1,0 +1,24 @@
+# NOTICE — licensing and third-party content
+
+## This repository (software)
+
+The application code and original course scaffolding (module outlines, original
+pedagogical quiz prompts/feedback written for this project, UI strings, and
+infrastructure) are licensed under the **MIT License**. See `LICENSE`.
+
+## Third-party rules and materials (not under MIT)
+
+Official **FIH** and **KNHB** rules, interpretations, umpire charts, and
+illustrations are **not** reproduced in this repository and are **not** covered
+by the MIT License. Those materials remain the property of their respective
+rights holders.
+
+This project only:
+
+- links to official public sources where appropriate;
+- uses placeholder hooks (`knhb_illustration_placeholder`, `translation_needed`)
+  for future licensed or authorized assets;
+- provides original instructional framing that tells learners to consult those
+  official sources.
+
+Do **not** paste copyrighted rule text or ship KNHB/FIH assets without rights.

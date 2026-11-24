@@ -1,4 +1,4 @@
-"""Session + module progress persistence."""
+"""Session + module progress persistence (bearer-token gated)."""
 
 import secrets
 from datetime import datetime, timezone
@@ -6,15 +6,18 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.data.course_seed import get_course_outline
 from app.database import get_db
 from app.models import ModuleProgress, UserSession
 from app.schemas import (
     ProgressOut,
     ProgressUpdate,
     SessionCreate,
+    SessionCreatedOut,
     SessionOut,
     SessionProgressOut,
 )
+from app.security import generate_access_token, hash_access_token, require_session
 
 router = APIRouter(prefix="/api/progress", tags=["progress"])
 
@@ -41,50 +44,55 @@ def _progress_out(row: ModuleProgress) -> ProgressOut:
     )
 
 
-@router.post("/sessions", response_model=SessionOut, status_code=201)
-def create_session(payload: SessionCreate, db: Session = Depends(get_db)) -> SessionOut:
+def _known_module_ids() -> set[str]:
+    return {m.id for m in get_course_outline().modules}
+
+
+@router.post("/sessions", response_model=SessionCreatedOut, status_code=201)
+def create_session(payload: SessionCreate, db: Session = Depends(get_db)) -> SessionCreatedOut:
+    access_token = generate_access_token()
     session = UserSession(
         id=secrets.token_urlsafe(16),
+        token_hash=hash_access_token(access_token),
         display_name=payload.display_name,
         locale=payload.locale or "nl",
     )
     db.add(session)
     db.commit()
     db.refresh(session)
-    return _session_out(session)
+    base = _session_out(session)
+    return SessionCreatedOut(**base.model_dump(), access_token=access_token)
 
 
-@router.get("/sessions/{session_id}", response_model=SessionProgressOut)
-def get_session_progress(session_id: str, db: Session = Depends(get_db)) -> SessionProgressOut:
-    session = db.get(UserSession, session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+@router.get("/session", response_model=SessionProgressOut)
+def get_session_progress(
+    session: UserSession = Depends(require_session),
+) -> SessionProgressOut:
     return SessionProgressOut(
         session=_session_out(session),
         progress=[_progress_out(p) for p in session.progress],
     )
 
 
-@router.put("/sessions/{session_id}", response_model=ProgressOut)
+@router.put("/session", response_model=ProgressOut)
 def upsert_progress(
-    session_id: str,
     payload: ProgressUpdate,
+    session: UserSession = Depends(require_session),
     db: Session = Depends(get_db),
 ) -> ProgressOut:
-    session = db.get(UserSession, session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+    if payload.module_id not in _known_module_ids():
+        raise HTTPException(status_code=400, detail=f"Unknown module_id: {payload.module_id}")
 
     row = (
         db.query(ModuleProgress)
         .filter(
-            ModuleProgress.session_id == session_id,
+            ModuleProgress.session_id == session.id,
             ModuleProgress.module_id == payload.module_id,
         )
         .one_or_none()
     )
     if row is None:
-        row = ModuleProgress(session_id=session_id, module_id=payload.module_id)
+        row = ModuleProgress(session_id=session.id, module_id=payload.module_id)
         db.add(row)
 
     row.status = payload.status
