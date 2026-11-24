@@ -48,6 +48,10 @@ const SVG_LABELS = {
   link: { nl: "link", en: "link" },
   source: { nl: "bron", en: "source" },
   placeholder: { nl: "plaatshouder", en: "placeholder" },
+  field: { nl: "veld", en: "field" },
+  indoor: { nl: "zaal", en: "indoor" },
+  pathway: { nl: "pad", en: "pathway" },
+  interp: { nl: "interpretatie", en: "interpretation" },
 } as const;
 
 function SafetyTriangleSvg({ locale }: { locale: Locale }) {
@@ -525,6 +529,59 @@ function AttributionChainSvg({ locale }: { locale: Locale }) {
   );
 }
 
+function CapstoneWeaveSvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg viz-capstone-weave" viewBox="0 0 260 180" aria-hidden="true">
+      <circle className="viz-node viz-node-a viz-weave-node" cx="70" cy="48" r="12" />
+      <circle className="viz-node viz-node-b viz-weave-node" cx="190" cy="48" r="12" />
+      <circle className="viz-node viz-node-c viz-weave-node" cx="70" cy="132" r="12" />
+      <circle className="viz-core viz-weave-core" cx="190" cy="132" r="12" />
+      <path
+        className="viz-weave-link"
+        d="M 82 48 L 178 48"
+        fill="none"
+        strokeWidth="2"
+      />
+      <path
+        className="viz-weave-link viz-weave-link-b"
+        d="M 70 60 L 70 120"
+        fill="none"
+        strokeWidth="2"
+      />
+      <path
+        className="viz-weave-link viz-weave-link-c"
+        d="M 190 60 L 190 120"
+        fill="none"
+        strokeWidth="2"
+      />
+      <path
+        className="viz-weave-link viz-weave-link-d"
+        d="M 82 132 L 178 132"
+        fill="none"
+        strokeWidth="2"
+      />
+      <path
+        className="viz-weave-diag"
+        d="M 82 56 L 178 124"
+        fill="none"
+        strokeWidth="1.5"
+      />
+      <text x="70" y="28" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.field, locale)}
+      </text>
+      <text x="190" y="28" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.indoor, locale)}
+      </text>
+      <text x="70" y="164" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.pathway, locale)}
+      </text>
+      <text x="190" y="164" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.interp, locale)}
+      </text>
+    </svg>
+  );
+}
+
 function pickAnimation(key: string | null | undefined, locale: Locale) {
   if (key === "safety-triangle") return <SafetyTriangleSvg locale={locale} />;
   if (key === "scan-cycle") return <ScanCycleSvg locale={locale} />;
@@ -540,6 +597,7 @@ function pickAnimation(key: string | null | undefined, locale: Locale) {
   if (key === "source-stack") return <SourceStackSvg locale={locale} />;
   if (key === "translation-slot") return <TranslationSlotSvg locale={locale} />;
   if (key === "attribution-chain") return <AttributionChainSvg locale={locale} />;
+  if (key === "capstone-weave") return <CapstoneWeaveSvg locale={locale} />;
   return (
     <div className="viz-fallback" aria-hidden="true">
       <span className="viz-pulse" />
@@ -591,6 +649,7 @@ const KNOWN_ANIMATION_KEYS = new Set([
   "source-stack",
   "translation-slot",
   "attribution-chain",
+  "capstone-weave",
 ]);
 
 /** Resolve a quiz visualization_hint to a known animation key or null. */

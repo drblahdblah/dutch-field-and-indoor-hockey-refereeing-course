@@ -2,14 +2,14 @@
 
 Browser-based course for Netherlands referees (field + indoor), bilingual **NL / EN** from day one, building toward professional standard (e.g. Hoofdklasse).
 
-This repository ships **full bilingual learning modules** (umpire role + field rules core + indoor rules core + professional / Hoofdklasse pathway + KNHB interpretation layer): graded quizzes with explanations, original CSS/SVG visuals (no copyrighted KNHB art), session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
+This repository ships **full bilingual learning modules** (umpire role + field rules core + indoor rules core + professional / Hoofdklasse pathway + KNHB interpretation layer + **capstone assessment**): graded quizzes with explanations, original CSS/SVG visuals (no copyrighted KNHB art), course-path progress overview, session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
 
 ## Architecture
 
 ```
 frontend/          React + Vite SPA (i18n UI, modules, quiz, SVG viz)
 backend/           FastAPI + SQLAlchemy + SQLite
-  app/data/        Bilingual course seed (intro + field + indoor + pathway + interpretations)
+  app/data/        Bilingual course seed (intro + field + indoor + pathway + interpretations + capstone)
   app/routers/     /api/course, /api/progress, /api/quizzes
   app/services/    Quiz grading
   app/security.py  Bearer/cookie session tokens for progress

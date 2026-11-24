@@ -9,6 +9,7 @@ import {
 import { ApiError } from "./api/errors";
 import { safeHttpUrl } from "./api/urls";
 import type { CourseOutline, ProgressOut, Quiz } from "./api/types";
+import { CourseProgressOverview } from "./components/CourseProgressOverview";
 import { ModuleDetail } from "./components/ModuleDetail";
 import { t, uiT, type Locale } from "./i18n/messages";
 
@@ -101,16 +102,23 @@ export default function App() {
     };
   }, [selectedId, course]);
 
+  function orderedModules() {
+    return course
+      ? [...course.modules].sort((a, b) => a.order - b.order)
+      : [];
+  }
+
   async function startOrResume() {
     setError(null);
     try {
+      const modules = orderedModules();
       if (hasSession) {
         const latest = await refreshProgress(accessToken);
         const firstIncomplete =
-          course?.modules.find(
+          modules.find(
             (m) =>
               latest.find((p) => p.module_id === m.id)?.status !== "completed",
-          ) ?? course?.modules[0];
+          ) ?? modules[0];
         setSelectedId(firstIncomplete?.id ?? null);
         return;
       }
@@ -120,7 +128,7 @@ export default function App() {
       setAccessToken(session.access_token);
       setHasSession(true);
       setProgress([]);
-      setSelectedId(course?.modules[0]?.id ?? null);
+      setSelectedId(modules[0]?.id ?? null);
     } catch (err) {
       handleApiFailure(err);
     }
@@ -162,7 +170,6 @@ export default function App() {
   }
 
   const selected = course?.modules.find((m) => m.id === selectedId) ?? null;
-  const progressMap = Object.fromEntries(progress.map((p) => [p.module_id, p]));
 
   return (
     <div className="app">
@@ -211,39 +218,16 @@ export default function App() {
             )}
           </div>
 
-          <h2 className="section-title">{uiT("modules", locale)}</h2>
-          <div className="module-list">
-            {course.modules
-              .slice()
-              .sort((a, b) => a.order - b.order)
-              .map((mod) => {
-                const status = progressMap[mod.id]?.status ?? "not_started";
-                return (
-                  <button
-                    key={mod.id}
-                    type="button"
-                    className="module-row"
-                    aria-current={selectedId === mod.id}
-                    onClick={() => openModule(mod.id)}
-                  >
-                    <div className="module-meta">
-                      <span className="pill">
-                        {mod.kind === "field"
-                          ? uiT("kindField", locale)
-                          : mod.kind === "indoor"
-                            ? uiT("kindIndoor", locale)
-                            : uiT("kindShared", locale)}
-                      </span>
-                      <span className={`status-${status}`}>
-                        {uiT("progress", locale)}: {status}
-                      </span>
-                    </div>
-                    <strong>{t(mod.title, locale)}</strong>
-                    <div className="muted">{t(mod.summary, locale)}</div>
-                  </button>
-                );
-              })}
-          </div>
+          <CourseProgressOverview
+            modules={course.modules}
+            progress={progress}
+            selectedId={selectedId}
+            locale={locale}
+            hasSession={hasSession}
+            onSelectModule={(id) => {
+              void openModule(id);
+            }}
+          />
 
           {selected && (
             <ModuleDetail

@@ -137,9 +137,111 @@ input {
   margin: 0 0 1rem;
 }
 
-.module-list {
+.course-progress {
+  margin: 0 0 1.75rem;
+  animation: rise 0.85s ease 0.1s both;
+}
+
+.course-progress-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.course-progress-summary {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.progress-track {
+  height: 0.55rem;
+  border-radius: 999px;
+  background: rgba(242, 247, 244, 0.12);
+  overflow: hidden;
+  margin: 0.85rem 0 1rem;
+}
+
+.progress-track-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ok), var(--accent));
+  transition: width 0.35s ease;
+}
+
+.next-up {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+}
+
+.linkish {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  padding: 0.55rem 0.25rem;
+  min-height: 44px;
+}
+
+.module-pathway {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
   gap: 0.85rem;
+  counter-reset: none;
+}
+
+.pathway-row {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.pathway-step {
+  flex: 0 0 2rem;
+  width: 2rem;
+  height: 2rem;
+  margin-top: 0.15rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  background: rgba(8, 20, 16, 0.35);
+}
+
+.pathway-row.is-next .pathway-step {
+  border-color: rgba(200, 245, 66, 0.65);
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+.pathway-row.is-done .pathway-step {
+  border-color: rgba(110, 231, 168, 0.55);
+  color: var(--ok);
+}
+
+.pathway-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.next-pill {
+  border-color: rgba(200, 245, 66, 0.55);
+  color: var(--accent);
+}
+
+.quiz-score {
+  font-variant-numeric: tabular-nums;
 }
 
 .module-row {
@@ -158,6 +260,10 @@ input {
 .module-row[aria-current="true"] {
   border-color: rgba(200, 245, 66, 0.55);
   background: rgba(200, 245, 66, 0.08);
+}
+
+.pathway-row.is-next {
+  border-color: rgba(200, 245, 66, 0.4);
 }
 
 .module-meta {
@@ -674,6 +780,51 @@ input {
   animation-delay: 0.35s;
 }
 
+.viz-weave-node {
+  fill: currentColor;
+  opacity: 0;
+  animation: pop-node 0.55s ease forwards;
+}
+
+.viz-weave-node.viz-node-b {
+  animation-delay: 0.1s;
+}
+
+.viz-weave-node.viz-node-c {
+  animation-delay: 0.2s;
+}
+
+.viz-weave-core {
+  animation: pop-node 0.55s ease 0.3s both;
+}
+
+.viz-weave-link {
+  stroke: currentColor;
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: draw-arc 1s ease 0.15s forwards;
+}
+
+.viz-weave-link-b {
+  animation-delay: 0.25s;
+}
+
+.viz-weave-link-c {
+  animation-delay: 0.35s;
+}
+
+.viz-weave-link-d {
+  animation-delay: 0.45s;
+}
+
+.viz-weave-diag {
+  stroke: currentColor;
+  opacity: 0.55;
+  stroke-dasharray: 140;
+  stroke-dashoffset: 140;
+  animation: draw-arc 1.1s ease 0.4s forwards;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -761,14 +912,21 @@ input {
   .viz-slot-arrow,
   .viz-attr-node,
   .viz-attr-link,
+  .viz-weave-node,
+  .viz-weave-core,
+  .viz-weave-link,
+  .viz-weave-diag,
   .viz-node,
   .viz-orbit-dot,
   .viz-pulse,
   .brand,
   .tagline,
   .hero-actions,
+  .course-progress,
+  .progress-track-fill,
   .panel {
     animation: none !important;
+    transition: none !important;
   }
 
   .viz-tri,
@@ -782,12 +940,16 @@ input {
   .viz-handoff-arc,
   .viz-consistency-ring,
   .viz-slot-arrow,
-  .viz-attr-link {
+  .viz-attr-link,
+  .viz-weave-link,
+  .viz-weave-diag {
     stroke-dashoffset: 0;
   }
 
   .viz-node,
-  .viz-attr-node {
+  .viz-attr-node,
+  .viz-weave-node,
+  .viz-weave-core {
     opacity: 1;
   }
 }

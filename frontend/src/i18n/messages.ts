@@ -17,7 +17,26 @@ const ui = {
   },
   start: { nl: "Start cursus", en: "Start course" },
   resume: { nl: "Hervat", en: "Resume" },
-  modules: { nl: "Modules", en: "Modules" },
+  progressOverview: {
+    nl: "Cursuspad & voortgang",
+    en: "Course path & progress",
+  },
+  modulesCompleted: {
+    nl: "{done} van {total} modules voltooid",
+    en: "{done} of {total} modules completed",
+  },
+  nextUp: { nl: "Volgende", en: "Next up" },
+  progressStartHint: {
+    nl: "Start of hervat een sessie om voortgang bij te houden.",
+    en: "Start or resume a session to track progress.",
+  },
+  progressIdle: {
+    nl: "Nog niet bijgehouden",
+    en: "Not tracking yet",
+  },
+  statusNotStarted: { nl: "niet gestart", en: "not started" },
+  statusInProgress: { nl: "bezig", en: "in progress" },
+  statusCompleted: { nl: "voltooid", en: "completed" },
   quiz: { nl: "Quiz", en: "Quiz" },
   submit: { nl: "Antwoorden indienen", en: "Submit answers" },
   furtherReading: { nl: "Verder lezen", en: "Further reading" },
