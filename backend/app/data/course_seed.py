@@ -1,4 +1,4 @@
-"""Bilingual course outline: full modules + remaining stubs.
+"""Bilingual course outline: full modules (intro, field, indoor, pathway).
 
 Do NOT invent copyrighted FIH/KNHB rule text or illustrations.
 Attribution hooks and official-source links only.
@@ -7,6 +7,7 @@ Attribution hooks and official-source links only.
 from app.data.module_field_rules import FIELD_MODULE, FIELD_QUIZ
 from app.data.module_indoor_rules import INDOOR_MODULE, INDOOR_QUIZ
 from app.data.module_intro_role import INTRO_MODULE, INTRO_QUIZ
+from app.data.module_pathway_professional import PATHWAY_MODULE, PATHWAY_QUIZ
 from app.schemas import (
     Attribution,
     CourseOutline,
@@ -72,34 +73,7 @@ MODULES: list[ModuleStub] = [
     INTRO_MODULE,
     FIELD_MODULE,
     INDOOR_MODULE,
-    ModuleStub(
-        id="mod-pathway-hoofdklasse",
-        kind="shared",
-        title=LocalizedText(
-            nl="Pad naar professioneel niveau (o.a. Hoofdklasse)",
-            en="Pathway toward professional standard (e.g. Hoofdklasse)",
-        ),
-        summary=LocalizedText(
-            nl="Wat ‘professioneel standaard’ betekent in NL-context (stub).",
-            en="What ‘professional standard’ means in the NL context (stub).",
-        ),
-        learning_objectives=[
-            LocalizedText(
-                nl="Schetsen van een ontwikkelpad van clubniveau naar topcompetitie.",
-                en="Outline a development path from club level toward top competition.",
-            ),
-        ],
-        instruction_outline=[
-            LocalizedText(
-                nl="[Instructie-stub] Mentoring, video-review, fitness, game management.",
-                en="[Instruction stub] Mentoring, video review, fitness, game management.",
-            ),
-        ],
-        content_status="stub",
-        quiz_id=None,
-        further_reading=[],
-        order=4,
-    ),
+    PATHWAY_MODULE,
 ]
 
 
@@ -112,14 +86,14 @@ def get_course_outline() -> CourseOutline:
         ),
         description=LocalizedText(
             nl=(
-                "Volledige modules (intro rol + veld- en zaalkernregels) plus "
-                "verdere stubs; quiz met feedback en sessievoortgang. "
-                + KNHB_RULES_NOTE.nl
+                "Volledige modules (intro rol, veld- en zaalkernregels, pad "
+                "naar professioneel niveau) met quiz, feedback en "
+                "sessievoortgang. " + KNHB_RULES_NOTE.nl
             ),
             en=(
-                "Full modules (intro role + field and indoor core rules) plus "
-                "further stubs; quiz with feedback and session progress. "
-                + KNHB_RULES_NOTE.en
+                "Full modules (intro role, field and indoor core rules, "
+                "pathway toward professional standard) with quiz, feedback "
+                "and session progress. " + KNHB_RULES_NOTE.en
             ),
         ),
         modules=MODULES,
@@ -127,6 +101,7 @@ def get_course_outline() -> CourseOutline:
             INTRO_QUIZ.id: INTRO_QUIZ,
             FIELD_QUIZ.id: FIELD_QUIZ,
             INDOOR_QUIZ.id: INDOOR_QUIZ,
+            PATHWAY_QUIZ.id: PATHWAY_QUIZ,
         },
         attributions=OFFICIAL_ATTRIBUTIONS,
     )

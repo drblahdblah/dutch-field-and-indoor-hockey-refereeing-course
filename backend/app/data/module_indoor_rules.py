@@ -629,14 +629,16 @@ INDOOR_MODULE = ModuleStub(
                     nl=(
                         "Maak de quiz hieronder. Sla voortgang op via je "
                         "cursussessie. Daarna: het pad naar professioneel "
-                        "niveau (stub). Houd officiële FIH Indoor / "
-                        "KNHB-bronnen bij de hand voor concrete regelvragen."
+                        "niveau (match management & consistentie). Houd "
+                        "officiële FIH Indoor / KNHB-bronnen bij de hand "
+                        "voor concrete regelvragen."
                     ),
                     en=(
                         "Take the quiz below. Save progress via your course "
                         "session. Next: the pathway toward professional "
-                        "standard (stub). Keep official FIH Indoor / KNHB "
-                        "sources handy for concrete rules questions."
+                        "standard (match management & consistency). Keep "
+                        "official FIH Indoor / KNHB sources handy for "
+                        "concrete rules questions."
                     ),
                 ),
             ],

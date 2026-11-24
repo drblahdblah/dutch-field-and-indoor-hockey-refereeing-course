@@ -495,6 +495,69 @@ input {
   animation: pop-node 0.45s ease 0.45s both;
 }
 
+.viz-cadence-rail {
+  stroke: var(--accent);
+  opacity: 0.75;
+}
+
+.viz-cadence-arrow {
+  stroke: var(--accent);
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: draw-tri 1.2s ease forwards;
+}
+
+.viz-cadence-arrow-b {
+  animation-delay: 0.2s;
+}
+
+.viz-cadence-node {
+  animation: pop-node 0.4s ease both;
+}
+
+.viz-cadence-node.viz-node-b {
+  animation-delay: 0.15s;
+}
+
+.viz-cadence-node.viz-node-c {
+  animation-delay: 0.3s;
+}
+
+.viz-handoff-arc {
+  stroke: var(--accent);
+  stroke-dasharray: 140;
+  stroke-dashoffset: 140;
+  animation: draw-tri 1.4s ease forwards;
+}
+
+.viz-handoff-arc-b {
+  animation-delay: 0.25s;
+}
+
+.viz-handoff-a {
+  animation: pop-node 0.4s ease both;
+}
+
+.viz-handoff-b {
+  animation: pop-node 0.4s ease 0.2s both;
+}
+
+.viz-consistency-ring {
+  stroke: var(--accent);
+  stroke-dasharray: 330;
+  stroke-dashoffset: 330;
+  animation: draw-tri 1.5s ease forwards;
+}
+
+.viz-consistency-dot {
+  transform-origin: 130px 85px;
+  animation: orbit-spin 4.5s linear infinite;
+}
+
+.viz-consistency-dot circle {
+  fill: var(--accent);
+}
+
 .viz-fallback {
   height: 64px;
   display: grid;
@@ -588,6 +651,13 @@ input {
   .viz-lift-raised,
   .viz-board-path,
   .viz-board-impact,
+  .viz-cadence-arrow,
+  .viz-cadence-node,
+  .viz-handoff-arc,
+  .viz-handoff-a,
+  .viz-handoff-b,
+  .viz-consistency-ring,
+  .viz-consistency-dot,
   .viz-node,
   .viz-orbit-dot,
   .viz-pulse,
@@ -604,7 +674,10 @@ input {
   .viz-pitch-circle,
   .viz-court-circle,
   .viz-lift-arc,
-  .viz-board-path {
+  .viz-board-path,
+  .viz-cadence-arrow,
+  .viz-handoff-arc,
+  .viz-consistency-ring {
     stroke-dashoffset: 0;
   }
 
