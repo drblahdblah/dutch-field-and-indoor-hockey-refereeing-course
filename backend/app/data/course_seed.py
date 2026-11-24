@@ -1,9 +1,10 @@
-"""Bilingual course outline: one full module + remaining stubs.
+"""Bilingual course outline: full modules + remaining stubs.
 
 Do NOT invent copyrighted FIH/KNHB rule text or illustrations.
 Attribution hooks and official-source links only.
 """
 
+from app.data.module_field_rules import FIELD_MODULE, FIELD_QUIZ
 from app.data.module_intro_role import INTRO_MODULE, INTRO_QUIZ
 from app.schemas import (
     Attribution,
@@ -70,165 +71,6 @@ OFFICIAL_ATTRIBUTIONS: list[Attribution] = [
         translation_needed=True,
     ),
 ]
-
-SAMPLE_QUIZ = Quiz(
-    id="quiz-dangerous-play-basics",
-    title=LocalizedText(
-        nl="Quiz: gevaarlijk spel (basis)",
-        en="Quiz: dangerous play (basics)",
-    ),
-    questions=[
-        QuizQuestion(
-            id="q1-raised-ball",
-            type="multiple_choice",
-            prompt=LocalizedText(
-                nl=(
-                    "Een speler slaat de bal hard omhoog in de richting van een "
-                    "tegenstander op korte afstand. Wat is de beste eerste "
-                    "overweging voor de scheidsrechter?"
-                ),
-                en=(
-                    "A player hits the ball hard and raised toward an opponent "
-                    "at close range. What is the umpire’s best first consideration?"
-                ),
-            ),
-            options=[
-                QuizOption(
-                    id="a",
-                    text=LocalizedText(
-                        nl="Altijd direct een groene kaart geven.",
-                        en="Always award a green card immediately.",
-                    ),
-                ),
-                QuizOption(
-                    id="b",
-                    text=LocalizedText(
-                        nl=(
-                            "Beoordelen of de actie gevaarlijk is (richting, "
-                            "afstand, snelheid) en passend fluiten/sanctioneren."
-                        ),
-                        en=(
-                            "Assess whether the action is dangerous (direction, "
-                            "distance, speed) and whistle/sanction appropriately."
-                        ),
-                    ),
-                ),
-                QuizOption(
-                    id="c",
-                    text=LocalizedText(
-                        nl="Alleen fluiten als de bal daadwerkelijk iemand raakt.",
-                        en="Only whistle if the ball actually hits someone.",
-                    ),
-                ),
-                QuizOption(
-                    id="d",
-                    text=LocalizedText(
-                        nl="Speel doorlaten; omhoog spelen is altijd toegestaan.",
-                        en="Play on; raising the ball is always allowed.",
-                    ),
-                ),
-            ],
-            correct_option_id="b",
-            feedback_correct=QuizFeedback(
-                explanation=LocalizedText(
-                    nl=(
-                        "Juist. Gevaarlijk spel hangt af van context: richting, "
-                        "afstand en snelheid. Consulteer FIH-regels/KNHB-"
-                        "interpretaties voor de actuele standaard."
-                    ),
-                    en=(
-                        "Correct. Dangerous play depends on context: direction, "
-                        "distance and speed. Consult FIH rules / KNHB "
-                        "interpretations for the current standard."
-                    ),
-                ),
-                visualization_hint="timeline: raise → proximity → risk assessment",
-            ),
-            feedback_incorrect={
-                "a": QuizFeedback(
-                    explanation=LocalizedText(
-                        nl=(
-                            "Niet altijd. Kaarten zijn situationeel; eerst "
-                            "beoordelen of (en hoe) de actie gevaarlijk was."
-                        ),
-                        en=(
-                            "Not always. Cards are situational; first assess "
-                            "whether (and how) the action was dangerous."
-                        ),
-                    ),
-                    visualization_hint="decision-tree: danger → advantage → card level",
-                ),
-                "c": QuizFeedback(
-                    explanation=LocalizedText(
-                        nl=(
-                            "Onjuist. Gevaar kan bestaan zonder contact; "
-                            "nabijheid en traject tellen mee."
-                        ),
-                        en=(
-                            "Incorrect. Danger can exist without contact; "
-                            "proximity and trajectory matter."
-                        ),
-                    ),
-                    visualization_hint="ball-path near defender silhouette (stub viz)",
-                ),
-                "d": QuizFeedback(
-                    explanation=LocalizedText(
-                        nl=(
-                            "Onjuist. Omhoog spelen is niet onvoorwaardelijk "
-                            "toegestaan wanneer het gevaarlijk is."
-                        ),
-                        en=(
-                            "Incorrect. Raising the ball is not unconditionally "
-                            "allowed when it is dangerous."
-                        ),
-                    ),
-                ),
-            },
-            feedback_incorrect_default=QuizFeedback(
-                explanation=LocalizedText(
-                    nl="Bekijk de officiële regels voor gevaarlijk spel.",
-                    en="Review the official rules on dangerous play.",
-                ),
-            ),
-        ),
-        QuizQuestion(
-            id="q2-advantage-keyword",
-            type="written",
-            prompt=LocalizedText(
-                nl=(
-                    "Welk Engels sleutelwoord gebruiken scheidsrechters vaak "
-                    "wanneer ze een overtreding ‘doorlaten’ ten voordele van "
-                    "het aangevallen team? (één woord)"
-                ),
-                en=(
-                    "Which English keyword do umpires often use when allowing "
-                    "play to continue after an offence that benefits the "
-                    "attacking team? (one word)"
-                ),
-            ),
-            accepted_answers=["advantage", "advantage!"],
-            feedback_correct=QuizFeedback(
-                explanation=LocalizedText(
-                    nl="Juist — ‘advantage’ (voordeel) is het gangbare signaalwoord.",
-                    en="Correct — ‘advantage’ is the common signal word.",
-                ),
-            ),
-            feedback_incorrect_default=QuizFeedback(
-                explanation=LocalizedText(
-                    nl=(
-                        "Het verwachte antwoord is ‘advantage’. Zie FIH "
-                        "umpire signals / KNHB-materiaal voor gebaren."
-                    ),
-                    en=(
-                        "The expected answer is ‘advantage’. See FIH umpire "
-                        "signals / KNHB materials for gestures."
-                    ),
-                ),
-                visualization_hint="umpire arm signal stub — link official chart",
-            ),
-        ),
-    ],
-)
 
 INDOOR_QUIZ = Quiz(
     id="quiz-indoor-context-basics",
@@ -380,53 +222,7 @@ INDOOR_QUIZ = Quiz(
 
 MODULES: list[ModuleStub] = [
     INTRO_MODULE,
-    ModuleStub(
-        id="mod-field-danger",
-        kind="field",
-        title=LocalizedText(
-            nl="Veld: gevaarlijk spel & omhoog spelen",
-            en="Field: dangerous play & raised ball",
-        ),
-        summary=LocalizedText(
-            nl="Contextueel beoordelen van gevaar op het veld.",
-            en="Contextual assessment of danger on the outdoor pitch.",
-        ),
-        learning_objectives=[
-            LocalizedText(
-                nl="Herkennen van factoren die een omhoog gespeelde bal gevaarlijk maken.",
-                en="Identify factors that make a raised ball dangerous.",
-            ),
-        ],
-        instruction_outline=[
-            LocalizedText(
-                nl="[Instructie-stub] Afstand, richting, snelheid — besliskader.",
-                en="[Instruction stub] Distance, direction, speed — decision frame.",
-            ),
-            LocalizedText(
-                nl=(
-                    "[KNHB-illustratie PLACEHOLDER] Officiële interpretatie/"
-                    "illustratie hier linken — geen asset inbegrepen. EN-vertaling TODO."
-                ),
-                en=(
-                    "[KNHB illustration PLACEHOLDER] Link official interpretation/"
-                    "illustration here — no asset included. EN translation TODO."
-                ),
-            ),
-        ],
-        content_status="stub",
-        quiz_id="quiz-dangerous-play-basics",
-        further_reading=[
-            FurtherReading(
-                title=LocalizedText(
-                    nl="KNHB interpretaties (placeholder-link)",
-                    en="KNHB interpretations (placeholder link)",
-                ),
-                url="https://www.knhb.nl/",
-                attribution=OFFICIAL_ATTRIBUTIONS[2],
-            ),
-        ],
-        order=2,
-    ),
+    FIELD_MODULE,
     ModuleStub(
         id="mod-indoor-basics",
         kind="indoor",
@@ -504,20 +300,20 @@ def get_course_outline() -> CourseOutline:
         ),
         description=LocalizedText(
             nl=(
-                "Eerste volledige module (intro rol) plus verdere stubs; "
-                "quiz met feedback en sessievoortgang. "
+                "Volledige modules (intro rol + veld kernregels) plus verdere "
+                "stubs; quiz met feedback en sessievoortgang. "
                 + KNHB_RULES_NOTE.nl
             ),
             en=(
-                "First full module (intro role) plus further stubs; "
-                "quiz with feedback and session progress. "
+                "Full modules (intro role + field core rules) plus further "
+                "stubs; quiz with feedback and session progress. "
                 + KNHB_RULES_NOTE.en
             ),
         ),
         modules=MODULES,
         quizzes={
             INTRO_QUIZ.id: INTRO_QUIZ,
-            SAMPLE_QUIZ.id: SAMPLE_QUIZ,
+            FIELD_QUIZ.id: FIELD_QUIZ,
             INDOOR_QUIZ.id: INDOOR_QUIZ,
         },
         attributions=OFFICIAL_ATTRIBUTIONS,

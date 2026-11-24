@@ -25,8 +25,11 @@ def test_course_outline_bilingual_and_strips_answers(client):
     assert body["title"]["en"]
     assert len(body["modules"]) >= 3
     assert "quiz-intro-umpire-role" in body["quizzes"]
-    assert "quiz-dangerous-play-basics" in body["quizzes"]
+    assert "quiz-field-rules-core" in body["quizzes"]
     assert "quiz-indoor-context-basics" in body["quizzes"]
+    module_ids = {m["id"] for m in body["modules"]}
+    assert "mod-intro-role" in module_ids
+    assert "mod-field-rules-core" in module_ids
     assert any(a.get("knhb_illustration_placeholder") for a in body["attributions"])
     for quiz in body["quizzes"].values():
         for q in quiz["questions"]:
@@ -118,8 +121,55 @@ def test_intro_quiz_progress_save_and_resume(client):
     assert row["quiz_total"] == 4
 
 
+def test_full_field_module_has_sections_and_visuals(client):
+    res = client.get("/api/course/modules/mod-field-rules-core")
+    assert res.status_code == 200
+    module = res.json()
+    assert module["content_status"] == "full"
+    assert module["kind"] == "field"
+    assert module["quiz_id"] == "quiz-field-rules-core"
+    assert len(module["sections"]) >= 4
+    assert len(module["visuals"]) >= 3
+    assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
+    visual_ids = {v["id"] for v in module["visuals"]}
+    for section in module["sections"]:
+        if section["visual_id"]:
+            assert section["visual_id"] in visual_ids
+    assert any(v["kind"] == "svg_animation" for v in module["visuals"])
+    assert any(v["animation_key"] == "danger-cone" for v in module["visuals"])
+    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+
+
+def test_field_quiz_grades_mc_and_written_with_explanations(client):
+    res = client.post(
+        "/api/quizzes/quiz-field-rules-core/submit",
+        json={
+            "answers": [
+                {"question_id": "q1-raised-ball", "selected_option_id": "c"},
+                {"question_id": "q2-restart-space", "selected_option_id": "c"},
+                {"question_id": "q3-scoring-area-keyword", "written_answer": "circle"},
+                {"question_id": "q4-advantage-keyword", "written_answer": "nope"},
+            ]
+        },
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["total"] == 4
+    assert body["score"] == 2
+    by_id = {r["question_id"]: r for r in body["results"]}
+    assert by_id["q1-raised-ball"]["correct"] is False
+    assert by_id["q1-raised-ball"]["explanation"]["nl"]
+    assert by_id["q1-raised-ball"]["explanation"]["en"]
+    assert by_id["q1-raised-ball"]["visualization_hint"] == "danger-cone"
+    assert by_id["q1-raised-ball"]["correct_option_id"] == "b"
+    assert by_id["q2-restart-space"]["correct"] is True
+    assert by_id["q2-restart-space"]["correct_option_id"] == "c"
+    assert by_id["q3-scoring-area-keyword"]["correct"] is True
+    assert by_id["q4-advantage-keyword"]["correct"] is False
+
+
 def test_quiz_get_hides_answers(client):
-    res = client.get("/api/course/quizzes/quiz-dangerous-play-basics")
+    res = client.get("/api/course/quizzes/quiz-field-rules-core")
     assert res.status_code == 200
     quiz = res.json()
     for q in quiz["questions"]:
@@ -165,18 +215,20 @@ def test_intro_quiz_get_hides_answers(client):
 
 def test_quiz_submit_grades_and_explains(client):
     res = client.post(
-        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        "/api/quizzes/quiz-field-rules-core/submit",
         json={
             "answers": [
                 {"question_id": "q1-raised-ball", "selected_option_id": "c"},
-                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
+                {"question_id": "q2-restart-space", "selected_option_id": "c"},
+                {"question_id": "q3-scoring-area-keyword", "written_answer": "circle"},
+                {"question_id": "q4-advantage-keyword", "written_answer": "advantage"},
             ]
         },
     )
     assert res.status_code == 200
     body = res.json()
-    assert body["score"] == 1
-    assert body["total"] == 2
+    assert body["score"] == 3
+    assert body["total"] == 4
     assert body["progress_saved"] is False
     wrong = next(r for r in body["results"] if r["question_id"] == "q1-raised-ball")
     assert wrong["correct"] is False
@@ -186,11 +238,13 @@ def test_quiz_submit_grades_and_explains(client):
 
 def test_quiz_submit_omits_key_for_unanswered(client):
     res = client.post(
-        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        "/api/quizzes/quiz-field-rules-core/submit",
         json={
             "answers": [
                 {"question_id": "q1-raised-ball"},
-                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
+                {"question_id": "q2-restart-space", "selected_option_id": "c"},
+                {"question_id": "q3-scoring-area-keyword", "written_answer": "circle"},
+                {"question_id": "q4-advantage-keyword", "written_answer": "advantage"},
             ]
         },
     )
@@ -202,7 +256,7 @@ def test_quiz_submit_omits_key_for_unanswered(client):
 
 def test_quiz_submit_rejects_unknown_question(client):
     res = client.post(
-        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        "/api/quizzes/quiz-field-rules-core/submit",
         json={"answers": [{"question_id": "not-a-real-question", "selected_option_id": "a"}]},
     )
     assert res.status_code == 400
@@ -259,30 +313,32 @@ def test_non_bearer_authorization_falls_back_to_cookie(client):
     assert res.status_code == 200
 
 
+_FIELD_PERFECT_ANSWERS = [
+    {"question_id": "q1-raised-ball", "selected_option_id": "b"},
+    {"question_id": "q2-restart-space", "selected_option_id": "c"},
+    {"question_id": "q3-scoring-area-keyword", "written_answer": "circle"},
+    {"question_id": "q4-advantage-keyword", "written_answer": "advantage"},
+]
+
+
 def test_save_progress_auth_failure_still_returns_grades(client):
     missing = client.post(
-        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        "/api/quizzes/quiz-field-rules-core/submit",
         json={
             "save_progress": True,
-            "answers": [
-                {"question_id": "q1-raised-ball", "selected_option_id": "b"},
-                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
-            ],
+            "answers": _FIELD_PERFECT_ANSWERS,
         },
     )
     assert missing.status_code == 200
     assert missing.json()["progress_saved"] is False
-    assert missing.json()["score"] == 2
+    assert missing.json()["score"] == 4
 
     bad = client.post(
-        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        "/api/quizzes/quiz-field-rules-core/submit",
         headers=_auth_headers("bogus"),
         json={
             "save_progress": True,
-            "answers": [
-                {"question_id": "q1-raised-ball", "selected_option_id": "b"},
-                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
-            ],
+            "answers": _FIELD_PERFECT_ANSWERS,
         },
     )
     assert bad.status_code == 200
@@ -295,26 +351,25 @@ def test_completed_module_not_demoted_on_worse_resubmit(client):
     headers = _auth_headers(token)
 
     perfect = client.post(
-        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        "/api/quizzes/quiz-field-rules-core/submit",
         headers=headers,
         json={
             "save_progress": True,
-            "answers": [
-                {"question_id": "q1-raised-ball", "selected_option_id": "b"},
-                {"question_id": "q2-advantage-keyword", "written_answer": "advantage"},
-            ],
+            "answers": _FIELD_PERFECT_ANSWERS,
         },
     )
     assert perfect.json()["progress_saved"] is True
 
     worse = client.post(
-        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        "/api/quizzes/quiz-field-rules-core/submit",
         headers=headers,
         json={
             "save_progress": True,
             "answers": [
                 {"question_id": "q1-raised-ball", "selected_option_id": "a"},
-                {"question_id": "q2-advantage-keyword", "written_answer": "nope"},
+                {"question_id": "q2-restart-space", "selected_option_id": "a"},
+                {"question_id": "q3-scoring-area-keyword", "written_answer": "nope"},
+                {"question_id": "q4-advantage-keyword", "written_answer": "nope"},
             ],
         },
     )
@@ -322,9 +377,11 @@ def test_completed_module_not_demoted_on_worse_resubmit(client):
     assert worse.json()["score"] == 0
 
     progress = client.get("/api/progress/session", headers=headers)
-    row = next(p for p in progress.json()["progress"] if p["module_id"] == "mod-field-danger")
+    row = next(
+        p for p in progress.json()["progress"] if p["module_id"] == "mod-field-rules-core"
+    )
     assert row["status"] == "completed"
-    assert row["quiz_score"] == 2
+    assert row["quiz_score"] == 4
     assert row["completed_at"] is not None
 
 
@@ -335,7 +392,7 @@ def test_progress_put_rejects_client_quiz_scores(client):
         "/api/progress/session",
         headers=_auth_headers(token),
         json={
-            "module_id": "mod-field-danger",
+            "module_id": "mod-field-rules-core",
             "status": "completed",
             "quiz_score": 99,
             "quiz_total": 99,
@@ -353,7 +410,7 @@ def test_session_progress_roundtrip(client):
     updated = client.put(
         "/api/progress/session",
         headers=headers,
-        json={"module_id": "mod-field-danger", "status": "in_progress"},
+        json={"module_id": "mod-field-rules-core", "status": "in_progress"},
     )
     assert updated.status_code == 200
     assert updated.json()["status"] == "in_progress"
@@ -367,25 +424,27 @@ def test_session_progress_roundtrip(client):
     assert bad_module.status_code == 400
 
     submit = client.post(
-        "/api/quizzes/quiz-dangerous-play-basics/submit",
+        "/api/quizzes/quiz-field-rules-core/submit",
         headers=headers,
         json={
             "save_progress": True,
             "answers": [
                 {"question_id": "q1-raised-ball", "selected_option_id": "b"},
-                {"question_id": "q2-advantage-keyword", "written_answer": "Advantage!"},
+                {"question_id": "q2-restart-space", "selected_option_id": "c"},
+                {"question_id": "q3-scoring-area-keyword", "written_answer": "Circle"},
+                {"question_id": "q4-advantage-keyword", "written_answer": "Advantage!"},
             ],
         },
     )
     assert submit.status_code == 200
     assert submit.json()["progress_saved"] is True
-    assert submit.json()["score"] == 2
+    assert submit.json()["score"] == 4
 
     progress = client.get("/api/progress/session", headers=headers)
     assert progress.status_code == 200
     modules = {p["module_id"]: p for p in progress.json()["progress"]}
-    assert modules["mod-field-danger"]["status"] == "completed"
-    assert modules["mod-field-danger"]["quiz_score"] == 2
+    assert modules["mod-field-rules-core"]["status"] == "completed"
+    assert modules["mod-field-rules-core"]["quiz_score"] == 4
 
 
 def test_cookie_auth_works_without_bearer(client):
