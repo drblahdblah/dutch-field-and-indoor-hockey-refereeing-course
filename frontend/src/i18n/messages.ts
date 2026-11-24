@@ -48,7 +48,7 @@ const ui = {
   quiz: { nl: "Quiz", en: "Quiz" },
   submit: { nl: "Antwoorden indienen", en: "Submit answers" },
   furtherReading: { nl: "Verder lezen", en: "Further reading" },
-  attribution: { nl: "Bronnen & attribution", en: "Sources & attribution" },
+  attribution: { nl: "Bronnen & vermelding", en: "Sources & attribution" },
   progress: { nl: "Voortgang", en: "Progress" },
   language: { nl: "Taal", en: "Language" },
   langNl: { nl: "Nederlands", en: "Dutch" },

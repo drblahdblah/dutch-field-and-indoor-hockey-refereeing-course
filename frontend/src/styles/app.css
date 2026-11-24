@@ -80,7 +80,8 @@ main:focus {
 }
 
 main:focus-visible {
-  outline: none;
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
 }
 
 .app {
@@ -322,6 +323,7 @@ main:focus-visible {
 }
 
 .module-row:hover,
+.module-row[aria-current="page"],
 .module-row[aria-current="true"] {
   border-color: rgba(200, 245, 66, 0.55);
   background: rgba(200, 245, 66, 0.08);

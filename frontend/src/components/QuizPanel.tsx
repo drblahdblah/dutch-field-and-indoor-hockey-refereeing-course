@@ -108,7 +108,10 @@ export function QuizPanel({
               />
             )}
             {feedback && (
-              <div className={`feedback ${feedback.correct ? "ok" : "bad"}`}>
+              <div
+                className={`feedback ${feedback.correct ? "ok" : "bad"}`}
+                role="status"
+              >
                 <strong>
                   {feedback.correct ? uiT("correct", locale) : uiT("incorrect", locale)}
                 </strong>
