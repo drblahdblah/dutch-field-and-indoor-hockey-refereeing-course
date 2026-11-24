@@ -30,6 +30,16 @@ const SVG_LABELS = {
   raised: { nl: "omhoog", en: "raised" },
   rebound: { nl: "rebound", en: "rebound" },
   recovery: { nl: "herstel", en: "recovery" },
+  before: { nl: "vóór", en: "before" },
+  during: { nl: "tijdens", en: "during" },
+  after: { nl: "ná", en: "after" },
+  lead: { nl: "lead", en: "lead" },
+  support: { nl: "support", en: "support" },
+  handoff: { nl: "overdracht", en: "handoff" },
+  observe: { nl: "observeer", en: "observe" },
+  decide: { nl: "besluit", en: "decide" },
+  communicate: { nl: "communiceer", en: "communicate" },
+  review: { nl: "review", en: "review" },
 } as const;
 
 function SafetyTriangleSvg({ locale }: { locale: Locale }) {
@@ -298,6 +308,99 @@ function BoardPlaySvg({ locale }: { locale: Locale }) {
   );
 }
 
+function MatchCadenceSvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg viz-cadence" viewBox="0 0 260 160" aria-hidden="true">
+      <line className="viz-cadence-rail" x1="36" y1="80" x2="224" y2="80" strokeWidth="2.5" />
+      <circle className="viz-node viz-node-a viz-cadence-node" cx="52" cy="80" r="10" />
+      <circle className="viz-node viz-node-b viz-cadence-node" cx="130" cy="80" r="10" />
+      <circle className="viz-node viz-node-c viz-cadence-node" cx="208" cy="80" r="10" />
+      <path
+        className="viz-cadence-arrow"
+        d="M 68 80 L 112 80"
+        fill="none"
+        strokeWidth="2"
+      />
+      <path
+        className="viz-cadence-arrow viz-cadence-arrow-b"
+        d="M 148 80 L 190 80"
+        fill="none"
+        strokeWidth="2"
+      />
+      <text x="52" y="52" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.before, locale)}
+      </text>
+      <text x="130" y="52" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.during, locale)}
+      </text>
+      <text x="208" y="52" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.after, locale)}
+      </text>
+    </svg>
+  );
+}
+
+function PartnerHandoffSvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg" viewBox="0 0 260 160" aria-hidden="true">
+      <circle className="viz-node viz-node-a viz-handoff-a" cx="70" cy="80" r="14" />
+      <circle className="viz-node viz-node-b viz-handoff-b" cx="190" cy="80" r="14" />
+      <path
+        className="viz-handoff-arc"
+        d="M 90 70 Q 130 36 170 70"
+        fill="none"
+        strokeWidth="2.5"
+      />
+      <path
+        className="viz-handoff-arc viz-handoff-arc-b"
+        d="M 170 90 Q 130 124 90 90"
+        fill="none"
+        strokeWidth="2.5"
+      />
+      <text x="70" y="48" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.lead, locale)}
+      </text>
+      <text x="190" y="48" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.support, locale)}
+      </text>
+      <text x="130" y="148" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.handoff, locale)}
+      </text>
+    </svg>
+  );
+}
+
+function ConsistencyLoopSvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg" viewBox="0 0 260 170" aria-hidden="true">
+      <circle
+        className="viz-consistency-ring"
+        cx="130"
+        cy="85"
+        r="52"
+        fill="none"
+        strokeWidth="2.5"
+      />
+      <g className="viz-consistency-dot">
+        <circle cx="130" cy="33" r="7" />
+      </g>
+      <text x="130" y="18" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.observe, locale)}
+      </text>
+      <text x="208" y="90" textAnchor="start" className="viz-label">
+        {t(SVG_LABELS.decide, locale)}
+      </text>
+      <text x="130" y="158" textAnchor="middle" className="viz-label">
+        {t(SVG_LABELS.communicate, locale)}
+      </text>
+      <text x="18" y="90" textAnchor="start" className="viz-label">
+        {t(SVG_LABELS.review, locale)}
+      </text>
+      <circle cx="130" cy="85" r="10" className="viz-core" />
+    </svg>
+  );
+}
+
 function pickAnimation(key: string | null | undefined, locale: Locale) {
   if (key === "safety-triangle") return <SafetyTriangleSvg locale={locale} />;
   if (key === "scan-cycle") return <ScanCycleSvg locale={locale} />;
@@ -307,6 +410,9 @@ function pickAnimation(key: string | null | undefined, locale: Locale) {
   if (key === "court-boards") return <CourtBoardsSvg locale={locale} />;
   if (key === "lift-limit") return <LiftLimitSvg locale={locale} />;
   if (key === "board-play") return <BoardPlaySvg locale={locale} />;
+  if (key === "match-cadence") return <MatchCadenceSvg locale={locale} />;
+  if (key === "partner-handoff") return <PartnerHandoffSvg locale={locale} />;
+  if (key === "consistency-loop") return <ConsistencyLoopSvg locale={locale} />;
   return (
     <div className="viz-fallback" aria-hidden="true">
       <span className="viz-pulse" />
@@ -352,6 +458,9 @@ const KNOWN_ANIMATION_KEYS = new Set([
   "court-boards",
   "lift-limit",
   "board-play",
+  "match-cadence",
+  "partner-handoff",
+  "consistency-loop",
 ]);
 
 /** Resolve a quiz visualization_hint to a known animation key or null. */

@@ -27,12 +27,16 @@ def test_course_outline_bilingual_and_strips_answers(client):
     assert "quiz-intro-umpire-role" in body["quizzes"]
     assert "quiz-field-rules-core" in body["quizzes"]
     assert "quiz-indoor-rules-core" in body["quizzes"]
+    assert "quiz-pathway-professional" in body["quizzes"]
     assert "quiz-indoor-context-basics" not in body["quizzes"]
     module_ids = {m["id"] for m in body["modules"]}
     assert "mod-intro-role" in module_ids
     assert "mod-field-rules-core" in module_ids
     assert "mod-indoor-rules-core" in module_ids
+    assert "mod-pathway-hoofdklasse" in module_ids
     assert "mod-indoor-basics" not in module_ids
+    pathway = next(m for m in body["modules"] if m["id"] == "mod-pathway-hoofdklasse")
+    assert pathway["content_status"] == "full"
     assert any(a.get("knhb_illustration_placeholder") for a in body["attributions"])
     for quiz in body["quizzes"].values():
         for q in quiz["questions"]:
@@ -629,6 +633,124 @@ def test_indoor_quiz_progress_save_and_resume(client):
     assert progress.status_code == 200
     row = next(
         p for p in progress.json()["progress"] if p["module_id"] == "mod-indoor-rules-core"
+    )
+    assert row["status"] == "completed"
+    assert row["quiz_score"] == 4
+    assert row["quiz_total"] == 4
+
+
+# Keep in sync with frontend ModuleVisual KNOWN_ANIMATION_KEYS.
+_SPA_ANIMATION_KEYS = frozenset(
+    {
+        "safety-triangle",
+        "scan-cycle",
+        "pitch-zones",
+        "danger-cone",
+        "restart-bubble",
+        "court-boards",
+        "lift-limit",
+        "board-play",
+        "match-cadence",
+        "partner-handoff",
+        "consistency-loop",
+    }
+)
+
+
+def test_seed_animation_keys_match_spa_allowlist():
+    from app.data.course_seed import get_course_outline
+
+    for module in get_course_outline().modules:
+        for visual in module.visuals:
+            if visual.kind != "svg_animation":
+                continue
+            assert visual.animation_key in _SPA_ANIMATION_KEYS, (
+                f"{module.id}/{visual.id} unknown animation_key {visual.animation_key!r}"
+            )
+
+
+def test_full_pathway_module_has_sections_and_visuals(client):
+    res = client.get("/api/course/modules/mod-pathway-hoofdklasse")
+    assert res.status_code == 200
+    module = res.json()
+    assert module["content_status"] == "full"
+    assert module["kind"] == "shared"
+    assert module["quiz_id"] == "quiz-pathway-professional"
+    assert len(module["sections"]) >= 4
+    assert len(module["visuals"]) >= 3
+    assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
+    visual_ids = {v["id"] for v in module["visuals"]}
+    for section in module["sections"]:
+        if section["visual_id"]:
+            assert section["visual_id"] in visual_ids
+    assert any(v["kind"] == "svg_animation" for v in module["visuals"])
+    assert any(v["animation_key"] == "match-cadence" for v in module["visuals"])
+    assert any(v["animation_key"] == "partner-handoff" for v in module["visuals"])
+    assert any(v["animation_key"] == "consistency-loop" for v in module["visuals"])
+    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+
+
+def test_pathway_quiz_grades_mc_and_written_with_explanations(client):
+    res = client.post(
+        "/api/quizzes/quiz-pathway-professional/submit",
+        json={
+            "answers": [
+                {"question_id": "q1-match-management", "selected_option_id": "a"},
+                {"question_id": "q2-collaboration", "selected_option_id": "d"},
+                {"question_id": "q3-consistency-keyword", "written_answer": "consistency"},
+                {"question_id": "q4-pathway-keyword", "written_answer": "nope"},
+            ]
+        },
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["total"] == 4
+    assert body["score"] == 2
+    by_id = {r["question_id"]: r for r in body["results"]}
+    assert by_id["q1-match-management"]["correct"] is False
+    assert by_id["q1-match-management"]["explanation"]["nl"]
+    assert by_id["q1-match-management"]["explanation"]["en"]
+    assert by_id["q1-match-management"]["visualization_hint"] == "match-cadence"
+    assert by_id["q1-match-management"]["correct_option_id"] == "c"
+    assert by_id["q2-collaboration"]["correct"] is True
+    assert by_id["q2-collaboration"]["correct_option_id"] == "d"
+    assert by_id["q3-consistency-keyword"]["correct"] is True
+    assert by_id["q4-pathway-keyword"]["correct"] is False
+
+
+def test_pathway_quiz_progress_save_and_resume(client):
+    created = client.post("/api/progress/sessions", json={"locale": "nl"})
+    token = created.json()["access_token"]
+    headers = _auth_headers(token)
+
+    opened = client.put(
+        "/api/progress/session",
+        headers=headers,
+        json={"module_id": "mod-pathway-hoofdklasse", "status": "in_progress"},
+    )
+    assert opened.status_code == 200
+
+    submit = client.post(
+        "/api/quizzes/quiz-pathway-professional/submit",
+        headers=headers,
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-match-management", "selected_option_id": "c"},
+                {"question_id": "q2-collaboration", "selected_option_id": "d"},
+                {"question_id": "q3-consistency-keyword", "written_answer": "Consistency"},
+                {"question_id": "q4-pathway-keyword", "written_answer": "Pathway!"},
+            ],
+        },
+    )
+    assert submit.status_code == 200
+    assert submit.json()["progress_saved"] is True
+    assert submit.json()["score"] == 4
+
+    progress = client.get("/api/progress/session", headers=headers)
+    assert progress.status_code == 200
+    row = next(
+        p for p in progress.json()["progress"] if p["module_id"] == "mod-pathway-hoofdklasse"
     )
     assert row["status"] == "completed"
     assert row["quiz_score"] == 4
