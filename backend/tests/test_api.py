@@ -29,6 +29,7 @@ def test_course_outline_bilingual_and_strips_answers(client):
     assert "quiz-indoor-rules-core" in body["quizzes"]
     assert "quiz-pathway-professional" in body["quizzes"]
     assert "quiz-knhb-interpretations" in body["quizzes"]
+    assert "quiz-capstone-assessment" in body["quizzes"]
     assert "quiz-indoor-context-basics" not in body["quizzes"]
     module_ids = {m["id"] for m in body["modules"]}
     assert "mod-intro-role" in module_ids
@@ -36,12 +37,16 @@ def test_course_outline_bilingual_and_strips_answers(client):
     assert "mod-indoor-rules-core" in module_ids
     assert "mod-pathway-hoofdklasse" in module_ids
     assert "mod-knhb-interpretations" in module_ids
+    assert "mod-capstone-assessment" in module_ids
     assert "mod-indoor-basics" not in module_ids
     pathway = next(m for m in body["modules"] if m["id"] == "mod-pathway-hoofdklasse")
     assert pathway["content_status"] == "full"
     interp = next(m for m in body["modules"] if m["id"] == "mod-knhb-interpretations")
     assert interp["content_status"] == "full"
     assert len(interp["interpretation_references"]) >= 3
+    capstone = next(m for m in body["modules"] if m["id"] == "mod-capstone-assessment")
+    assert capstone["content_status"] == "full"
+    assert capstone["order"] == 6
     assert any(a.get("knhb_illustration_placeholder") for a in body["attributions"])
     assert any(a.get("translation_needed") for a in body["attributions"])
     for quiz in body["quizzes"].values():
@@ -662,6 +667,7 @@ _SPA_ANIMATION_KEYS = frozenset(
         "source-stack",
         "translation-slot",
         "attribution-chain",
+        "capstone-weave",
     }
 )
 
@@ -669,13 +675,27 @@ _SPA_ANIMATION_KEYS = frozenset(
 def test_seed_animation_keys_match_spa_allowlist():
     from app.data.course_seed import get_course_outline
 
-    for module in get_course_outline().modules:
+    course = get_course_outline()
+    for module in course.modules:
         for visual in module.visuals:
             if visual.kind != "svg_animation":
                 continue
             assert visual.animation_key in _SPA_ANIMATION_KEYS, (
                 f"{module.id}/{visual.id} unknown animation_key {visual.animation_key!r}"
             )
+    for quiz in course.quizzes.values():
+        for question in quiz.questions:
+            for feedback in [
+                question.feedback_correct,
+                question.feedback_incorrect_default,
+                *(question.feedback_incorrect or {}).values(),
+            ]:
+                if feedback is None or not feedback.visualization_hint:
+                    continue
+                assert feedback.visualization_hint in _SPA_ANIMATION_KEYS, (
+                    f"{quiz.id}/{question.id} unknown visualization_hint "
+                    f"{feedback.visualization_hint!r}"
+                )
 
 
 def test_full_pathway_module_has_sections_and_visuals(client):
@@ -864,6 +884,105 @@ def test_interpretation_quiz_progress_save_and_resume(client):
     assert row["status"] == "completed"
     assert row["quiz_score"] == 4
     assert row["quiz_total"] == 4
+
+
+def test_full_capstone_module_has_sections_and_visuals(client):
+    res = client.get("/api/course/modules/mod-capstone-assessment")
+    assert res.status_code == 200
+    module = res.json()
+    assert module["content_status"] == "full"
+    assert module["kind"] == "shared"
+    assert module["quiz_id"] == "quiz-capstone-assessment"
+    assert len(module["sections"]) >= 4
+    assert len(module["visuals"]) >= 3
+    assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
+    visual_ids = {v["id"] for v in module["visuals"]}
+    for section in module["sections"]:
+        if section["visual_id"]:
+            assert section["visual_id"] in visual_ids
+    assert any(v["animation_key"] == "capstone-weave" for v in module["visuals"])
+    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    assert len(module["interpretation_references"]) >= 1
+    for ref in module["interpretation_references"]:
+        if ref["translation_needed"]:
+            assert "[EN translation slot]" in ref["summary"]["en"]
+
+
+def test_capstone_quiz_grades_mc_and_written_with_explanations(client):
+    res = client.post(
+        "/api/quizzes/quiz-capstone-assessment/submit",
+        json={
+            "answers": [
+                {"question_id": "q1-field-danger-priority", "selected_option_id": "a"},
+                {"question_id": "q2-indoor-lift-boards", "selected_option_id": "c"},
+                {"question_id": "q3-pathway-management", "selected_option_id": "c"},
+                {"question_id": "q4-interpretation-source", "selected_option_id": "b"},
+                {"question_id": "q5-safety-keyword", "written_answer": "safety"},
+                {"question_id": "q6-capstone-keyword", "written_answer": "nope"},
+            ]
+        },
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["total"] == 6
+    assert body["score"] == 4
+    by_id = {r["question_id"]: r for r in body["results"]}
+    assert by_id["q1-field-danger-priority"]["correct"] is False
+    assert by_id["q1-field-danger-priority"]["explanation"]["nl"]
+    assert by_id["q1-field-danger-priority"]["explanation"]["en"]
+    assert by_id["q1-field-danger-priority"]["visualization_hint"] == "danger-cone"
+    assert by_id["q1-field-danger-priority"]["correct_option_id"] == "b"
+    assert by_id["q2-indoor-lift-boards"]["correct"] is True
+    assert by_id["q2-indoor-lift-boards"]["visualization_hint"] == "lift-limit"
+    assert by_id["q3-pathway-management"]["correct"] is True
+    assert by_id["q3-pathway-management"]["visualization_hint"] == "match-cadence"
+    assert by_id["q4-interpretation-source"]["correct"] is True
+    assert by_id["q4-interpretation-source"]["visualization_hint"] == "source-stack"
+    assert by_id["q5-safety-keyword"]["correct"] is True
+    assert by_id["q5-safety-keyword"]["visualization_hint"] == "safety-triangle"
+    assert by_id["q6-capstone-keyword"]["correct"] is False
+    assert by_id["q6-capstone-keyword"]["visualization_hint"] == "capstone-weave"
+
+
+def test_capstone_quiz_progress_save_and_resume(client):
+    created = client.post("/api/progress/sessions", json={"locale": "nl"})
+    token = created.json()["access_token"]
+    headers = _auth_headers(token)
+
+    opened = client.put(
+        "/api/progress/session",
+        headers=headers,
+        json={"module_id": "mod-capstone-assessment", "status": "in_progress"},
+    )
+    assert opened.status_code == 200
+
+    submit = client.post(
+        "/api/quizzes/quiz-capstone-assessment/submit",
+        headers=headers,
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-field-danger-priority", "selected_option_id": "b"},
+                {"question_id": "q2-indoor-lift-boards", "selected_option_id": "c"},
+                {"question_id": "q3-pathway-management", "selected_option_id": "c"},
+                {"question_id": "q4-interpretation-source", "selected_option_id": "b"},
+                {"question_id": "q5-safety-keyword", "written_answer": "Safety"},
+                {"question_id": "q6-capstone-keyword", "written_answer": "Capstone!"},
+            ],
+        },
+    )
+    assert submit.status_code == 200
+    assert submit.json()["progress_saved"] is True
+    assert submit.json()["score"] == 6
+
+    progress = client.get("/api/progress/session", headers=headers)
+    assert progress.status_code == 200
+    row = next(
+        p for p in progress.json()["progress"] if p["module_id"] == "mod-capstone-assessment"
+    )
+    assert row["status"] == "completed"
+    assert row["quiz_score"] == 6
+    assert row["quiz_total"] == 6
 
 
 def test_invalid_locale_rejected(client):

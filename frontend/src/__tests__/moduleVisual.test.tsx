@@ -19,6 +19,7 @@ describe("animationKeyFromHint", () => {
     expect(animationKeyFromHint("match-cadence")).toBe("match-cadence");
     expect(animationKeyFromHint("partner-handoff")).toBe("partner-handoff");
     expect(animationKeyFromHint("consistency-loop")).toBe("consistency-loop");
+    expect(animationKeyFromHint("capstone-weave")).toBe("capstone-weave");
     expect(animationKeyFromHint(" Danger-Cone ")).toBe("danger-cone");
     expect(animationKeyFromHint("timeline: raise → proximity")).toBeNull();
     expect(animationKeyFromHint("prefix-safety-triangle")).toBeNull();
@@ -263,5 +264,24 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("link")).toBeInTheDocument();
     expect(screen.getByText("source")).toBeInTheDocument();
     expect(screen.getByText("placeholder")).toBeInTheDocument();
+  });
+
+  it("renders capstone-weave SVG with domain labels", () => {
+    const visual: VisualPlaceholder = {
+      id: "viz-capstone-weave",
+      kind: "svg_animation",
+      title: { nl: "Weefsel", en: "Weave" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "capstone-weave",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    render(<ModuleVisual visual={visual} locale="en" />);
+    expect(document.querySelector("svg.viz-capstone-weave")).toBeTruthy();
+    expect(screen.getByText("field")).toBeInTheDocument();
+    expect(screen.getByText("indoor")).toBeInTheDocument();
+    expect(screen.getByText("pathway")).toBeInTheDocument();
+    expect(screen.getByText("interpretation")).toBeInTheDocument();
   });
 });
