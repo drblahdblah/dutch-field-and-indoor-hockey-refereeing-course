@@ -40,6 +40,18 @@ const ui = {
     nl: "KNHB-illustratie/interpretatie: plaatshouder — link officiële bron; EN-vertaling volgt.",
     en: "KNHB illustration/interpretation: placeholder — link official source; EN translation TBD.",
   },
+  translationNeeded: {
+    nl: "EN-vertalingsslot — geen geautoriseerde juridische vertaling van KNHB-tekst.",
+    en: "EN translation slot — no authorized legal translation of KNHB text yet.",
+  },
+  interpretationRefs: {
+    nl: "Interpretatiereferenties",
+    en: "Interpretation references",
+  },
+  officialSource: {
+    nl: "Officiële bron",
+    en: "Official source",
+  },
   licenseNote: {
     nl: "Software: MIT. Officiële FIH/KNHB-regeltekst en illustraties blijven eigendom van hun rechthebbenden — hier alleen links/placeholders.",
     en: "Software: MIT. Official FIH/KNHB rule text and illustrations remain with their rights holders — links/placeholders only here.",

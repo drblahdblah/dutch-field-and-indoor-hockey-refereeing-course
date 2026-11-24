@@ -215,4 +215,53 @@ describe("ModuleVisual", () => {
     );
     expect(screen.getByText(/KNHB-illustratie\/interpretatie: plaatshouder/i)).toBeInTheDocument();
   });
+
+  it("renders interpretation-layer animations", () => {
+    const stack: VisualPlaceholder = {
+      id: "viz-source-stack",
+      kind: "svg_animation",
+      title: { nl: "Stapel", en: "Stack" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "source-stack",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    const { rerender } = render(<ModuleVisual visual={stack} locale="en" />);
+    expect(document.querySelector("svg.viz-source-stack")).toBeTruthy();
+    expect(screen.getByText("FIH")).toBeInTheDocument();
+    expect(screen.getByText("KNHB")).toBeInTheDocument();
+    expect(screen.getByText("club")).toBeInTheDocument();
+
+    const slot: VisualPlaceholder = {
+      id: "viz-translation-slot",
+      kind: "svg_animation",
+      title: { nl: "Slot", en: "Slot" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "translation-slot",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={slot} locale="nl" />);
+    expect(document.querySelector("svg.viz-translation-slot")).toBeTruthy();
+    expect(screen.getByText("NL")).toBeInTheDocument();
+    expect(screen.getByText("EN-slot")).toBeInTheDocument();
+
+    const chain: VisualPlaceholder = {
+      id: "viz-attribution-chain",
+      kind: "svg_animation",
+      title: { nl: "Keten", en: "Chain" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "attribution-chain",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={chain} locale="en" />);
+    expect(document.querySelector("svg.viz-attribution-chain")).toBeTruthy();
+    expect(screen.getByText("link")).toBeInTheDocument();
+    expect(screen.getByText("source")).toBeInTheDocument();
+    expect(screen.getByText("placeholder")).toBeInTheDocument();
+  });
 });

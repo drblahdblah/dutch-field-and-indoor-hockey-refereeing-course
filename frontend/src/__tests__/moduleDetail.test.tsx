@@ -31,6 +31,7 @@ const fullModule: ModuleStub = {
       knhb_illustration_placeholder: false,
     },
   ],
+  interpretation_references: [],
   quiz_id: "quiz-intro-umpire-role",
   further_reading: [],
   order: 1,
@@ -86,5 +87,103 @@ describe("ModuleDetail", () => {
       />,
     );
     expect(screen.queryByText("Verkeerde quiz")).not.toBeInTheDocument();
+  });
+
+  it("renders interpretation references with translation slots", () => {
+    const withRefs: ModuleStub = {
+      ...fullModule,
+      interpretation_references: [
+        {
+          id: "interp-demo",
+          topic: { nl: "Topic NL", en: "Topic EN" },
+          scope: "shared",
+          summary: {
+            nl: "Samenvatting NL",
+            en: "[EN translation slot] TBD",
+          },
+          translation_needed: true,
+          official_source_url: "https://www.knhb.nl/",
+          official_source_name: "KNHB",
+          knhb_illustration_placeholder: true,
+          attribution: {
+            source_name: "KNHB",
+            source_url: "https://www.knhb.nl/",
+            note: { nl: "Attributie NL", en: "Attribution EN" },
+            knhb_illustration_placeholder: true,
+            translation_needed: true,
+          },
+          visual_id: "viz-safety-triangle",
+        },
+      ],
+    };
+    render(
+      <ModuleDetail
+        module={withRefs}
+        quiz={null}
+        locale="en"
+        accessToken={null}
+        hasSession={false}
+      />,
+    );
+    expect(
+      screen.getByRole("heading", { name: "Interpretation references" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Topic EN" })).toBeInTheDocument();
+    expect(screen.getByText("[EN translation slot] TBD")).toBeInTheDocument();
+    // knhb placeholder covers EN-TBD; translationNeeded flag is not duplicated.
+    expect(
+      screen.getByText(/KNHB illustration\/interpretation: placeholder/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/EN translation slot — no authorized legal translation/i),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "KNHB" })).toHaveAttribute(
+      "href",
+      "https://www.knhb.nl/",
+    );
+    const card = document.querySelector('[data-interp-id="interp-demo"]');
+    expect(card).toBeTruthy();
+    expect(card?.querySelector("svg.viz-svg")).toBeTruthy();
+    expect(card?.querySelector(".module-visual.is-compact")).toBeTruthy();
+  });
+
+  it("drops unsafe interpretation source URLs", () => {
+    const unsafe: ModuleStub = {
+      ...fullModule,
+      interpretation_references: [
+        {
+          id: "interp-unsafe",
+          topic: { nl: "Onveilig", en: "Unsafe" },
+          scope: "field",
+          summary: { nl: "NL", en: "[EN translation slot] TBD" },
+          translation_needed: true,
+          official_source_url: "javascript:alert(1)",
+          official_source_name: "BadSource",
+          knhb_illustration_placeholder: false,
+          attribution: {
+            source_name: "BadSource",
+            source_url: "javascript:alert(1)",
+            note: { nl: "n", en: "n" },
+            knhb_illustration_placeholder: false,
+            translation_needed: true,
+          },
+          visual_id: null,
+        },
+      ],
+    };
+    render(
+      <ModuleDetail
+        module={unsafe}
+        quiz={null}
+        locale="en"
+        accessToken={null}
+        hasSession={false}
+      />,
+    );
+    expect(screen.queryByRole("link", { name: "BadSource" })).not.toBeInTheDocument();
+    expect(screen.getByText("BadSource")).toBeInTheDocument();
+    expect(
+      screen.getByText(/EN translation slot — no authorized legal translation/i),
+    ).toBeInTheDocument();
   });
 });

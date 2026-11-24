@@ -14,6 +14,19 @@ export type FurtherReading = {
   attribution: Attribution;
 };
 
+export type InterpretationReference = {
+  id: string;
+  topic: LocalizedText;
+  scope: "field" | "indoor" | "shared";
+  summary: LocalizedText;
+  translation_needed: boolean;
+  official_source_url: string;
+  official_source_name: string;
+  knhb_illustration_placeholder: boolean;
+  attribution: Attribution;
+  visual_id: string | null;
+};
+
 export type VisualPlaceholder = {
   id: string;
   kind: "svg_animation" | "official_link_slot";
@@ -42,6 +55,7 @@ export type ModuleStub = {
   content_status: "stub" | "full";
   sections: LearningSection[];
   visuals: VisualPlaceholder[];
+  interpretation_references: InterpretationReference[];
   quiz_id: string | null;
   further_reading: FurtherReading[];
   order: number;
