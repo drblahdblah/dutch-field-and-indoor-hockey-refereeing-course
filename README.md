@@ -53,12 +53,22 @@ Open http://127.0.0.1:5173 — Vite proxies `/api` to the backend.
 
 ### Docker Compose (optional)
 
+Local hot-reload stack:
+
 ```bash
 docker compose up
 ```
 
 - Web: http://localhost:5173  
 - API: http://localhost:8000  
+
+Prod-ish single-host demo (no API reload, `COURSE_ENVIRONMENT=production`, Vite production build + preview, one uvicorn worker for SQLite). The overlay keeps `COURSE_COOKIE_SECURE=false` so httpOnly cookies work on local HTTP — set `COURSE_COOKIE_SECURE=true` (and HTTPS) for a real deploy. First boot installs deps into bind mounts and may take longer than the API health `start_period`.
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+```
+
+Copy `backend/.env.example` → `backend/.env` (and `frontend/.env.example` as needed) before changing CORS, cookie, or proxy settings. Never set `COURSE_CORS_ORIGINS=*`.
 
 ## Tests
 
@@ -68,16 +78,30 @@ cd backend
 source .venv/bin/activate
 pytest -q
 
-# Frontend (vitest smoke)
+# Frontend (vitest + production build)
 cd frontend
 npm test
+npm run build
 ```
+
+CI (`.github/workflows/ci.yml`) runs on pull requests and pushes to `main`: pytest, `npm test`, `npm run build`, and `docker compose … config`.
+
+## Deploy notes
+
+This repo is a **single-host / demo-friendly** stack, not a multi-region HA template.
+
+1. **API** — run uvicorn with `--workers 1` while using SQLite and the in-process rate limiter (or move limits to the edge and use a shared DB).
+2. **SPA** — `cd frontend && npm ci && npm run build`, then serve `frontend/dist/` behind your reverse proxy (or use the Compose prod overlay preview for a quick demo).
+3. **Env** — set `COURSE_ENVIRONMENT=production`, an explicit `COURSE_CORS_ORIGINS` allowlist matching the SPA origin, `COURSE_EXPOSE_ACCESS_TOKEN=false`, and `COURSE_COOKIE_SECURE=true` on HTTPS. Enable `COURSE_TRUST_PROXY` only behind a proxy that strips spoofed `X-Forwarded-For`.
+4. **Cookies** — production omits bearer tokens from JSON; the SPA resumes via the httpOnly `course_access_token` cookie (`credentials: "include"`). Cross-site needs `SameSite=None` + Secure.
+5. **Health** — `GET /api/health` for readiness probes.
+6. **Secrets** — no API keys are required for v0 defaults; keep real `.env` files out of git (see `.gitignore`).
 
 ## Security notes (v0)
 
 - Progress read/write and quiz progress save require a session capability token via `Authorization: Bearer <access_token>` **or** the httpOnly `course_access_token` cookie (set on session create; works with the Vite `/api` proxy).
 - Sessions have a TTL (`COURSE_SESSION_TTL_SECONDS`, default 30 days) and can be revoked with `DELETE /api/progress/session`.
-- Production (`COURSE_ENVIRONMENT=production`): cookie is `Secure`; JSON omits `access_token` (cookie-only). Dev may expose a bearer for TestClient / debugging.
+- Production (`COURSE_ENVIRONMENT=production`): cookie defaults to `Secure` and JSON omits `access_token` (cookie-only). Override with `COURSE_COOKIE_SECURE=false` only for local HTTP demos (as in `docker-compose.prod.yml`). Dev may expose a bearer for TestClient / debugging.
 - Cookie `SameSite` is configurable (`COURSE_COOKIE_SAMESITE`); `none` requires Secure.
 - Per-IP rate limits apply to session create and quiz submit (`COURSE_RATE_LIMIT_*`). Default uses the direct peer IP (not client-supplied `X-Forwarded-For`); set `COURSE_TRUST_PROXY=true` only behind a trusted proxy. Limits are in-process (single worker); use edge limiting for multi-worker/prod scale.
 - Quiz scores and `completed` status are set only by graded `POST /api/quizzes/.../submit` — clients cannot forge scores on `PUT /api/progress/session`.

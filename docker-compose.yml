@@ -1,3 +1,7 @@
+# Local development stack (hot reload).
+# Prod-ish single-host demo: docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+# Copy backend/.env.example → backend/.env (and frontend/.env.example) before changing secrets/CORS.
+
 services:
   api:
     image: python:3.12-slim
@@ -13,6 +17,21 @@ services:
     environment:
       COURSE_DATABASE_URL: sqlite:////app/data/course.db
       COURSE_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      COURSE_ENVIRONMENT: development
+      COURSE_TRUST_PROXY: "false"
+      # Keep expose_access_token default (on in development) for TestClient / SPA bearer fallback.
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 90s
 
   web:
     image: node:22-alpine
@@ -24,9 +43,12 @@ services:
     ports:
       - "5173:5173"
     environment:
+      # Browser → host-mapped API. Do not use the compose service hostname here
+      # (that only resolves inside the container network, not in the user's browser).
       VITE_API_BASE: http://localhost:8000
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
 volumes:
   course-data:

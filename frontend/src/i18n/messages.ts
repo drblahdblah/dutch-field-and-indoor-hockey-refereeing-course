@@ -34,6 +34,14 @@ const ui = {
     nl: "Nog niet bijgehouden",
     en: "Not tracking yet",
   },
+  courseComplete: {
+    nl: "Cursuspad voltooid — goed gedaan.",
+    en: "Course path complete — well done.",
+  },
+  jumpToNext: {
+    nl: "Ga naar volgende module",
+    en: "Go to next module",
+  },
   statusNotStarted: { nl: "niet gestart", en: "not started" },
   statusInProgress: { nl: "bezig", en: "in progress" },
   statusCompleted: { nl: "voltooid", en: "completed" },

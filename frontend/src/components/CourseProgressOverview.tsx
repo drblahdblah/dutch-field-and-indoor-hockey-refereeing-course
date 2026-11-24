@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { ModuleStub, ProgressOut } from "../api/types";
 import { t, uiT, type Locale } from "../i18n/messages";
 
@@ -37,6 +38,10 @@ export function CourseProgressOverview({
   hasSession,
   onSelectModule,
 }: Props) {
+  const baseId = useId();
+  const headingId = `${baseId}-heading`;
+  const summaryId = `${baseId}-summary`;
+
   const ordered = [...modules].sort((a, b) => a.order - b.order);
   const progressMap = Object.fromEntries(progress.map((p) => [p.module_id, p]));
   const completedCount = ordered.filter(
@@ -44,29 +49,31 @@ export function CourseProgressOverview({
   ).length;
   const total = ordered.length;
   const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+  const allComplete = hasSession && total > 0 && completedCount === total;
   const nextUp =
     ordered.find(
       (m) => normalizeStatus(progressMap[m.id]?.status) !== "completed",
     ) ?? null;
 
   return (
-    <section
-      className="course-progress"
-      aria-labelledby="course-progress-heading"
-    >
+    <section className="course-progress" aria-labelledby={headingId}>
       <div className="course-progress-head">
-        <h2 id="course-progress-heading" className="section-title">
+        <h2 id={headingId} className="section-title">
           {uiT("progressOverview", locale)}
         </h2>
         {hasSession ? (
-          <p className="course-progress-summary muted" aria-live="polite">
+          <p
+            id={summaryId}
+            className="course-progress-summary muted"
+            aria-live="polite"
+          >
             {uiT("modulesCompleted", locale)
               .replace("{done}", String(completedCount))
               .replace("{total}", String(total))}{" "}
             · {percent}%
           </p>
         ) : (
-          <p className="course-progress-summary muted">
+          <p id={summaryId} className="course-progress-summary muted">
             {uiT("progressStartHint", locale)}
           </p>
         )}
@@ -79,6 +86,7 @@ export function CourseProgressOverview({
         aria-valuemax={100}
         aria-valuenow={hasSession ? percent : 0}
         aria-label={uiT("progressOverview", locale)}
+        aria-describedby={summaryId}
       >
         <div
           className="progress-track-fill"
@@ -99,12 +107,19 @@ export function CourseProgressOverview({
         </p>
       )}
 
+      {allComplete && (
+        <p className="course-complete" role="status">
+          {uiT("courseComplete", locale)}
+        </p>
+      )}
+
       <ol className="module-pathway">
         {ordered.map((mod, index) => {
           const row = progressMap[mod.id];
           const status = normalizeStatus(row?.status);
           const isSelected = selectedId === mod.id;
-          const isNext = nextUp?.id === mod.id;
+          const isNext = Boolean(hasSession && nextUp?.id === mod.id);
+          const isDone = Boolean(hasSession && status === "completed");
           const score =
             row?.quiz_score != null && row.quiz_total != null
               ? `${row.quiz_score}/${row.quiz_total}`
@@ -117,16 +132,19 @@ export function CourseProgressOverview({
                 className={[
                   "module-row",
                   "pathway-row",
-                  hasSession && isNext ? "is-next" : "",
-                  hasSession && status === "completed" ? "is-done" : "",
+                  isNext ? "is-next" : "",
+                  isDone ? "is-done" : "",
                 ]
                   .filter(Boolean)
                   .join(" ")}
                 aria-current={isSelected ? "true" : undefined}
                 onClick={() => onSelectModule(mod.id)}
               >
+                {isNext && (
+                  <span className="sr-only">{uiT("jumpToNext", locale)}: </span>
+                )}
                 <span className="pathway-step" aria-hidden="true">
-                  {index + 1}
+                  {isDone ? "✓" : index + 1}
                 </span>
                 <div className="pathway-body">
                   <div className="module-meta">

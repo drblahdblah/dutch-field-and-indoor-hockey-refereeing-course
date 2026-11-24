@@ -1,0 +1,30 @@
+# Prod-ish overlay (single host / demo). Not a multi-worker HA deploy.
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+#
+# Before running: set COURSE_CORS_ORIGINS to your real SPA origin(s).
+# Behind TLS termination, keep COURSE_TRUST_PROXY=true only if the proxy strips spoofed XFF.
+
+services:
+  api:
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt
+      && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1"
+    environment:
+      COURSE_DATABASE_URL: sqlite:////app/data/course.db
+      # Replace with the public SPA origin(s) in real deploys — never "*"
+      COURSE_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      COURSE_ENVIRONMENT: production
+      COURSE_EXPOSE_ACCESS_TOKEN: "false"
+      # Cookie Secure must be true when serving over HTTPS; false only for local HTTP demo.
+      COURSE_COOKIE_SECURE: "false"
+      COURSE_COOKIE_SAMESITE: lax
+      COURSE_TRUST_PROXY: "false"
+      # SQLite + in-process rate limits: stay on workers=1 (or put limits at the edge).
+
+  web:
+    # Reuses host port 5173 from the base file; preview serves the production build.
+    command: sh -c "npm ci && npm run build && npm run preview -- --host 0.0.0.0 --port 5173"
+    environment:
+      # Baked into the Vite build; browser calls the host-mapped API origin.
+      VITE_API_BASE: http://localhost:8000
