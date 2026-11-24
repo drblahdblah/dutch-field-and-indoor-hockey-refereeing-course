@@ -28,16 +28,22 @@ def test_course_outline_bilingual_and_strips_answers(client):
     assert "quiz-field-rules-core" in body["quizzes"]
     assert "quiz-indoor-rules-core" in body["quizzes"]
     assert "quiz-pathway-professional" in body["quizzes"]
+    assert "quiz-knhb-interpretations" in body["quizzes"]
     assert "quiz-indoor-context-basics" not in body["quizzes"]
     module_ids = {m["id"] for m in body["modules"]}
     assert "mod-intro-role" in module_ids
     assert "mod-field-rules-core" in module_ids
     assert "mod-indoor-rules-core" in module_ids
     assert "mod-pathway-hoofdklasse" in module_ids
+    assert "mod-knhb-interpretations" in module_ids
     assert "mod-indoor-basics" not in module_ids
     pathway = next(m for m in body["modules"] if m["id"] == "mod-pathway-hoofdklasse")
     assert pathway["content_status"] == "full"
+    interp = next(m for m in body["modules"] if m["id"] == "mod-knhb-interpretations")
+    assert interp["content_status"] == "full"
+    assert len(interp["interpretation_references"]) >= 3
     assert any(a.get("knhb_illustration_placeholder") for a in body["attributions"])
+    assert any(a.get("translation_needed") for a in body["attributions"])
     for quiz in body["quizzes"].values():
         for q in quiz["questions"]:
             assert "correct_option_id" not in q
@@ -653,6 +659,9 @@ _SPA_ANIMATION_KEYS = frozenset(
         "match-cadence",
         "partner-handoff",
         "consistency-loop",
+        "source-stack",
+        "translation-slot",
+        "attribution-chain",
     }
 )
 
@@ -751,6 +760,106 @@ def test_pathway_quiz_progress_save_and_resume(client):
     assert progress.status_code == 200
     row = next(
         p for p in progress.json()["progress"] if p["module_id"] == "mod-pathway-hoofdklasse"
+    )
+    assert row["status"] == "completed"
+    assert row["quiz_score"] == 4
+    assert row["quiz_total"] == 4
+
+
+def test_full_interpretation_module_has_refs_and_visuals(client):
+    res = client.get("/api/course/modules/mod-knhb-interpretations")
+    assert res.status_code == 200
+    module = res.json()
+    assert module["content_status"] == "full"
+    assert module["kind"] == "shared"
+    assert module["quiz_id"] == "quiz-knhb-interpretations"
+    assert len(module["sections"]) >= 4
+    assert len(module["visuals"]) >= 3
+    assert len(module["interpretation_references"]) >= 3
+    assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
+    visual_ids = {v["id"] for v in module["visuals"]}
+    for section in module["sections"]:
+        if section["visual_id"]:
+            assert section["visual_id"] in visual_ids
+    for ref in module["interpretation_references"]:
+        assert ref["topic"]["nl"] and ref["topic"]["en"]
+        assert ref["summary"]["nl"] and ref["summary"]["en"]
+        assert ref["official_source_url"]
+        assert ref["attribution"]["source_name"]
+        if ref["visual_id"]:
+            assert ref["visual_id"] in visual_ids
+    assert any(r["translation_needed"] for r in module["interpretation_references"])
+    for ref in module["interpretation_references"]:
+        if ref["translation_needed"]:
+            assert "[EN translation slot]" in ref["summary"]["en"]
+    assert any(v["animation_key"] == "source-stack" for v in module["visuals"])
+    assert any(v["animation_key"] == "translation-slot" for v in module["visuals"])
+    assert any(v["animation_key"] == "attribution-chain" for v in module["visuals"])
+    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+
+
+def test_interpretation_quiz_grades_mc_and_written_with_explanations(client):
+    res = client.post(
+        "/api/quizzes/quiz-knhb-interpretations/submit",
+        json={
+            "answers": [
+                {"question_id": "q1-official-source", "selected_option_id": "a"},
+                {"question_id": "q2-no-knhb-art", "selected_option_id": "c"},
+                {"question_id": "q3-translation-keyword", "written_answer": "translation"},
+                {"question_id": "q4-attribution-keyword", "written_answer": "nope"},
+            ]
+        },
+    )
+    assert res.status_code == 200
+    body = res.json()
+    assert body["total"] == 4
+    assert body["score"] == 2
+    by_id = {r["question_id"]: r for r in body["results"]}
+    assert by_id["q1-official-source"]["correct"] is False
+    assert by_id["q1-official-source"]["explanation"]["nl"]
+    assert by_id["q1-official-source"]["explanation"]["en"]
+    assert by_id["q1-official-source"]["visualization_hint"] == "source-stack"
+    assert by_id["q1-official-source"]["correct_option_id"] == "b"
+    assert by_id["q2-no-knhb-art"]["correct"] is True
+    assert by_id["q2-no-knhb-art"]["correct_option_id"] == "c"
+    assert by_id["q3-translation-keyword"]["correct"] is True
+    assert by_id["q3-translation-keyword"]["visualization_hint"] == "translation-slot"
+    assert by_id["q4-attribution-keyword"]["correct"] is False
+
+
+def test_interpretation_quiz_progress_save_and_resume(client):
+    created = client.post("/api/progress/sessions", json={"locale": "nl"})
+    token = created.json()["access_token"]
+    headers = _auth_headers(token)
+
+    opened = client.put(
+        "/api/progress/session",
+        headers=headers,
+        json={"module_id": "mod-knhb-interpretations", "status": "in_progress"},
+    )
+    assert opened.status_code == 200
+
+    submit = client.post(
+        "/api/quizzes/quiz-knhb-interpretations/submit",
+        headers=headers,
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-official-source", "selected_option_id": "b"},
+                {"question_id": "q2-no-knhb-art", "selected_option_id": "c"},
+                {"question_id": "q3-translation-keyword", "written_answer": "Placeholder"},
+                {"question_id": "q4-attribution-keyword", "written_answer": "Attribution!"},
+            ],
+        },
+    )
+    assert submit.status_code == 200
+    assert submit.json()["progress_saved"] is True
+    assert submit.json()["score"] == 4
+
+    progress = client.get("/api/progress/session", headers=headers)
+    assert progress.status_code == 200
+    row = next(
+        p for p in progress.json()["progress"] if p["module_id"] == "mod-knhb-interpretations"
     )
     assert row["status"] == "completed"
     assert row["quiz_score"] == 4

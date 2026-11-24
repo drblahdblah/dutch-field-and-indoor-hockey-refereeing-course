@@ -577,6 +577,103 @@ input {
   gap: 0.4rem;
 }
 
+.interpretation-refs {
+  margin-top: 1.5rem;
+}
+
+.interpretation-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.interpretation-card {
+  padding: 1rem 1.05rem;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  background: rgba(200, 245, 66, 0.03);
+}
+
+.interpretation-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.interpretation-card-head h4 {
+  font-family: var(--font-display);
+  margin: 0;
+  font-size: 1.05rem;
+  flex: 1 1 auto;
+}
+
+.interpretation-source {
+  margin: 0.5rem 0 0.25rem;
+}
+
+.attribution-note {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+}
+
+.viz-stack-layer {
+  stroke: currentColor;
+  animation: rise 0.7s ease both;
+}
+
+.viz-stack-b {
+  animation-delay: 0.15s;
+}
+
+.viz-stack-c {
+  animation-delay: 0.3s;
+}
+
+.viz-nl-box {
+  stroke: currentColor;
+  animation: rise 0.65s ease both;
+}
+
+.viz-en-slot {
+  stroke: currentColor;
+  stroke-dasharray: 6 5;
+  animation: rise 0.65s ease 0.12s both;
+}
+
+.viz-slot-arrow {
+  stroke: currentColor;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: draw-arc 1.1s ease 0.25s forwards;
+}
+
+.viz-attr-node {
+  fill: currentColor;
+  opacity: 0;
+  animation: pop-node 0.55s ease forwards;
+}
+
+.viz-attr-node.viz-node-b {
+  animation-delay: 0.12s;
+}
+
+.viz-attr-node.viz-node-c {
+  animation-delay: 0.24s;
+}
+
+.viz-attr-link {
+  stroke: currentColor;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: draw-arc 1s ease 0.2s forwards;
+}
+
+.viz-attr-link-b {
+  animation-delay: 0.35s;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -658,6 +755,12 @@ input {
   .viz-handoff-b,
   .viz-consistency-ring,
   .viz-consistency-dot,
+  .viz-stack-layer,
+  .viz-nl-box,
+  .viz-en-slot,
+  .viz-slot-arrow,
+  .viz-attr-node,
+  .viz-attr-link,
   .viz-node,
   .viz-orbit-dot,
   .viz-pulse,
@@ -677,11 +780,14 @@ input {
   .viz-board-path,
   .viz-cadence-arrow,
   .viz-handoff-arc,
-  .viz-consistency-ring {
+  .viz-consistency-ring,
+  .viz-slot-arrow,
+  .viz-attr-link {
     stroke-dashoffset: 0;
   }
 
-  .viz-node {
+  .viz-node,
+  .viz-attr-node {
     opacity: 1;
   }
 }

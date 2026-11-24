@@ -279,6 +279,9 @@ export default function App() {
                     {a.knhb_illustration_placeholder && (
                       <p className="placeholder-flag">{uiT("knhbPlaceholder", locale)}</p>
                     )}
+                    {a.translation_needed && (
+                      <p className="placeholder-flag">{uiT("translationNeeded", locale)}</p>
+                    )}
                   </li>
                 );
               })}

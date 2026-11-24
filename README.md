@@ -2,14 +2,14 @@
 
 Browser-based course for Netherlands referees (field + indoor), bilingual **NL / EN** from day one, building toward professional standard (e.g. Hoofdklasse).
 
-This repository ships **full bilingual learning modules** (umpire role + field rules core + indoor rules core + professional / Hoofdklasse pathway): graded quizzes with explanations, original CSS/SVG visuals (no copyrighted KNHB art), session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
+This repository ships **full bilingual learning modules** (umpire role + field rules core + indoor rules core + professional / Hoofdklasse pathway + KNHB interpretation layer): graded quizzes with explanations, original CSS/SVG visuals (no copyrighted KNHB art), session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
 
 ## Architecture
 
 ```
 frontend/          React + Vite SPA (i18n UI, modules, quiz, SVG viz)
 backend/           FastAPI + SQLAlchemy + SQLite
-  app/data/        Bilingual course seed (full intro + field + indoor + pathway modules)
+  app/data/        Bilingual course seed (intro + field + indoor + pathway + interpretations)
   app/routers/     /api/course, /api/progress, /api/quizzes
   app/services/    Quiz grading
   app/security.py  Bearer/cookie session tokens for progress
@@ -93,7 +93,7 @@ npm test
 - All learner-facing course strings are `{ nl, en }` pairs in the seed and API.
 - UI chrome is in `frontend/src/i18n/messages.ts` with a locale toggle.
 - Structure is ready for more locales: extend `LocalizedText`, seed data, and UI dictionaries.
-- **KNHB interpretations**: NL source links/placeholders only; mark `translation_needed` / `knhb_illustration_placeholder` — do not invent EN legal text or claim assets you do not have.
+- **KNHB interpretations**: module `mod-knhb-interpretations` exposes structured `interpretation_references` (NL pedagogical summaries + EN translation slots). Mark `translation_needed` / `knhb_illustration_placeholder` — do not invent EN legal text or claim assets you do not have.
 
 ## Attribution & license
 
@@ -103,7 +103,7 @@ npm test
 | Source | Notes |
 |--------|--------|
 | [FIH Rules of Hockey](https://www.fih.hockey/inside-fih/our-official-documents/rules-of-hockey) | Official outdoor/indoor rules — link out |
-| [KNHB](https://www.knhb.nl/) | Interpretations / umpire materials — **placeholder** hooks; no KNHB illustrations bundled; EN translation TODO |
+| [KNHB](https://www.knhb.nl/) | Interpretations / umpire materials — structured refs + EN slots; no KNHB illustrations bundled |
 
 See also in-app **Sources & attribution** and fields on `Attribution` in the API.
 

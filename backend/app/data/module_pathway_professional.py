@@ -624,15 +624,17 @@ PATHWAY_MODULE = ModuleStub(
                 LocalizedText(
                     nl=(
                         "Maak de quiz hieronder. Sla voortgang op via je "
-                        "cursussessie. Houd KNHB- en FIH-bronnen bij de hand "
-                        "voor officiële eisen; deze module is een "
+                        "cursussessie. Daarna: de KNHB-interpretatielaag "
+                        "(attributie + EN-vertaalslots). Houd KNHB- en "
+                        "FIH-bronnen bij de hand; deze module is een "
                         "besliskader, geen vervanging van bondscursussen."
                     ),
                     en=(
                         "Take the quiz below. Save progress via your course "
-                        "session. Keep KNHB and FIH sources handy for "
-                        "official requirements; this module is a decision "
-                        "frame, not a replacement for federation courses."
+                        "session. Next: the KNHB interpretation layer "
+                        "(attribution + EN translation slots). Keep KNHB and "
+                        "FIH sources handy; this module is a decision frame, "
+                        "not a replacement for federation courses."
                     ),
                 ),
             ],

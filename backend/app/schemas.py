@@ -27,6 +27,43 @@ class FurtherReading(BaseModel):
     attribution: Attribution
 
 
+EN_TRANSLATION_SLOT_MARKER = "[EN translation slot]"
+
+
+class InterpretationReference(BaseModel):
+    """Official interpretation pointer — original pedagogy + EN translation slots.
+
+    Never paste copyrighted KNHB/FIH interpretation text or illustrations.
+    When ``translation_needed`` is True, ``summary.en`` is an EN slot (not legal
+    paraphrase of protected NL materials).
+    """
+
+    id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    topic: LocalizedText
+    scope: Literal["field", "indoor", "shared"]
+    summary: LocalizedText
+    translation_needed: bool = False
+    official_source_url: str = Field(min_length=1, max_length=500)
+    official_source_name: str = Field(min_length=1, max_length=200)
+    knhb_illustration_placeholder: bool = True
+    attribution: Attribution
+    visual_id: str | None = Field(
+        default=None,
+        max_length=64,
+        pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+    )
+
+    @model_validator(mode="after")
+    def validate_translation_slot(self) -> Self:
+        if self.translation_needed:
+            if EN_TRANSLATION_SLOT_MARKER not in self.summary.en:
+                raise ValueError(
+                    "translation_needed references require "
+                    f"{EN_TRANSLATION_SLOT_MARKER!r} in summary.en"
+                )
+        return self
+
+
 class QuizOption(BaseModel):
     id: str = Field(min_length=1, max_length=32)
     text: LocalizedText
@@ -146,6 +183,13 @@ class ModuleStub(BaseModel):
     )
     sections: list[LearningSection] = Field(default_factory=list)
     visuals: list[VisualPlaceholder] = Field(default_factory=list)
+    interpretation_references: list[InterpretationReference] = Field(
+        default_factory=list,
+        description=(
+            "Structured FIH/KNHB interpretation pointers with attribution and "
+            "EN translation slots (no copyrighted art/text)."
+        ),
+    )
     quiz_id: str | None = None
     further_reading: list[FurtherReading] = Field(default_factory=list)
     order: int
@@ -157,6 +201,11 @@ class ModuleStub(BaseModel):
             if section.visual_id and section.visual_id not in visual_ids:
                 raise ValueError(
                     f"section {section.id} references unknown visual_id {section.visual_id}"
+                )
+        for ref in self.interpretation_references:
+            if ref.visual_id and ref.visual_id not in visual_ids:
+                raise ValueError(
+                    f"interpretation {ref.id} references unknown visual_id {ref.visual_id}"
                 )
         if self.content_status == "full" and not self.sections:
             raise ValueError("full modules require at least one learning section")
