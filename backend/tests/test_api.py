@@ -162,17 +162,31 @@ def test_full_field_module_has_sections_and_visuals(client):
     assert module["content_status"] == "full"
     assert module["kind"] == "field"
     assert module["quiz_id"] == "quiz-field-rules-core"
-    assert len(module["sections"]) >= 4
-    assert len(module["visuals"]) >= 3
+    assert len(module["sections"]) >= 6
+    assert len(module["visuals"]) >= 5
     assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
+    assert all(len(s["paragraphs"]) >= 1 for s in module["sections"])
     visual_ids = {v["id"] for v in module["visuals"]}
     for section in module["sections"]:
         if section["visual_id"]:
             assert section["visual_id"] in visual_ids
+    anim_keys = {
+        v["animation_key"] for v in module["visuals"] if v["kind"] == "svg_animation"
+    }
+    assert {
+        "pitch-zones",
+        "danger-cone",
+        "restart-bubble",
+        "field-attack",
+        "advantage-lens",
+    } <= anim_keys
+    section_ids = {s["id"] for s in module["sections"]}
+    assert "sec-advantage-lens" in section_ids
+    advantage = next(s for s in module["sections"] if s["id"] == "sec-advantage-lens")
+    assert advantage["visual_id"] == "viz-advantage-lens"
     assert any(v["kind"] == "svg_animation" for v in module["visuals"])
-    assert any(v["animation_key"] == "danger-cone" for v in module["visuals"])
-    assert any(v["animation_key"] == "field-attack" for v in module["visuals"])
-    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    assert not any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    assert all(v["kind"] == "svg_animation" for v in module["visuals"])
 
 
 def test_field_quiz_grades_mc_and_written_with_explanations(client):
@@ -184,13 +198,14 @@ def test_field_quiz_grades_mc_and_written_with_explanations(client):
                 {"question_id": "q2-restart-space", "selected_option_id": "c"},
                 {"question_id": "q3-scoring-area-keyword", "written_answer": "circle"},
                 {"question_id": "q4-advantage-keyword", "written_answer": "nope"},
+                {"question_id": "q5-advantage-when", "selected_option_id": "b"},
             ]
         },
     )
     assert res.status_code == 200
     body = res.json()
-    assert body["total"] == 4
-    assert body["score"] == 2
+    assert body["total"] == 5
+    assert body["score"] == 3
     by_id = {r["question_id"]: r for r in body["results"]}
     assert by_id["q1-raised-ball"]["correct"] is False
     assert by_id["q1-raised-ball"]["explanation"]["nl"]
@@ -201,12 +216,15 @@ def test_field_quiz_grades_mc_and_written_with_explanations(client):
     assert by_id["q2-restart-space"]["correct_option_id"] == "c"
     assert by_id["q3-scoring-area-keyword"]["correct"] is True
     assert by_id["q4-advantage-keyword"]["correct"] is False
+    assert by_id["q5-advantage-when"]["correct"] is True
+    assert by_id["q5-advantage-when"]["visualization_hint"] == "advantage-lens"
 
 
 def test_quiz_get_hides_answers(client):
     res = client.get("/api/course/quizzes/quiz-field-rules-core")
     assert res.status_code == 200
     quiz = res.json()
+    assert len(quiz["questions"]) == 5
     for q in quiz["questions"]:
         assert "correct_option_id" not in q
         assert "accepted_answers" not in q
@@ -257,13 +275,14 @@ def test_quiz_submit_grades_and_explains(client):
                 {"question_id": "q2-restart-space", "selected_option_id": "c"},
                 {"question_id": "q3-scoring-area-keyword", "written_answer": "circle"},
                 {"question_id": "q4-advantage-keyword", "written_answer": "advantage"},
+                {"question_id": "q5-advantage-when", "selected_option_id": "b"},
             ]
         },
     )
     assert res.status_code == 200
     body = res.json()
-    assert body["score"] == 3
-    assert body["total"] == 4
+    assert body["score"] == 4
+    assert body["total"] == 5
     assert body["progress_saved"] is False
     wrong = next(r for r in body["results"] if r["question_id"] == "q1-raised-ball")
     assert wrong["correct"] is False
@@ -280,6 +299,7 @@ def test_quiz_submit_omits_key_for_unanswered(client):
                 {"question_id": "q2-restart-space", "selected_option_id": "c"},
                 {"question_id": "q3-scoring-area-keyword", "written_answer": "circle"},
                 {"question_id": "q4-advantage-keyword", "written_answer": "advantage"},
+                {"question_id": "q5-advantage-when", "selected_option_id": "b"},
             ]
         },
     )
@@ -353,6 +373,7 @@ _FIELD_PERFECT_ANSWERS = [
     {"question_id": "q2-restart-space", "selected_option_id": "c"},
     {"question_id": "q3-scoring-area-keyword", "written_answer": "circle"},
     {"question_id": "q4-advantage-keyword", "written_answer": "advantage"},
+    {"question_id": "q5-advantage-when", "selected_option_id": "b"},
 ]
 
 
@@ -366,7 +387,7 @@ def test_save_progress_auth_failure_still_returns_grades(client):
     )
     assert missing.status_code == 200
     assert missing.json()["progress_saved"] is False
-    assert missing.json()["score"] == 4
+    assert missing.json()["score"] == 5
 
     bad = client.post(
         "/api/quizzes/quiz-field-rules-core/submit",
@@ -405,6 +426,7 @@ def test_completed_module_not_demoted_on_worse_resubmit(client):
                 {"question_id": "q2-restart-space", "selected_option_id": "a"},
                 {"question_id": "q3-scoring-area-keyword", "written_answer": "nope"},
                 {"question_id": "q4-advantage-keyword", "written_answer": "nope"},
+                {"question_id": "q5-advantage-when", "selected_option_id": "a"},
             ],
         },
     )
@@ -416,7 +438,7 @@ def test_completed_module_not_demoted_on_worse_resubmit(client):
         p for p in progress.json()["progress"] if p["module_id"] == "mod-field-rules-core"
     )
     assert row["status"] == "completed"
-    assert row["quiz_score"] == 4
+    assert row["quiz_score"] == 5
     assert row["completed_at"] is not None
 
 
@@ -468,18 +490,19 @@ def test_session_progress_roundtrip(client):
                 {"question_id": "q2-restart-space", "selected_option_id": "c"},
                 {"question_id": "q3-scoring-area-keyword", "written_answer": "Circle"},
                 {"question_id": "q4-advantage-keyword", "written_answer": "Advantage!"},
+                {"question_id": "q5-advantage-when", "selected_option_id": "b"},
             ],
         },
     )
     assert submit.status_code == 200
     assert submit.json()["progress_saved"] is True
-    assert submit.json()["score"] == 4
+    assert submit.json()["score"] == 5
 
     progress = client.get("/api/progress/session", headers=headers)
     assert progress.status_code == 200
     modules = {p["module_id"]: p for p in progress.json()["progress"]}
     assert modules["mod-field-rules-core"]["status"] == "completed"
-    assert modules["mod-field-rules-core"]["quiz_score"] == 4
+    assert modules["mod-field-rules-core"]["quiz_score"] == 5
 
 
 def test_cookie_auth_works_without_bearer(client):
@@ -693,6 +716,7 @@ _SPA_ANIMATION_KEYS = frozenset(
         "context-split",
         "presence-arc",
         "call-clarity",
+        "advantage-lens",
     }
 )
 

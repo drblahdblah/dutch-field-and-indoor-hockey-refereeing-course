@@ -768,8 +768,8 @@ main:focus-visible {
 
 .viz-scenario-path {
   stroke: var(--accent);
-  stroke-dasharray: 320;
-  stroke-dashoffset: 320;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
   animation: draw-tri 1.6s ease forwards;
 }
 
@@ -944,8 +944,8 @@ main:focus-visible {
 
 .viz-pitch-circle {
   stroke: var(--accent);
-  stroke-dasharray: 120;
-  stroke-dashoffset: 120;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
   animation: draw-arc 1.5s ease forwards;
 }
 
@@ -953,16 +953,24 @@ main:focus-visible {
   animation-delay: 0.2s;
 }
 
+.viz-pitch-glow {
+  animation: glow-pulse 2.6s ease-in-out infinite;
+}
+
 .viz-cone {
-  stroke-dasharray: 360;
-  stroke-dashoffset: 360;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
   animation: draw-tri 1.5s ease forwards;
+}
+
+.viz-cone-glow {
+  animation: glow-pulse 2.4s ease-in-out infinite;
 }
 
 .viz-bubble {
   stroke: var(--accent);
-  stroke-dasharray: 330;
-  stroke-dashoffset: 330;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
   animation: draw-tri 1.4s ease forwards;
 }
 
@@ -1438,13 +1446,38 @@ main:focus-visible {
   animation: glow-pulse 2.6s ease-in-out infinite;
 }
 
+.viz-advantage-lens-ring,
+.viz-advantage-path {
+  stroke: currentColor;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.1s ease 0.15s forwards;
+}
+
+.viz-advantage-path {
+  animation-delay: 0.4s;
+  opacity: 0.9;
+}
+
+.viz-advantage-glow {
+  fill: rgba(200, 245, 66, 0.12);
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+.viz-ball-advantage {
+  offset-path: path("M 52 118 Q 110 96 210 72");
+  animation: ball-slide 2.2s ease-in-out infinite alternate;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .viz-tri,
   .viz-cone,
   .viz-cone-fill,
+  .viz-cone-glow,
   .viz-bubble,
   .viz-pitch-circle,
   .viz-pitch-band,
+  .viz-pitch-glow,
   .viz-bubble-core,
   .viz-court-board,
   .viz-court-circle,
@@ -1482,6 +1515,9 @@ main:focus-visible {
   .viz-call-arc,
   .viz-call-arm,
   .viz-call-glow,
+  .viz-advantage-lens-ring,
+  .viz-advantage-path,
+  .viz-advantage-glow,
   .viz-label-fade,
   .viz-glow,
   .viz-ball-travel,
@@ -1546,7 +1582,9 @@ main:focus-visible {
   .viz-presence-ring,
   .viz-presence-sweep,
   .viz-call-arc,
-  .viz-call-arm {
+  .viz-call-arm,
+  .viz-advantage-lens-ring,
+  .viz-advantage-path {
     stroke-dashoffset: 0;
   }
 

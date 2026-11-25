@@ -26,6 +26,7 @@ import {
   ContextSplitSvg,
   PresenceArcSvg,
 } from "./introSvgs";
+import { AdvantageLensSvg } from "./fieldSvgs";
 import {
   FieldAttackSvg,
   IndoorReboundSvg,
@@ -57,6 +58,7 @@ const ANIMATIONS = {
   "context-split": ContextSplitSvg,
   "presence-arc": PresenceArcSvg,
   "call-clarity": CallClaritySvg,
+  "advantage-lens": AdvantageLensSvg,
 } as const satisfies Record<AnimationKey, ComponentType<SvgProps>>;
 
 export function pickAnimation(

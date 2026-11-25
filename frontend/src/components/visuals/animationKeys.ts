@@ -22,6 +22,7 @@ export const KNOWN_ANIMATION_KEYS = [
   "context-split",
   "presence-arc",
   "call-clarity",
+  "advantage-lens",
 ] as const;
 
 export type AnimationKey = (typeof KNOWN_ANIMATION_KEYS)[number];

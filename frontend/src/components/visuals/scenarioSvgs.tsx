@@ -30,6 +30,7 @@ export function FieldAttackSvg({ locale }: { locale: Locale }) {
         fill="none"
         strokeWidth="2"
       />
+      <circle className="viz-glow viz-pitch-glow" cx="160" cy="108" r="62" />
       <polygon className="viz-cone-fill" points="78,132 248,78 248,142" />
       <polygon
         className="viz-cone"
@@ -37,12 +38,15 @@ export function FieldAttackSvg({ locale }: { locale: Locale }) {
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
+        strokeLinejoin="round"
+        pathLength={1}
       />
       <path
         className="viz-scenario-path"
         d="M 70 132 Q 150 112 240 108"
         fill="none"
         strokeWidth="2.5"
+        pathLength={1}
       />
       <circle className="viz-node viz-node-a" cx="70" cy="132" r="7" />
       <circle className="viz-core viz-scenario-focus" cx="240" cy="108" r="9" />
@@ -102,12 +106,14 @@ export function IndoorReboundSvg({ locale }: { locale: Locale }) {
         d="M 230 140 L 52 100 L 180 56"
         fill="none"
         strokeWidth="2.5"
+        pathLength={1}
       />
       <path
         className="viz-lift-arc"
         d="M 130 100 Q 160 64 180 56"
         fill="none"
         strokeWidth="2"
+        pathLength={1}
       />
       <line className="viz-lift-limit-line" x1="48" y1="72" x2="250" y2="72" strokeWidth="1.5" />
       <circle className="viz-node viz-node-a" cx="230" cy="140" r="7" />
@@ -158,6 +164,7 @@ export function MatchPressureSvg({ locale }: { locale: Locale }) {
         d="M 70 128 L 150 128 L 230 128"
         fill="none"
         strokeWidth="1.5"
+        pathLength={1}
       />
       <circle className="viz-ball-travel viz-ball-pressure" cx="70" cy="128" r="4" />
       <UmpireMarker x={150} y={156} />
