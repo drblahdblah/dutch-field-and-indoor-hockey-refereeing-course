@@ -48,6 +48,14 @@ describe("ModuleDetail", () => {
     expect(screen.getByText("Paragraph EN")).toBeInTheDocument();
     expect(screen.getByText("Triangle")).toBeInTheDocument();
     expect(document.querySelector("svg.viz-svg")).toBeTruthy();
+    const section = document.querySelector(".learning-section.is-active-step");
+    const svg = section?.querySelector("svg.viz-svg");
+    const para = [...(section?.querySelectorAll("p") ?? [])].find((p) =>
+      p.textContent?.includes("Paragraph EN"),
+    );
+    expect(svg && para && Boolean(svg.compareDocumentPosition(para) & Node.DOCUMENT_POSITION_FOLLOWING)).toBe(
+      true,
+    );
     expect(screen.queryByRole("heading", { name: /Quiz/i })).not.toBeInTheDocument();
     expect(screen.getByText(/Part 1 of 1/i)).toBeInTheDocument();
     fireEvent.click(

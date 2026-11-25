@@ -27,26 +27,40 @@ def test_course_outline_bilingual_and_strips_answers(client):
     assert "quiz-intro-umpire-role" in body["quizzes"]
     assert "quiz-field-rules-core" in body["quizzes"]
     assert "quiz-indoor-rules-core" in body["quizzes"]
+    assert "quiz-field-hard-decisions" in body["quizzes"]
+    assert "quiz-indoor-hard-decisions" in body["quizzes"]
     assert "quiz-pathway-professional" in body["quizzes"]
     assert "quiz-knhb-interpretations" in body["quizzes"]
     assert "quiz-capstone-assessment" in body["quizzes"]
+    assert "quiz-hard-decisions" not in body["quizzes"]
     assert "quiz-indoor-context-basics" not in body["quizzes"]
     module_ids = {m["id"] for m in body["modules"]}
     assert "mod-intro-role" in module_ids
     assert "mod-field-rules-core" in module_ids
     assert "mod-indoor-rules-core" in module_ids
+    assert "mod-field-hard-decisions" in module_ids
+    assert "mod-indoor-hard-decisions" in module_ids
+    assert "mod-hard-decisions" not in module_ids
     assert "mod-pathway-hoofdklasse" in module_ids
     assert "mod-knhb-interpretations" in module_ids
     assert "mod-capstone-assessment" in module_ids
     assert "mod-indoor-basics" not in module_ids
+    field_hard = next(m for m in body["modules"] if m["id"] == "mod-field-hard-decisions")
+    assert field_hard["content_status"] == "full"
+    assert field_hard["order"] == 4
+    indoor_hard = next(m for m in body["modules"] if m["id"] == "mod-indoor-hard-decisions")
+    assert indoor_hard["content_status"] == "full"
+    assert indoor_hard["order"] == 5
     pathway = next(m for m in body["modules"] if m["id"] == "mod-pathway-hoofdklasse")
     assert pathway["content_status"] == "full"
+    assert pathway["order"] == 6
     interp = next(m for m in body["modules"] if m["id"] == "mod-knhb-interpretations")
     assert interp["content_status"] == "full"
+    assert interp["order"] == 7
     assert len(interp["interpretation_references"]) >= 3
     capstone = next(m for m in body["modules"] if m["id"] == "mod-capstone-assessment")
     assert capstone["content_status"] == "full"
-    assert capstone["order"] == 6
+    assert capstone["order"] == 8
     assert any(a.get("knhb_illustration_placeholder") for a in body["attributions"])
     assert any(a.get("translation_needed") for a in body["attributions"])
     for quiz in body["quizzes"].values():
@@ -174,13 +188,20 @@ def test_full_field_module_has_sections_and_visuals(client):
         v["animation_key"] for v in module["visuals"] if v["kind"] == "svg_animation"
     }
     assert {
-        "pitch-zones",
+        "match-start",
+        "hit-types",
+        "obstruction-types",
+        "card-ladder",
+        "penalty-corner",
+        "penalty-stroke",
+        "gk-limits",
         "danger-cone",
-        "restart-bubble",
-        "field-attack",
-        "advantage-lens",
     } <= anim_keys
     section_ids = {s["id"] for s in module["sections"]}
+    assert "sec-match-start" in section_ids
+    assert "sec-hit-types" in section_ids
+    assert "sec-obstruction" in section_ids
+    assert "sec-cards" in section_ids
     assert "sec-advantage-lens" in section_ids
     advantage = next(s for s in module["sections"] if s["id"] == "sec-advantage-lens")
     assert advantage["visual_id"] == "viz-advantage-lens"
@@ -624,8 +645,10 @@ def test_full_indoor_module_has_sections_and_visuals(client):
         "court-boards",
         "lift-limit",
         "board-play",
-        "indoor-rebound",
         "tempo-proximity",
+        "match-start",
+        "hit-types",
+        "card-ladder",
     }
     assert len(module["sections"]) >= 6
     assert "sec-tempo-proximity" in {s["id"] for s in module["sections"]}
@@ -745,6 +768,19 @@ _SPA_ANIMATION_KEYS = frozenset(
         "practice-board-lift",
         "practice-indoor-restart",
         "practice-side-board",
+        "hard-decision-frame",
+        "hard-raised-danger",
+        "hard-pressure-clear",
+        "hard-contested",
+        "hard-gk-dive",
+        "hit-types",
+        "obstruction-types",
+        "penalty-corner",
+        "penalty-stroke",
+        "card-ladder",
+        "match-start",
+        "umpire-position",
+        "gk-limits",
     }
 )
 
@@ -773,6 +809,77 @@ def test_seed_animation_keys_match_spa_allowlist():
                     f"{quiz.id}/{question.id} unknown visualization_hint "
                     f"{feedback.visualization_hint!r}"
                 )
+
+
+def test_full_field_hard_module_has_sections_and_visuals(client):
+    res = client.get("/api/course/modules/mod-field-hard-decisions")
+    assert res.status_code == 200
+    module = res.json()
+    assert module["content_status"] == "full"
+    assert module["kind"] == "field"
+    assert module["quiz_id"] == "quiz-field-hard-decisions"
+    assert module["order"] == 4
+    assert len(module["sections"]) >= 6
+    assert len(module["visuals"]) >= 5
+    section_ids = {s["id"] for s in module["sections"]}
+    assert "sec-fh-crowded-raised" in section_ids
+    assert "sec-fh-cards" in section_ids
+    raised = next(s for s in module["sections"] if s["id"] == "sec-fh-crowded-raised")
+    blob = " ".join(f"{p['nl']} {p['en']}" for p in raised["paragraphs"]).lower()
+    assert "worked example" in blob or "uitgewerkt voorbeeld" in blob
+    # Situation captions — not SVG meta
+    for v in module["visuals"]:
+        cap = (v["caption"]["nl"] + " " + v["caption"]["en"]).lower()
+        assert "originele svg" not in cap
+        assert "original svg" not in cap
+        assert "original course" not in cap
+
+
+def test_full_indoor_hard_module_has_sections_and_visuals(client):
+    res = client.get("/api/course/modules/mod-indoor-hard-decisions")
+    assert res.status_code == 200
+    module = res.json()
+    assert module["kind"] == "indoor"
+    assert module["quiz_id"] == "quiz-indoor-hard-decisions"
+    assert module["order"] == 5
+    assert len(module["sections"]) >= 6
+    ids = {s["id"] for s in module["sections"]}
+    assert "sec-ih-crowded-raised" in ids
+    assert "sec-ih-cards" in ids
+
+
+def test_field_hard_quiz_grades(client):
+    res = client.post(
+        "/api/quizzes/quiz-field-hard-decisions/submit",
+        json={
+            "answers": [
+                {"question_id": "q1-crowded-raised", "selected_option_id": "c"},
+                {"question_id": "q2-pressure", "selected_option_id": "b"},
+                {"question_id": "q3-contested", "selected_option_id": "a"},
+                {"question_id": "q4-gk", "selected_option_id": "b"},
+                {"question_id": "q5-card-pirouette", "written_answer": "intensity"},
+            ]
+        },
+    )
+    assert res.status_code == 200
+    assert res.json()["score"] == 5
+
+
+def test_indoor_hard_quiz_grades(client):
+    res = client.post(
+        "/api/quizzes/quiz-indoor-hard-decisions/submit",
+        json={
+            "answers": [
+                {"question_id": "q1-crowded-raised", "selected_option_id": "c"},
+                {"question_id": "q2-pressure", "selected_option_id": "b"},
+                {"question_id": "q3-contested", "selected_option_id": "a"},
+                {"question_id": "q4-gk", "selected_option_id": "b"},
+                {"question_id": "q5-card-pirouette", "written_answer": "Intensiteit!"},
+            ]
+        },
+    )
+    assert res.status_code == 200
+    assert res.json()["score"] == 5
 
 
 def test_full_pathway_module_has_sections_and_visuals(client):

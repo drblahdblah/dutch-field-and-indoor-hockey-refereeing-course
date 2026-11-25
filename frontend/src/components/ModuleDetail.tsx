@@ -129,10 +129,10 @@ export function ModuleDetail({ module, locale, onOpenQuiz }: Props) {
             aria-labelledby={`section-${section.id}`}
           >
             <h4 id={`section-${section.id}`}>{t(section.title, locale)}</h4>
+            {visual && <ModuleVisual visual={visual} locale={locale} />}
             {section.paragraphs.map((para, i) => (
               <p key={i}>{t(para, locale)}</p>
             ))}
-            {visual && <ModuleVisual visual={visual} locale={locale} />}
           </section>
 
           <nav

@@ -23,101 +23,122 @@ KNHB_HOME_URL = "https://www.knhb.nl/"
 
 INDOOR_VISUALS: list[VisualPlaceholder] = [
     VisualPlaceholder(
-        id="viz-court-boards",
+        id="viz-in-match-start",
         kind="svg_animation",
-        title=LocalizedText(
-            nl="Zaalbaan met banden (scheidsrechterlijk overzicht)",
-            en="Indoor court with boards (umpire overview)",
-        ),
+        title=LocalizedText(nl="Zaalwedstrijdstart", en="Indoor match start"),
         caption=LocalizedText(
-            nl=(
-                "Originele SVG: rechthoekige baan, zijbanden, helften, cirkels. "
-                "Geen officiële FIH/KNHB-zaaltekening — exacte afmetingen in "
-                "officiële bronnen."
-            ),
-            en=(
-                "Original SVG: rectangular court, side boards, halves, circles. "
-                "Not an official FIH/KNHB court diagram — exact dimensions in "
-                "official sources."
-            ),
+            nl="Spelers tellen, doelen en banden checken, toss, kant en aftrap kiezen — kleinere ruimte, zelfde ritueel.",
+            en="Count players, check goals and boards, toss, choose side and start — smaller space, same ritual.",
         ),
-        animation_key="court-boards",
+        animation_key="match-start",
+    ),
+    VisualPlaceholder(
+        id="viz-in-position",
+        kind="svg_animation",
+        title=LocalizedText(nl="Positie in de zaal", en="Indoor positioning"),
+        caption=LocalizedText(
+            nl="Dichter op de bal dan op het veld; lead en support wisselen sneller bij bandenspel.",
+            en="Closer to the ball than outdoors; lead and support switch faster on board play.",
+        ),
+        animation_key="umpire-position",
+    ),
+    VisualPlaceholder(
+        id="viz-in-hit-types",
+        kind="svg_animation",
+        title=LocalizedText(nl="Slagtypes (zaal)", en="Stroke types (indoor)"),
+        caption=LocalizedText(
+            nl="Push en slap domineren; volle hit is zeldzamer — kracht × nabijheid weegt zwaar in krappe ruimte.",
+            en="Push and slap dominate; full hits are rarer — power × proximity weighs heavily in tight space.",
+        ),
+        animation_key="hit-types",
+    ),
+    VisualPlaceholder(
+        id="viz-in-obstruction",
+        kind="svg_animation",
+        title=LocalizedText(nl="Obstructie bij de banden", en="Obstruction at the boards"),
+        caption=LocalizedText(
+            nl="Stick-, lichaams- en schaduwobstructie — bij de banden is uitwijkruimte kleiner.",
+            en="Stick, body and shadow obstruction — at the boards escape space is smaller.",
+        ),
+        animation_key="obstruction-types",
     ),
     VisualPlaceholder(
         id="viz-lift-limit",
         kind="svg_animation",
-        title=LocalizedText(
-            nl="Liftkader: plat vs. omhoog (zaalaccent)",
-            en="Lift frame: flat vs raised (indoor emphasis)",
-        ),
+        title=LocalizedText(nl="Lift / omhoog (zaalbasis)", en="Lift / raised (indoor basics)"),
         caption=LocalizedText(
-            nl=(
-                "Originele cursusanimatie: in zaal is omhoog spelen strakker "
-                "beoordeeld dan op het veld. Geen overgenomen regeltekst."
-            ),
-            en=(
-                "Original course animation: indoors, raising the ball is judged "
-                "more tightly than outdoors. No reproduced rule text."
-            ),
+            nl="Plat is default; lift is strenger begrensd dan op het veld — check officiële uitzonderingen (o.a. schoten).",
+            en="Flat is default; lift is bounded more tightly than outdoors — check official exceptions (e.g. shots).",
         ),
         animation_key="lift-limit",
     ),
     VisualPlaceholder(
+        id="viz-in-cards",
+        kind="svg_animation",
+        title=LocalizedText(nl="Kaarten (zaal)", en="Cards (indoor)"),
+        caption=LocalizedText(
+            nl="Zelfde ladder groen → geel → rood; in de zaal escaleert herhaling sneller door tempo en nabijheid.",
+            en="Same ladder green → yellow → red; indoors repetition escalates faster via tempo and proximity.",
+        ),
+        animation_key="card-ladder",
+    ),
+    VisualPlaceholder(
+        id="viz-in-pc",
+        kind="svg_animation",
+        title=LocalizedText(nl="Strafcorner (zaal)", en="Penalty corner (indoor)"),
+        caption=LocalizedText(
+            nl="Set piece in kleinere ruimte — check aantallen, banden en klaar-signaal vóór de injectie.",
+            en="Set piece in smaller space — check numbers, boards and ready signal before injection.",
+        ),
+        animation_key="penalty-corner",
+    ),
+    VisualPlaceholder(
+        id="viz-in-ps",
+        kind="svg_animation",
+        title=LocalizedText(nl="Strafbal (zaal)", en="Penalty stroke (indoor)"),
+        caption=LocalizedText(
+            nl="Eén aanvaller vs keeper — stilstand en duidelijk signaal; banden veranderen de uitwijkhoek niet voor de procedure.",
+            en="One attacker vs keeper — stillness and a clear signal; boards do not change the stroke procedure.",
+        ),
+        animation_key="penalty-stroke",
+    ),
+    VisualPlaceholder(
+        id="viz-in-gk",
+        kind="svg_animation",
+        title=LocalizedText(nl="Zaalkeeper", en="Indoor keeper"),
+        caption=LocalizedText(
+            nl="Keeperrechten in de eigen zone; buiten die zone als veldspeler — banden beperken slides.",
+            en="Keeper rights in their own zone; outside that zone as an outfielder — boards constrain slides.",
+        ),
+        animation_key="gk-limits",
+    ),
+    VisualPlaceholder(
+        id="viz-court-boards",
+        kind="svg_animation",
+        title=LocalizedText(nl="Banden & speelvlak", en="Boards & playing area"),
+        caption=LocalizedText(
+            nl="Bal speelt van de band terug — lees of het veilig is of dat iemand klem zit tegen de band.",
+            en="Ball comes back off the board — read whether it is safe or someone is pinned against the board.",
+        ),
+        animation_key="court-boards",
+    ),
+    VisualPlaceholder(
         id="viz-board-play",
         kind="svg_animation",
-        title=LocalizedText(
-            nl="Bandenscan: bal → band → herstel",
-            en="Board scan: ball → board → recovery",
-        ),
+        title=LocalizedText(nl="Bandenspel", en="Board play"),
         caption=LocalizedText(
-            nl=(
-                "Originele SVG: scanpatroon wanneer de bal de band raakt. "
-                "Procedures en uitzonderingen: FIH Indoor / KNHB."
-            ),
-            en=(
-                "Original SVG: scan pattern when the ball meets the boards. "
-                "Procedures and exceptions: FIH Indoor / KNHB."
-            ),
+            nl="Duel langs de zijband: contact vs bal, en of de band het duel oneerlijk maakt.",
+            en="Contest along the side board: contact vs ball, and whether the board makes the contest unfair.",
         ),
         animation_key="board-play",
     ),
     VisualPlaceholder(
-        id="viz-indoor-rebound",
-        kind="svg_animation",
-        title=LocalizedText(
-            nl="Scenario: rebound van de band",
-            en="Scenario: rebound off the boards",
-        ),
-        caption=LocalizedText(
-            nl=(
-                "Originele scenario-SVG: bandcontact → rebound → mogelijke "
-                "lift. Geen KNHB-kunst of officiële zaalmaat."
-            ),
-            en=(
-                "Original scenario SVG: board contact → rebound → possible "
-                "lift. No KNHB art or official court diagram."
-            ),
-        ),
-        animation_key="indoor-rebound",
-    ),
-    VisualPlaceholder(
         id="viz-tempo-proximity",
         kind="svg_animation",
-        title=LocalizedText(
-            nl="Tempo & nabijheid (zaalritme)",
-            en="Tempo & proximity (indoor cadence)",
-        ),
+        title=LocalizedText(nl="Tempo & nabijheid", en="Tempo & proximity"),
         caption=LocalizedText(
-            nl=(
-                "Originele cursusillustratie: dichterbij → tempo lezen → "
-                "sneller met je partner communiceren. Geen KNHB-/FIH-plaat — "
-                "officiële bronnen staan onder Verder lezen."
-            ),
-            en=(
-                "Original course illustration: closer → read tempo → "
-                "communicate sooner with your partner. Not a KNHB/FIH chart — "
-                "official sources are under Further reading."
-            ),
+            nl="Zaal is sneller en dichter — kortere reactietijd, vaker dichter bij de actie staan.",
+            en="Indoor is faster and tighter — shorter reaction time, stand closer to the action more often.",
         ),
         animation_key="tempo-proximity",
     ),
@@ -561,148 +582,264 @@ INDOOR_MODULE = ModuleStub(
     sections=[
         LearningSection(
             id="sec-indoor-why",
-            title=LocalizedText(
-                nl="Waarom zaalregels als kernmodule",
-                en="Why indoor rules as a core module",
-            ),
+            title=LocalizedText(nl="Wat je in deze module leert", en="What this module teaches"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Na veldregels vertaal je hetzelfde besliskader "
-                        "(veiligheid → eerlijkheid → flow) naar de zaal: "
-                        "minder ruimte, sneller tempo, en banden die het "
-                        "speelbeeld veranderen."
+                        "Zaalkern: start, positie, slagtypes, obstructie, "
+                        "lift, kaarten, PC/PS, keeper, banden en tempo. "
+                        "Diagram = situatie; officiële tekst onder Verder "
+                        "lezen. Harde scenario’s: Zaal: harde beslissingen."
                     ),
                     en=(
-                        "After field rules you translate the same decision "
-                        "frame (safety → fairness → flow) indoors: less space, "
-                        "faster tempo, and boards that reshape the picture."
-                    ),
-                ),
-                LocalizedText(
-                    nl=(
-                        "Deze module citeert geen auteursrechtelijk beschermde "
-                        "FIH- of KNHB-regeltekst. We bouwen pedagogische "
-                        "kaarten en verwijzen naar officiële Indoor Rules voor "
-                        "de actuele standaard."
-                    ),
-                    en=(
-                        "This module does not reproduce copyrighted FIH or "
-                        "KNHB rule text. We build pedagogical maps and point "
-                        "to official Indoor Rules for the current standard."
+                        "Indoor core: start, positioning, stroke types, "
+                        "obstruction, lift, cards, PC/PS, keeper, boards "
+                        "and tempo. Diagram = situation; official text "
+                        "under Further reading. Hard scenarios: Indoor: "
+                        "hard decisions."
                     ),
                 ),
             ],
+            visual_id="viz-in-match-start",
         ),
         LearningSection(
-            id="sec-court-boards",
-            title=LocalizedText(
-                nl="Zaalbaan & banden: waar je aandacht verandert",
-                en="Court & boards: where your attention shifts",
-            ),
+            id="sec-in-match-start",
+            title=LocalizedText(nl="Wedstrijdstart (zaal)", en="Match start (indoor)"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Denk in lagen: zijbanden als harde grenzen, helften "
-                        "voor cadans, en cirkels als zones met hogere "
-                        "scoringsdichtheid. Exacte lijnen en afmetingen staan "
-                        "in de officiële FIH Indoor Rules — hier alleen het "
-                        "aandachtsmodel."
+                        "Tel spelers (zaalteams zijn kleiner dan veld — "
+                        "check actuele KNHB/competitieaantallen), check "
+                        "doelen, netten en banden op veiligheid, doe de "
+                        "toss: winnaar kiest kant of aftrap."
                     ),
                     en=(
-                        "Think in layers: side boards as hard boundaries, "
-                        "halves for cadence, and circles as zones with higher "
-                        "scoring density. Exact lines and dimensions live in "
-                        "the official FIH Indoor Rules — here only the "
-                        "attention model."
+                        "Count players (indoor teams are smaller than "
+                        "field — check current KNHB/competition numbers), "
+                        "check goals, nets and boards for safety, do the "
+                        "toss: winner chooses side or start."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Banden verkorten afstanden: een pass of rebound kan "
-                        "snel van flank naar midden springen. Houd de "
-                        "bandrand in je perifere scan."
+                        "Spreek lead/support af; in de zaal wissel je "
+                        "vaker omdat de bal sneller de helft kruist."
                     ),
                     en=(
-                        "Boards shorten distances: a pass or rebound can jump "
-                        "from flank to middle quickly. Keep the board edge in "
-                        "your peripheral scan."
+                        "Agree lead/support; indoors you switch more often "
+                        "because the ball crosses the half faster."
                     ),
                 ),
             ],
-            visual_id="viz-court-boards",
+            visual_id="viz-in-match-start",
+        ),
+        LearningSection(
+            id="sec-in-positioning",
+            title=LocalizedText(nl="Waar staan (zaal)", en="Where to stand (indoor)"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Sta dichter bij de actie dan op het veld. Lead "
+                        "dicht bij bal/bandenhoek; support dekt diepte en "
+                        "tweede duel. Bij PC/stroke: hoek met zicht op "
+                        "injectie en keeper."
+                    ),
+                    en=(
+                        "Stand closer to the action than outdoors. Lead "
+                        "near ball/board corner; support covers depth and "
+                        "second contest. On PC/stroke: angle with sight of "
+                        "injection and keeper."
+                    ),
+                ),
+            ],
+            visual_id="viz-in-position",
+        ),
+        LearningSection(
+            id="sec-in-hit-types",
+            title=LocalizedText(nl="Slagtypes (zaal)", en="Stroke types (indoor)"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Push en slap zijn dominant; volle hit is zeldzaam "
+                        "en weegt zwaar op gevaar in krappe ruimte. Lees "
+                        "type × kracht × nabijheid tot spelers en banden."
+                    ),
+                    en=(
+                        "Push and slap dominate; a full hit is rare and "
+                        "weighs heavily on danger in tight space. Read "
+                        "type × power × proximity to players and boards."
+                    ),
+                ),
+            ],
+            visual_id="viz-in-hit-types",
+        ),
+        LearningSection(
+            id="sec-in-obstruction",
+            title=LocalizedText(nl="Obstructie (zaal)", en="Obstruction (indoor)"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Zelfde drie types (stick, lichaam, schaduw/derde-"
+                        "man), maar bij de banden is uitwijkruimte kleiner "
+                        "— afschermen is sneller oneerlijk. Lees of de "
+                        "opponent een reële route naar de bal had."
+                    ),
+                    en=(
+                        "Same three types (stick, body, shadow/third-man), "
+                        "but at the boards escape space is smaller — "
+                        "screening becomes unfair sooner. Read whether the "
+                        "opponent had a real route to the ball."
+                    ),
+                ),
+            ],
+            visual_id="viz-in-obstruction",
         ),
         LearningSection(
             id="sec-lift-emphasis",
-            title=LocalizedText(
-                nl="Lift & omhoog spelen (zaalaccent)",
-                en="Lift & raised ball (indoor emphasis)",
-            ),
+            title=LocalizedText(nl="Lift / omhoog (basis)", en="Lift / raised (basics)"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "In de zaal is omhoog spelen vaak strakker beoordeeld "
-                        "dan op het veld: kleinere ruimte, snellere reacties, "
-                        "meer lichamen dichtbij. Dit cursusmodel vraagt: is "
-                        "de lift veilig en leesbaar — niet of ‘alles omhoog’ "
-                        "mag."
+                        "Zaal: plat is default; liftgrenzen zijn strenger "
+                        "dan op het veld. Officiële uitzonderingen "
+                        "(bijvoorbeeld bepaalde schoten) staan in FIH "
+                        "Indoor / KNHB. Basis: te hoog of te dicht bij "
+                        "een tegenstander → fluit."
                     ),
                     en=(
-                        "Indoors, raising the ball is often judged more "
-                        "tightly than outdoors: less space, faster reactions, "
-                        "more bodies nearby. This course model asks: is the "
-                        "lift safe and readable — not whether ‘anything raised’ "
-                        "is fine."
+                        "Indoor: flat is default; lift limits are tighter "
+                        "than outdoors. Official exceptions (e.g. certain "
+                        "shots) live in FIH Indoor / KNHB. Basics: too "
+                        "high or too close to an opponent → whistle."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Exacte hoogtegrenzen, uitzonderingen en "
-                        "strafprocedures horen in FIH Indoor / KNHB. Hier "
-                        "train je de reflex: plat als default, lift alleen "
-                        "met context."
+                        "Verdieping (lift in drukke hoeken, kaarten) volgt "
+                        "in Zaal: harde beslissingen."
                     ),
                     en=(
-                        "Exact height limits, exceptions and sanction "
-                        "procedures belong in FIH Indoor / KNHB. Here you "
-                        "train the reflex: flat as default, lift only with "
-                        "context."
+                        "Deepening (lift in crowded corners, cards) follows "
+                        "in Indoor: hard decisions."
                     ),
                 ),
             ],
             visual_id="viz-lift-limit",
         ),
         LearningSection(
-            id="sec-board-play",
-            title=LocalizedText(
-                nl="Scenario: rebound van de band (scan → herstel)",
-                en="Scenario: rebound off the boards (scan → recovery)",
-            ),
+            id="sec-in-cards",
+            title=LocalizedText(nl="Kaarten (zaal)", en="Cards (indoor)"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Wanneer de bal de band nadert of raakt, verscherp je "
-                        "scan: waar gaat de rebound, wie is dichtbij, is er "
-                        "contact of gevaar? Bandenspel kan veilig én "
-                        "problematisch zijn — context eerst."
+                        "Groen → geel → rood zoals op het veld. Tempo en "
+                        "nabijheid maken herhaling sneller zichtbaar — "
+                        "communiceer vroeg. Procedures: KNHB/competitie."
                     ),
                     en=(
-                        "When the ball approaches or meets the boards, "
-                        "tighten your scan: where does the rebound go, who is "
-                        "nearby, is there contact or danger? Board play can be "
-                        "safe and problematic — context first."
+                        "Green → yellow → red as outdoors. Tempo and "
+                        "proximity make repetition visible sooner — "
+                        "communicate early. Procedures: KNHB/competition."
                     ),
                 ),
+            ],
+            visual_id="viz-in-cards",
+        ),
+        LearningSection(
+            id="sec-in-pc",
+            title=LocalizedText(nl="Strafcorner (zaal)", en="Penalty corner (indoor)"),
+            paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Koppel terug aan de prioriteitsdriehoek: veiligheid "
-                        "bij de band, dan eerlijk sanctioneren, dan flow als "
-                        "het speelbeeld het toelaat."
+                        "Zelfde idee als veld: fouten van de verdediging "
+                        "in de eigen zone kunnen PC geven (lijst: FIH "
+                        "Indoor). Check aantallen, bandenruimte en "
+                        "klaar-signaal; tijdens: gevaar/lift en feet."
                     ),
                     en=(
-                        "Tie back to the priority triangle: safety at the "
-                        "boards, then fair sanctioning, then flow if the "
-                        "picture allows."
+                        "Same idea as field: defensive fouls in their own "
+                        "zone can award a PC (list: FIH Indoor). Check "
+                        "numbers, board space and ready signal; during: "
+                        "danger/lift and feet."
+                    ),
+                ),
+            ],
+            visual_id="viz-in-pc",
+        ),
+        LearningSection(
+            id="sec-in-ps",
+            title=LocalizedText(nl="Strafbal (zaal)", en="Penalty stroke (indoor)"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Ernstige fouten die een scoringskans ontnemen: "
+                        "strafbal (gronden: FIH Indoor). Stilstand, juiste "
+                        "plek, duidelijk signaal — zelfde procedurekern "
+                        "als veld."
+                    ),
+                    en=(
+                        "Serious fouls that deny a scoring chance: penalty "
+                        "stroke (grounds: FIH Indoor). Stillness, correct "
+                        "spot, clear signal — same procedural core as field."
+                    ),
+                ),
+            ],
+            visual_id="viz-in-ps",
+        ),
+        LearningSection(
+            id="sec-in-gk",
+            title=LocalizedText(nl="Keeper (zaal)", en="Keeper (indoor)"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "In de eigen zone: keeperrechten. Buiten: "
+                        "veldspeler. Banden beperken slides — raak de "
+                        "aanvaller niet zonder bal. Verdieping in Zaal: "
+                        "harde beslissingen."
+                    ),
+                    en=(
+                        "In their own zone: keeper rights. Outside: "
+                        "outfielder. Boards constrain slides — do not hit "
+                        "the attacker without the ball. Deepening in "
+                        "Indoor: hard decisions."
+                    ),
+                ),
+            ],
+            visual_id="viz-in-gk",
+        ),
+        LearningSection(
+            id="sec-court-boards",
+            title=LocalizedText(nl="Banden & speelvlak", en="Boards & playing area"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "De band is speelbaar: bal terug van de band is "
+                        "normaal. Lees gevaar als iemand klem zit of hard "
+                        "in de band wordt geduwd."
+                    ),
+                    en=(
+                        "The board is in play: ball back off the board is "
+                        "normal. Read danger if someone is pinned or shoved "
+                        "hard into the board."
+                    ),
+                ),
+            ],
+            visual_id="viz-court-boards",
+        ),
+        LearningSection(
+            id="sec-board-play",
+            title=LocalizedText(nl="Bandenspel", en="Board play"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Duel langs de band: speelt de verdediger de bal "
+                        "of de speler? Band mag het duel niet oneerlijk "
+                        "maken door vastzetten zonder bal."
+                    ),
+                    en=(
+                        "Contest along the board: is the defender playing "
+                        "the ball or the player? The board must not make "
+                        "the contest unfair by pinning without the ball."
                     ),
                 ),
             ],
@@ -710,39 +847,16 @@ INDOOR_MODULE = ModuleStub(
         ),
         LearningSection(
             id="sec-tempo-proximity",
-            title=LocalizedText(
-                nl="Tempo & nabijheid zonder de standaard te verliezen",
-                en="Tempo & proximity without losing the standard",
-            ),
+            title=LocalizedText(nl="Tempo & nabijheid", en="Tempo & proximity"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Kleinere ruimte betekent kortere besliscycli: dichter "
-                        "bij het spel blijven, eerder oogcontact met je "
-                        "partner, en sneller communiceren bij herstarten of "
-                        "escalatie. Dat is flow ná veiligheid — geen vrijbrief "
-                        "om te dicht op het duel te staan."
+                        "Zaal vraagt kortere cycli: dichter staan, sneller "
+                        "fluiten bij gevaar, vaker partner-cue."
                     ),
                     en=(
-                        "Less space means shorter decision cycles: stay closer "
-                        "to play, seek partner eye contact earlier, and "
-                        "communicate sooner on restarts or escalation. That is "
-                        "flow after safety — not a free pass to crowd the "
-                        "contest."
-                    ),
-                ),
-                LocalizedText(
-                    nl=(
-                        "Officiële FIH-/KNHB-voorschriften en interpretaties "
-                        "blijven bij hun bronnen (zie Verder lezen). Hier "
-                        "oefen je alleen de tempo- & nabijheidslens als "
-                        "cursusmodel."
-                    ),
-                    en=(
-                        "Official FIH/KNHB prescriptions and interpretations "
-                        "stay with their sources (see Further reading). Here "
-                        "you practise only the tempo & proximity lens as a "
-                        "course model."
+                        "Indoor needs shorter cycles: stand closer, whistle "
+                        "danger sooner, use partner cues more often."
                     ),
                 ),
             ],
@@ -750,30 +864,18 @@ INDOOR_MODULE = ModuleStub(
         ),
         LearningSection(
             id="sec-indoor-practice-next",
-            title=LocalizedText(
-                nl="Oefenen en verder",
-                en="Practice and next steps",
-            ),
+            title=LocalizedText(nl="Quiz en volgende module", en="Quiz and next module"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Als je de lesstof hebt gelezen, open je de modulequiz "
-                        "via de knop onderaan — op een aparte pagina, met "
-                        "meerkeuze én open vragen, uitleg en visuals. Sla "
-                        "voortgang op via je cursussessie zodat je later kunt "
-                        "hervatten. Ga daarna door naar het pad naar "
-                        "professioneel niveau; houd officiële FIH Indoor / "
-                        "KNHB-bronnen bij de hand voor concrete regelvragen."
+                        "Open de zaalquiz. Daarna: Zaal: harde beslissingen "
+                        "voor lift in krappe hoeken, druk bij banden en "
+                        "keeperslide — of het professionele pad."
                     ),
                     en=(
-                        "When you have finished the reading, open the module "
-                        "quiz via the button below — on a separate page, with "
-                        "multiple-choice and written items, explanations and "
-                        "visuals. Save progress via your course session so you "
-                        "can resume later. Then continue into the pathway "
-                        "toward professional standard; keep official FIH "
-                        "Indoor / KNHB sources handy for concrete rules "
-                        "questions."
+                        "Open the indoor quiz. Next: Indoor: hard decisions "
+                        "for lift in tight corners, board pressure and "
+                        "keeper slide — or the professional pathway."
                     ),
                 ),
             ],
