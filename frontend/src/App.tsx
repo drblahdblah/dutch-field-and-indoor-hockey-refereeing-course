@@ -97,10 +97,9 @@ export default function App() {
     let cancelled = false;
     (async () => {
       try {
-        const [outline, bank] = await Promise.all([api.course(), api.practice()]);
+        const outline = await api.course();
         if (cancelled) return;
         setCourse(outline);
-        setPracticeBank(bank);
         try {
           await refreshProgress(accessToken);
         } catch (err) {
@@ -120,6 +119,22 @@ export default function App() {
         }
       } finally {
         if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const bank = await api.practice();
+        if (!cancelled) setPracticeBank(bank);
+      } catch {
+        // Practice is a separate flow — do not block course overview.
+        if (!cancelled) setPracticeBank(null);
       }
     })();
     return () => {
@@ -379,10 +394,8 @@ export default function App() {
       return;
     }
     if (showingPracticeBank) {
-      if (lastScenarioIdRef.current) {
-        lastScenarioIdRef.current = null;
-        focusById("practice-bank-heading");
-      }
+      lastScenarioIdRef.current = null;
+      focusById("practice-bank-heading");
       return;
     }
     if (lastModuleIdRef.current || lastScenarioIdRef.current) {
@@ -447,9 +460,11 @@ export default function App() {
               <button className="btn btn-primary" type="button" onClick={startOrResume}>
                 {hasSession ? uiT("resume", locale) : uiT("start", locale)}
               </button>
-              <button className="btn" type="button" onClick={openPracticeBank}>
-                {uiT("openPracticeBank", locale)}
-              </button>
+              {practiceBank && (
+                <button className="btn" type="button" onClick={openPracticeBank}>
+                  {uiT("openPracticeBank", locale)}
+                </button>
+              )}
               {hasSession && (
                 <>
                   <button className="btn" type="button" onClick={endSession}>

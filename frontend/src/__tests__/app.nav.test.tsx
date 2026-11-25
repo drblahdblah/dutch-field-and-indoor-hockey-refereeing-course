@@ -344,4 +344,16 @@ describe("App course / module navigation", () => {
     });
     expect(screen.getByText(/Situatie B/i)).toBeInTheDocument();
   });
+
+  it("replaces an unknown practice scenario hash with the practice bank", async () => {
+    window.location.hash = "#/practice/does-not-exist";
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /Oefenscenario's/i }),
+      ).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/practice");
+  });
 });

@@ -1,5 +1,5 @@
 import type { PracticeScenario } from "../api/types";
-import { quizVizTitle, t, ui, uiT, type Locale } from "../i18n/messages";
+import { quizVizTitle, t, uiT, type Locale } from "../i18n/messages";
 import { ModuleVisual } from "./ModuleVisual";
 import { QuizPanel } from "./QuizPanel";
 
@@ -63,7 +63,7 @@ export function PracticeScenarioDetail({
             id: `scenario-viz-${scenario.id}`,
             kind: "svg_animation",
             title: vizTitle,
-            caption: ui.quizVizCaption,
+            caption: scenario.focus,
             animation_key: scenario.visual_key,
             official_source_url: null,
             official_source_name: null,
@@ -74,6 +74,7 @@ export function PracticeScenarioDetail({
       </article>
 
       <QuizPanel
+        key={scenario.quiz.id}
         quiz={scenario.quiz}
         locale={locale}
         accessToken={accessToken}

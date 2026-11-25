@@ -209,11 +209,8 @@ SCENARIO_FIELD_RAISED = PracticeScenario(
                 ),
                 QuizFeedback(
                     explanation=LocalizedText(
-                        nl=(
-                            "Verwacht: richting, afstand of snelheid "
-                            "(direction / distance / speed)."
-                        ),
-                        en="Expected: direction, distance, or speed.",
+                        nl="Verwacht antwoord: direction, distance of speed.",
+                        en="Expected answer: direction, distance, or speed.",
                     ),
                     visualization_hint="danger-cone",
                 ),
@@ -363,8 +360,8 @@ SCENARIO_FIELD_RESTART = PracticeScenario(
                 ),
                 QuizFeedback(
                     explanation=LocalizedText(
-                        nl="Verwacht: bubbel / bubble.",
-                        en="Expected: bubble / bubbel.",
+                        nl="Verwacht antwoord: bubble.",
+                        en="Expected answer: bubble.",
                     ),
                     visualization_hint="restart-bubble",
                 ),
@@ -515,8 +512,8 @@ SCENARIO_FIELD_ADVANTAGE = PracticeScenario(
                 ),
                 QuizFeedback(
                     explanation=LocalizedText(
-                        nl="Verwacht: voordeel / advantage.",
-                        en="Expected: advantage / voordeel.",
+                        nl="Verwacht antwoord: advantage.",
+                        en="Expected answer: advantage.",
                     ),
                     visualization_hint="practice-advantage-wave",
                 ),
@@ -666,8 +663,8 @@ SCENARIO_INDOOR_BOARD_LIFT = PracticeScenario(
                 ),
                 QuizFeedback(
                     explanation=LocalizedText(
-                        nl="Verwacht: hoogte / height.",
-                        en="Expected: height / hoogte.",
+                        nl="Verwacht antwoord: height.",
+                        en="Expected answer: height.",
                     ),
                     visualization_hint="lift-limit",
                 ),
@@ -817,8 +814,8 @@ SCENARIO_INDOOR_RESTART = PracticeScenario(
                 ),
                 QuizFeedback(
                     explanation=LocalizedText(
-                        nl="Verwacht: ruimte / space.",
-                        en="Expected: space / ruimte.",
+                        nl="Verwacht antwoord: space.",
+                        en="Expected answer: space.",
                     ),
                     visualization_hint="practice-indoor-restart",
                 ),
@@ -968,8 +965,8 @@ SCENARIO_INDOOR_SIDE_BOARD = PracticeScenario(
                 ),
                 QuizFeedback(
                     explanation=LocalizedText(
-                        nl="Verwacht: banden / boards.",
-                        en="Expected: boards / banden.",
+                        nl="Verwacht antwoord: boards.",
+                        en="Expected answer: boards.",
                     ),
                     visualization_hint="board-play",
                 ),
