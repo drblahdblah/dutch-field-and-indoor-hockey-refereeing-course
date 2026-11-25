@@ -819,8 +819,27 @@ def test_full_hard_decisions_module_has_sections_and_visuals(client):
     assert "sec-gk-sliding" in section_ids
     raised = next(s for s in module["sections"] if s["id"] == "sec-raised-dangerous")
     assert raised["visual_id"] == "viz-hard-raised"
+    assert len(raised["paragraphs"]) >= 4
+    raised_blob = " ".join(
+        f"{p['nl']} {p['en']}" for p in raised["paragraphs"]
+    ).lower()
+    assert "worked example" in raised_blob or "uitgewerkt voorbeeld" in raised_blob
+    assert "decision and why" in raised_blob or "besluit en waarom" in raised_blob
+    assert "rules framework" in raised_blob or "regelkader" in raised_blob
+    for sec_id in (
+        "sec-clear-possession-pressure",
+        "sec-contested-possession",
+        "sec-gk-sliding",
+    ):
+        sec = next(s for s in module["sections"] if s["id"] == sec_id)
+        assert len(sec["paragraphs"]) >= 4
+        blob = " ".join(f"{p['nl']} {p['en']}" for p in sec["paragraphs"]).lower()
+        assert "worked example" in blob or "uitgewerkt voorbeeld" in blob
+        assert "decision and why" in blob or "besluit en waarom" in blob
     why = next(s for s in module["sections"] if s["id"] == "sec-hard-why")
     assert why["visual_id"] == "viz-hard-frame"
+    why_blob = " ".join(f"{p['nl']} {p['en']}" for p in why["paragraphs"]).lower()
+    assert "worked example" in why_blob or "uitgewerkt voorbeeld" in why_blob
     assert not any(v["kind"] == "official_link_slot" for v in module["visuals"])
     assert not any(v["knhb_illustration_placeholder"] for v in module["visuals"])
     assert module["further_reading"]

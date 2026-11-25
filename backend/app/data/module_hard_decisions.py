@@ -126,35 +126,60 @@ HARD_MODULE = ModuleStub(
     ),
     summary=LocalizedText(
         nl=(
-            "Showcase-module: klikstappen over omhoog/gevaar, druk bij "
-            "duidelijk bezit, betwist bezit en keeperslide — veld én zaal "
-            "waar ze verschillen. Originele SVG-animaties en aparte quiz. "
-            "Het pad naar Hoofdklasse verfijnt deze oordelen later."
+            "Showcase-module: per hard scenario het regelprincipe "
+            "(pedagogisch) plus een uitgewerkt voorbeeld — omhoog/gevaar, "
+            "druk bij duidelijk bezit, betwist bezit en keeperslide "
+            "(veld vs zaal). Originele SVG’s en aparte quiz. Het pad naar "
+            "Hoofdklasse verfijnt deze oordelen later."
         ),
         en=(
-            "Showcase module: click-steps on raised/danger, pressure with "
-            "clear possession, contested possession and keeper slide — "
-            "field and indoor where they differ. Original SVG animations "
-            "and a separate quiz. The Hoofdklasse pathway refines these "
-            "judgments later."
+            "Showcase module: for each hard scenario the rule principle "
+            "(pedagogical) plus a worked example — raised/danger, pressure "
+            "with clear possession, contested possession and keeper slide "
+            "(field vs indoor). Original SVGs and a separate quiz. The "
+            "Hoofdklasse pathway refines these judgments later."
         ),
     ),
     learning_objectives=[
         LocalizedText(
-            nl="Gevaar bij omhoog spelen wegen (veld vs zaallift).",
-            en="Weigh danger on raised play (field vs indoor lift).",
+            nl=(
+                "Het regelprincipe voor gevaarlijke/omhoog gespeelde ballen "
+                "noemen en in een uitgewerkt voorbeeld toepassen."
+            ),
+            en=(
+                "State the rule principle for dangerous/raised balls and "
+                "apply it in a worked example."
+            ),
         ),
         LocalizedText(
-            nl="Bij duidelijk bezit contact/tackle lezen i.p.v. aantallen.",
-            en="With clear possession, read contact/tackle — not headcount.",
+            nl=(
+                "Bij duidelijk bezit uitleggen waarom contact/tackle telt "
+                "— niet het aantal verdedigers — met een voorbeeld."
+            ),
+            en=(
+                "With clear possession, explain why contact/tackle counts "
+                "— not defender count — with a worked example."
+            ),
         ),
         LocalizedText(
-            nl="Bij betwist bezit ‘aanval’-bias vermijden.",
-            en="Avoid attack-bias when possession is contested.",
+            nl=(
+                "Bij betwist bezit ‘aanval’-bias herkennen en een "
+                "uitgewerkt voorbeeld correct afhandelen."
+            ),
+            en=(
+                "Recognise attack-bias on contested possession and resolve "
+                "a worked example correctly."
+            ),
         ),
         LocalizedText(
-            nl="Keeperslide/duik lezen via pad → timing → contact.",
-            en="Read keeper slide/dive via path → timing → contact.",
+            nl=(
+                "Keeperslide/duik uitleggen via pad → timing → contact, "
+                "met veld/zaalverschil in een voorbeeld."
+            ),
+            en=(
+                "Explain keeper slide/dive via path → timing → contact, "
+                "with field/indoor contrast in a worked example."
+            ),
         ),
         LocalizedText(
             nl="Weten dat het Hoofdklasse-pad deze oordelen later verfijnt.",
@@ -163,8 +188,8 @@ HARD_MODULE = ModuleStub(
     ],
     instruction_outline=[
         LocalizedText(
-            nl="Besliskader: lees → weeg → fluit.",
-            en="Decision frame: read → weigh → whistle.",
+            nl="Lespatroon: regelprincipe → uitgewerkt voorbeeld → besluit.",
+            en="Lesson pattern: rule principle → worked example → decision.",
         ),
         LocalizedText(
             nl="Omhoog / gevaarlijke bal (veld + zaal).",
@@ -188,38 +213,44 @@ HARD_MODULE = ModuleStub(
         LearningSection(
             id="sec-hard-why",
             title=LocalizedText(
-                nl="Waarom harde beslissingen",
-                en="Why hard decisions",
+                nl="Hoe deze module leert",
+                en="How this module teaches",
             ),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Basisregels zeggen wát mag; harde wedstrijden vragen "
-                        "hóe je in een fractie leest: gevaar, bezit en "
-                        "keepercontact. Deze module oefent die oordelen met "
-                        "klikstappen en visuals — geen overgenomen "
-                        "FIH-/KNHB-tekst of KNHB-kunst."
+                        "Elke harde situatie volgt hetzelfde lespatroon: "
+                        "(1) wat het regelkader vastlegt — pedagogische "
+                        "samenvatting, geen overgenomen FIH-/KNHB-citaat; "
+                        "(2) een uitgewerkt voorbeeld met concrete feiten; "
+                        "(3) het besluit en waarom. Exacte formuleringen en "
+                        "limieten staan in de officiële bronnen (Verder lezen)."
                     ),
                     en=(
-                        "Basic rules say what is allowed; hard matches ask "
-                        "how you read in a split second: danger, possession "
-                        "and keeper contact. This module drills those "
-                        "judgments with click-steps and visuals — no "
-                        "reproduced FIH/KNHB text or KNHB art."
+                        "Each hard situation follows the same teaching "
+                        "pattern: (1) what the rules framework establishes — "
+                        "pedagogical summary, not a reproduced FIH/KNHB "
+                        "quotation; (2) a worked example with concrete "
+                        "facts; (3) the decision and why. Exact wording and "
+                        "limits live in the official sources (Further reading)."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Het pad naar professioneel niveau (o.a. Hoofdklasse) "
-                        "komt daarna: ritme, samenwerking en consistentie "
-                        "verfijnen dezezelfde oordelen. Hier bouw je eerst "
-                        "het besliskader."
+                        "Gebruik altijd de lus lees → weeg → fluit. Kaarten "
+                        "en herstarten zijn middelen ná die lezing — geen "
+                        "reflex. Het pad naar professioneel niveau "
+                        "(o.a. Hoofdklasse) komt later: daar verfijn je "
+                        "ritme, samenwerking en consistentie op dezezelfde "
+                        "oordelen."
                     ),
                     en=(
-                        "The pathway toward professional standard "
-                        "(e.g. Hoofdklasse) comes after: cadence, "
-                        "collaboration and consistency refine these same "
-                        "judgments. Here you build the decision frame first."
+                        "Always use the loop read → weigh → whistle. Cards "
+                        "and restarts are tools after that read — not a "
+                        "reflex. The pathway toward professional standard "
+                        "(e.g. Hoofdklasse) comes later: there you refine "
+                        "cadence, collaboration and consistency on these "
+                        "same judgments."
                     ),
                 ),
             ],
@@ -234,30 +265,82 @@ HARD_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Veld: weeg richting × afstand × snelheid vóór je "
-                        "automatisch fluit of kaarten trekt. Een omhooggaande "
-                        "bal is niet per definitie illegaal — gevaar en "
-                        "context bepalen."
+                        "Wat het regelkader vastlegt (veld): een hard of "
+                        "omhoog gespeelde bal is niet automatisch fout én "
+                        "niet automatisch toegestaan. Spel dat gevaarlijk "
+                        "is — of dat tot gevaarlijk spel leidt — hoort "
+                        "gestopt/gesanctioneerd te worden. Jouw lezing "
+                        "weegt richting (naar wie?), afstand (hoe dicht?) "
+                        "en snelheid (hoe hard?). Gevaar kan bestaan zonder "
+                        "contact. Exacte sanctietreden: FIH Rules / KNHB."
                     ),
                     en=(
-                        "Field: weigh direction × distance × speed before "
-                        "you automatically whistle or card. A raised ball is "
-                        "not illegal by definition — danger and context "
-                        "decide."
+                        "What the rules framework establishes (field): a "
+                        "hard or raised ball is not automatically illegal "
+                        "and not automatically allowed. Play that is "
+                        "dangerous — or that leads to dangerous play — "
+                        "should be stopped/sanctioned. Your read weighs "
+                        "direction (toward whom?), distance (how close?) "
+                        "and speed (how hard?). Danger can exist without "
+                        "contact. Exact sanction steps: FIH Rules / KNHB."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Zaal: liftgrenzen zijn strenger en de ruimte "
-                        "kleiner. Dezelfde leeslus (richting, nabijheid, "
-                        "tempo) — maar de drempel voor ‘te hoog / te dicht’ "
-                        "ligt lager. Officiële limieten: FIH Indoor / KNHB."
+                        "Wat het regelkader vastlegt (zaal): lift wordt "
+                        "strenger begrensd dan op het veld; plat spel is "
+                        "de default. In de kleine ruimte is ‘te hoog / te "
+                        "dicht bij een tegenstander’ sneller gevaarlijk. "
+                        "Officiële liftgrenzen en uitzonderingen "
+                        "(bijv. schoten) staan in FIH Indoor / KNHB — hier "
+                        "train je de lezing, geen citaten."
                     ),
                     en=(
-                        "Indoor: lift limits are stricter and space is "
-                        "tighter. Same read loop (direction, proximity, "
-                        "tempo) — but the threshold for ‘too high / too "
-                        "close’ is lower. Official limits: FIH Indoor / KNHB."
+                        "What the rules framework establishes (indoor): "
+                        "lift is bounded more tightly than outdoors; flat "
+                        "play is the default. In tight space, ‘too high / "
+                        "too close to an opponent’ becomes dangerous "
+                        "sooner. Official lift limits and exceptions "
+                        "(e.g. shots) live in FIH Indoor / KNHB — here you "
+                        "train the read, not quotations."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Uitgewerkt voorbeeld (veld): aanval vanuit de 23m. "
+                        "Aanvaller A speelt de bal hard en omhoog (~kniehoogte "
+                        "op aankomst) recht op verdediger D die ~4 m verder "
+                        "staat en de bal niet veilig kan ontwijken. D wordt "
+                        "niet geraakt — maar moet wegduiken."
+                    ),
+                    en=(
+                        "Worked example (field): attack from the 23m. "
+                        "Attacker A plays the ball hard and raised "
+                        "(~knee height on arrival) straight at defender D "
+                        "standing ~4 m away who cannot safely evade. D is "
+                        "not hit — but must duck away."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Besluit en waarom: fluit — gevaarlijke bal. "
+                        "Richting = op D, afstand = kort, snelheid = hoog → "
+                        "gevaar ook zonder contact. Herstart volgens "
+                        "officiële plaats/richting (bronnen). Niet "
+                        "automatisch een kaart: weeg intentie/ernst; "
+                        "kaart alleen als de situatie dat vraagt. "
+                        "Zaalvariant: dezelfde trajecten zijn sneller fout "
+                        "door strengere liftgrenzen — fluit eerder."
+                    ),
+                    en=(
+                        "Decision and why: whistle — dangerous ball. "
+                        "Direction = at D, distance = short, speed = high → "
+                        "danger even without contact. Restart per official "
+                        "spot/direction (sources). Not an automatic card: "
+                        "weigh intent/severity; card only if the picture "
+                        "asks for it. Indoor variant: the same trajectories "
+                        "are illegal sooner under tighter lift limits — "
+                        "whistle earlier."
                     ),
                 ),
             ],
@@ -272,28 +355,76 @@ HARD_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Twee verdedigers op één aanvaller met duidelijke "
-                        "bal: lees of de tackle/contact legaal de bal speelt "
-                        "of de bezitter illegaal raakt. Het aantal "
-                        "verdedigers is geen automatische fout."
+                        "Wat het regelkader vastlegt: wie de bal speelt, "
+                        "mag dat met een legale stick/tackle. Contact dat "
+                        "de balbezitter raakt (lichaam, stick-op-stick dat "
+                        "de bal wegneemt zonder legale tackle) of dat de "
+                        "balbezitter omver speelt, is een overtreding. Het "
+                        "aantal verdedigers (1 of 2) is géén aparte "
+                        "regelgrond — bezit en contactkwaliteit wel. "
+                        "Exacte formulering: FIH / KNHB."
                     ),
                     en=(
-                        "Two defenders on one attacker with a clear ball: "
-                        "read whether the tackle/contact legally plays the "
-                        "ball or illegally hits the carrier. Defender count "
-                        "is not an automatic foul."
+                        "What the rules framework establishes: whoever "
+                        "plays the ball may do so with a legal stick/"
+                        "tackle. Contact that hits the ball carrier (body, "
+                        "stick-on-stick that strips the ball without a "
+                        "legal tackle) or that plays the carrier over is "
+                        "an offence. Defender count (1 or 2) is not a "
+                        "separate rule ground — possession and contact "
+                        "quality are. Exact wording: FIH / KNHB."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Zaal is sneller en dichter bij de banden — dezelfde "
-                        "bezitslezing, kortere reactietijd. Communiceer "
+                        "Uitgewerkt voorbeeld (veld): aanvaller A dribbelt "
+                        "duidelijk met de bal aan de stick richting de "
+                        "cirkel. Verdedigers D1 en D2 drukken samen. D1 "
+                        "speelt eerst de bal schoon van A’s stick; A blijft "
+                        "overeind en speelt door. Geen body-check, geen "
+                        "stick over de handen."
+                    ),
+                    en=(
+                        "Worked example (field): attacker A dribbles clearly "
+                        "with the ball on the stick toward the circle. "
+                        "Defenders D1 and D2 press together. D1 first plays "
+                        "the ball cleanly off A’s stick; A stays upright "
+                        "and plays on. No body check, no stick over the "
+                        "hands."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Besluit en waarom: speel door (of geef advantage "
+                        "als A duidelijk ruimte houdt). Duidelijk bezit lag "
+                        "bij A; D1 speelde de bal, niet de speler. Twee "
+                        "verdedigers maken het niet automatisch een fout. "
+                        "Als D2 daarna A’s lichaam raakt zonder bal → fluit "
+                        "dan wél voor die contactfout."
+                    ),
+                    en=(
+                        "Decision and why: play on (or advantage if A "
+                        "clearly keeps space). Clear possession was with A; "
+                        "D1 played the ball, not the player. Two defenders "
+                        "do not make it automatically a foul. If D2 then "
+                        "hits A’s body without the ball → whistle that "
+                        "contact foul."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Zaalvariant: dezelfde lezing, kortere tijd. Bij "
+                        "de banden is ‘schone tackle’ nog steeds de "
+                        "standaard — maar D die A in de band duwt zonder "
+                        "bal is sneller zichtbaar illegaal. Communiceer "
                         "vroeg met je partner als het spel de helft kruist."
                     ),
                     en=(
-                        "Indoor is faster and closer to the boards — same "
-                        "possession read, shorter reaction time. Communicate "
-                        "early with your partner when play crosses the half."
+                        "Indoor variant: same read, less time. Near the "
+                        "boards a ‘clean tackle’ is still the standard — "
+                        "but D shoving A into the boards without the ball "
+                        "is illegal sooner to the eye. Communicate early "
+                        "with your partner when play crosses the half."
                     ),
                 ),
             ],
@@ -308,31 +439,80 @@ HARD_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Als twee sticks de bal delen en niemand controle "
-                        "heeft, vermijd ‘aanval’-bias: niet automatisch "
-                        "fluiten voor de aanvallende kant omdat die dichter "
-                        "bij het doel staat."
+                        "Wat het regelkader vastlegt: een overtreding "
+                        "vereist een leesbare fout (illegaal contact, "
+                        "gevaar, obstructie, …) — niet ‘de aanvallende "
+                        "kant stond dichter bij het doel’. Zolang niemand "
+                        "controle heeft en er geen duidelijke fout is, "
+                        "is doorspelen of wachten op controle correcter "
+                        "dan een automatische ‘aanval’-fluit. Advantage "
+                        "alleen als één kant écht ruimte/tempo wint. "
+                        "Bronnen: FIH / KNHB."
                     ),
                     en=(
-                        "When two sticks share the ball and nobody has "
-                        "control, avoid attack-bias: do not automatically "
-                        "whistle for the attacking side because they are "
-                        "closer to goal."
+                        "What the rules framework establishes: an offence "
+                        "needs a readable foul (illegal contact, danger, "
+                        "obstruction, …) — not ‘the attacking side was "
+                        "closer to goal’. While nobody has control and "
+                        "there is no clear foul, playing on or waiting "
+                        "for control is better than an automatic ‘attack’ "
+                        "whistle. Advantage only when one side truly gains "
+                        "space/tempo. Sources: FIH / KNHB."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Wacht tot controle zichtbaar is of tot een "
-                        "duidelijke overtreding. Advantage alleen als één "
-                        "kant écht ruimte krijgt. Op topniveau (later in "
-                        "het pad) wordt deze consistentie nóg strenger "
-                        "getoetst."
+                        "Uitgewerkt voorbeeld: middenveld. A en D hebben "
+                        "beide de stick bij de bal; de bal ligt tussen de "
+                        "sticks, niemand dribbelt weg. A staat dichter bij "
+                        "het aanvallende doel. Geen stick-over-stick die "
+                        "iemand omver speelt, geen gevaarlijke lift, geen "
+                        "body-check."
                     ),
                     en=(
-                        "Wait until control is visible or until a clear "
-                        "offence. Advantage only when one side truly gains "
-                        "space. At top standard (later in the pathway) this "
-                        "consistency is tested even harder."
+                        "Worked example: midfield. A and D both have the "
+                        "stick at the ball; the ball sits between the "
+                        "sticks, nobody dribbles away. A is closer to the "
+                        "attacking goal. No stick-over-stick that plays "
+                        "someone over, no dangerous lift, no body check."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Besluit en waarom: speel door / houd de fluit. "
+                        "Bezit is onduidelijk; nabijheid van het doel is "
+                        "geen fout. Fluit pas als A of D een leesbare "
+                        "overtreding maakt (bijv. D haakt A’s stick en "
+                        "trekt A om) of als één kant duidelijk controle "
+                        "neemt. Slechtste reflex: ‘aanval’ fluiten alleen "
+                        "omdat A dichter bij het doel stond."
+                    ),
+                    en=(
+                        "Decision and why: play on / hold the whistle. "
+                        "Possession is unclear; proximity to goal is not "
+                        "a foul. Whistle only when A or D commits a "
+                        "readable offence (e.g. D hooks A’s stick and "
+                        "pulls A over) or when one side clearly takes "
+                        "control. Worst reflex: whistling ‘attack’ only "
+                        "because A stood closer to goal."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Veld vs zaal: het principe is gelijk. Zaal is "
+                        "sneller en dichter — je hebt minder frames om te "
+                        "wachten, dus train vroege eye contact met je "
+                        "partner op de scheidingslijn. Op topniveau "
+                        "(later in het pad) wordt deze consistentie "
+                        "strenger getoetst."
+                    ),
+                    en=(
+                        "Field vs indoor: the principle is the same. "
+                        "Indoor is faster and tighter — you have fewer "
+                        "frames to wait, so train early eye contact with "
+                        "your partner on the split line. At top standard "
+                        "(later in the pathway) this consistency is "
+                        "tested harder."
                     ),
                 ),
             ],
@@ -347,28 +527,84 @@ HARD_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Lees in volgorde: pad van de keeper → timing t.o.v. "
-                        "de aanvaller → contactkwaliteit (bal of lichaam). "
-                        "Geen automatische stroke omdat er een duik is."
+                        "Wat het regelkader vastlegt: de keeper mag de "
+                        "bal verdedigen binnen de eigen cirkel/zone met "
+                        "lichaam en uitrusting volgens de keeperregels. "
+                        "Een slide of duik is niet automatisch een "
+                        "penalty stroke — en niet automatisch legaal. "
+                        "Illegaal is o.a. de aanvaller raken zonder de "
+                        "bal te spelen, of gevaarlijk contact. Lees "
+                        "altijd: pad → timing → contact (bal of lichaam). "
+                        "Exacte keeperrechten: FIH / KNHB."
                     ),
                     en=(
-                        "Read in order: keeper’s path → timing vs the "
-                        "attacker → contact quality (ball or body). No "
-                        "automatic stroke just because there is a dive."
+                        "What the rules framework establishes: the keeper "
+                        "may defend the ball inside their own circle/zone "
+                        "with body and equipment per the keeper rules. A "
+                        "slide or dive is not automatically a penalty "
+                        "stroke — and not automatically legal. Illegal "
+                        "includes hitting the attacker without playing "
+                        "the ball, or dangerous contact. Always read: "
+                        "path → timing → contact (ball or body). Exact "
+                        "keeper rights: FIH / KNHB."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Veld: meer uitwijkruimte. Zaal: banden en kleinere "
-                        "cirkel/zone beperken ontsnapping — weeg nabijheid "
-                        "zwaarder. Officiële keeperregels blijven bij FIH/"
-                        "KNHB (Verder lezen)."
+                        "Uitgewerkt voorbeeld (veld): A dribbelt de cirkel "
+                        "in met de bal aan de stick. Keeper K glijdt "
+                        "schuin naar voren, speelt eerst de bal weg met "
+                        "de stick/pad, en raakt A’s been pas nádat de "
+                        "bal al weg is — A valt. Timing: K was bij de "
+                        "bal vóór het contact met A."
                     ),
                     en=(
-                        "Field: more escape space. Indoor: boards and a "
-                        "smaller circle/zone limit escape — weigh proximity "
-                        "more heavily. Official keeper rules stay with "
-                        "FIH/KNHB (Further reading)."
+                        "Worked example (field): A dribbles into the "
+                        "circle with the ball on the stick. Keeper K "
+                        "slides diagonally forward, first plays the ball "
+                        "away with stick/pad, and only then contacts A’s "
+                        "leg after the ball is already gone — A falls. "
+                        "Timing: K was at the ball before contact with A."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Besluit en waarom: speel door (of fluit alleen "
+                        "als het ná-contact nog een aparte fout is). K "
+                        "speelde eerst de bal; pad en timing kloppen. "
+                        "Geen automatische stroke omdat A viel. "
+                        "Tegenvoorbeeld: als K’s pad A’s lichaam raakt "
+                        "vóór of zonder de bal → fluit (vaak stroke/"
+                        "sanction per officiële tabel) — waarom: contact "
+                        "op de speler, niet op de bal."
+                    ),
+                    en=(
+                        "Decision and why: play on (or whistle only if "
+                        "the after-contact is still a separate foul). K "
+                        "played the ball first; path and timing fit. No "
+                        "automatic stroke because A fell. Counter-"
+                        "example: if K’s path hits A’s body before or "
+                        "without the ball → whistle (often stroke/"
+                        "sanction per the official table) — why: contact "
+                        "on the player, not the ball."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Zaalvariant: banden en kleinere ruimte beperken "
+                        "A’s uitwijkpad. Dezelfde lus (pad → timing → "
+                        "contact), maar nabijheid weegt zwaarder — een "
+                        "slide die A in de band duwt zonder bal is sneller "
+                        "illegaal. Check officiële indoor-keeperregels "
+                        "voor limieten."
+                    ),
+                    en=(
+                        "Indoor variant: boards and smaller space limit "
+                        "A’s escape path. Same loop (path → timing → "
+                        "contact), but proximity weighs more — a slide "
+                        "that shoves A into the boards without the ball "
+                        "is illegal sooner. Check official indoor keeper "
+                        "rules for limits."
                     ),
                 ),
             ],
@@ -383,26 +619,39 @@ HARD_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Open hieronder de modulequiz op een aparte pagina: "
-                        "meerkeuze plus een korte schrijfvraag, met uitleg "
-                        "en visuals bij foute antwoorden. Sla voortgang op "
-                        "via je cursussessie. Daarna: het pad naar "
-                        "professioneel niveau (o.a. Hoofdklasse) — daar "
-                        "worden ritme, samenwerking en consistentie "
-                        "toegevoegd om deze oordelen te verfijnen. Losse "
-                        "oefenscenario’s blijven beschikbaar onder "
-                        "Oefenscenario’s."
+                        "Je hebt per scenario het regelprincipe en een "
+                        "uitgewerkt voorbeeld gezien. Open hieronder de "
+                        "modulequiz op een aparte pagina: meerkeuze plus "
+                        "een korte schrijfvraag, met uitleg en visuals bij "
+                        "foute antwoorden. Sla voortgang op via je "
+                        "cursussessie."
                     ),
                     en=(
-                        "Open the module quiz below on a separate page: "
-                        "multiple-choice plus a short written item, with "
-                        "explanations and visuals on wrong answers. Save "
-                        "progress via your course session. Next: the "
-                        "pathway toward professional standard "
+                        "You have seen the rule principle and a worked "
+                        "example per scenario. Open the module quiz below "
+                        "on a separate page: multiple-choice plus a short "
+                        "written item, with explanations and visuals on "
+                        "wrong answers. Save progress via your course "
+                        "session."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Daarna: het pad naar professioneel niveau "
+                        "(o.a. Hoofdklasse) — daar worden ritme, "
+                        "samenwerking en consistentie toegevoegd om "
+                        "deze oordelen te verfijnen. Losse "
+                        "oefenscenario’s blijven beschikbaar onder "
+                        "Oefenscenario’s. Houd FIH-/KNHB-bronnen bij de "
+                        "hand voor exacte tekst."
+                    ),
+                    en=(
+                        "Next: the pathway toward professional standard "
                         "(e.g. Hoofdklasse) — there cadence, collaboration "
                         "and consistency are added to refine these "
-                        "judgments. Standalone drills remain under Practice "
-                        "scenarios."
+                        "judgments. Standalone drills remain under "
+                        "Practice scenarios. Keep FIH/KNHB sources handy "
+                        "for exact wording."
                     ),
                 ),
             ],
