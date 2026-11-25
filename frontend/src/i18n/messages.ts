@@ -278,6 +278,10 @@ export const QUIZ_VIZ_TITLES = {
     nl: "Visualisatie: leesbare beslissing",
     en: "Visualization: readable call",
   },
+  "advantage-lens": {
+    nl: "Visualisatie: voordeellens",
+    en: "Visualization: advantage lens",
+  },
 } as const satisfies Record<string, Localized>;
 
 export type UiKey = keyof typeof ui;

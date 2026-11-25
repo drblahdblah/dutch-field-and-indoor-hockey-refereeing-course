@@ -101,25 +101,25 @@ FIELD_VISUALS: list[VisualPlaceholder] = [
         animation_key="field-attack",
     ),
     VisualPlaceholder(
-        id="viz-knhb-field-interpretations-slot",
-        kind="official_link_slot",
+        id="viz-advantage-lens",
+        kind="svg_animation",
         title=LocalizedText(
-            nl="Officiële veldinterpretaties (plaatshouder)",
-            en="Official field interpretations (placeholder)",
+            nl="Voordeellens (leesbaar doorlaten)",
+            en="Advantage lens (readable play-on)",
         ),
         caption=LocalizedText(
             nl=(
-                "Link naar KNHB/FIH-materiaal. Geen KNHB-illustratie in deze "
-                "repo. EN-vertaling van NL-interpretaties: volgt later."
+                "Originele cursusillustratie: contest → voordeel lezen → "
+                "ruimte houden. Geen KNHB-/FIH-gebarenplaat — officiële "
+                "bronnen staan onder Verder lezen."
             ),
             en=(
-                "Link to KNHB/FIH materials. No KNHB illustration ships in this "
-                "repo. EN translation of NL interpretations: TBD."
+                "Original course illustration: contest → read advantage → "
+                "keep space. Not a KNHB/FIH signals chart — official sources "
+                "are under Further reading."
             ),
         ),
-        official_source_url=KNHB_HOME_URL,
-        official_source_name="KNHB",
-        knhb_illustration_placeholder=True,
+        animation_key="advantage-lens",
     ),
 ]
 
@@ -393,6 +393,7 @@ FIELD_QUIZ = Quiz(
                     nl="Juist — ‘advantage’ (voordeel) is het gangbare signaalwoord.",
                     en="Correct — ‘advantage’ is the common signal word.",
                 ),
+                visualization_hint="advantage-lens",
             ),
             feedback_incorrect_default=QuizFeedback(
                 explanation=LocalizedText(
@@ -405,6 +406,113 @@ FIELD_QUIZ = Quiz(
                         "signals / KNHB materials for gestures."
                     ),
                 ),
+                visualization_hint="advantage-lens",
+            ),
+        ),
+        QuizQuestion(
+            id="q5-advantage-when",
+            type="multiple_choice",
+            prompt=LocalizedText(
+                nl=(
+                    "Er is een lichte overtreding, maar de aanval heeft nog "
+                    "duidelijke ruimte en tempo. Wat past het best bij de "
+                    "voordeellens in dit cursusmodel (pedagogisch)?"
+                ),
+                en=(
+                    "There is a light offence, but the attack still has clear "
+                    "space and tempo. What best matches the advantage lens in "
+                    "this course model (pedagogical)?"
+                ),
+            ),
+            options=[
+                QuizOption(
+                    id="a",
+                    text=LocalizedText(
+                        nl="Altijd meteen fluiten — elke overtreding stoppen.",
+                        en="Always whistle immediately — stop every offence.",
+                    ),
+                ),
+                QuizOption(
+                    id="b",
+                    text=LocalizedText(
+                        nl=(
+                            "Eerst checken of de aanval nog voordeel heeft "
+                            "zonder veiligheidsrisico; zo ja, leesbaar "
+                            "doorlaten en later herstellen indien nodig."
+                        ),
+                        en=(
+                            "First check whether the attack still has advantage "
+                            "without a safety risk; if so, play on readably and "
+                            "reset later if needed."
+                        ),
+                    ),
+                ),
+                QuizOption(
+                    id="c",
+                    text=LocalizedText(
+                        nl="Negeer veiligheid zolang de score open blijft.",
+                        en="Ignore safety as long as the score stays open.",
+                    ),
+                ),
+                QuizOption(
+                    id="d",
+                    text=LocalizedText(
+                        nl="Vraag de coach welke optie hij prefereert.",
+                        en="Ask the coach which option they prefer.",
+                    ),
+                ),
+            ],
+            correct_option_id="b",
+            feedback_correct=QuizFeedback(
+                explanation=LocalizedText(
+                    nl=(
+                        "Juist. De voordeellens weegt ruimte en tempo ná "
+                        "veiligheid — niet in plaats daarvan."
+                    ),
+                    en=(
+                        "Correct. The advantage lens weighs space and tempo "
+                        "after safety — not instead of it."
+                    ),
+                ),
+                visualization_hint="advantage-lens",
+            ),
+            feedback_incorrect={
+                "a": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl=(
+                            "Niet altijd. Onnodig fluiten kan flow én "
+                            "leesbaarheid schaden wanneer de aanval nog "
+                            "duidelijk voordeel heeft."
+                        ),
+                        en=(
+                            "Not always. Unnecessary whistles can harm flow "
+                            "and readability when the attack still has clear "
+                            "advantage."
+                        ),
+                    ),
+                    visualization_hint="advantage-lens",
+                ),
+                "c": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl="Veiligheid blijft eerst — voordeel volgt daarna.",
+                        en="Safety stays first — advantage comes after.",
+                    ),
+                    visualization_hint="danger-cone",
+                ),
+                "d": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl="Jij beslist; coaches sturen niet jouw voordeellens.",
+                        en="You decide; coaches do not drive your advantage lens.",
+                    ),
+                    visualization_hint="advantage-lens",
+                ),
+            },
+            feedback_incorrect_default=QuizFeedback(
+                explanation=LocalizedText(
+                    nl="Herlees de voordeellens: contest → voordeel → ruimte.",
+                    en="Revisit the advantage lens: contest → advantage → space.",
+                ),
+                visualization_hint="advantage-lens",
             ),
         ),
     ],
@@ -419,12 +527,14 @@ FIELD_MODULE = ModuleStub(
     ),
     summary=LocalizedText(
         nl=(
-            "Volledige module: veldzones, herstarten, gevaarlijk spel en "
-            "cirkelcontext — met visuals, oefenquiz en officiële bronlinks."
+            "Showcase-module: rijke NL/EN-lesstof in klikstappen, originele "
+            "veldanimaties en een aparte nagekeken quiz — zones, herstarten, "
+            "gevaar en voordeel."
         ),
         en=(
-            "Full module: pitch zones, restarts, dangerous play and circle "
-            "context — with visuals, practice quiz and official source links."
+            "Showcase module: rich NL/EN reading in click-steps, original "
+            "field animations and a separate graded quiz — zones, restarts, "
+            "danger and advantage."
         ),
     ),
     learning_objectives=[
@@ -444,6 +554,10 @@ FIELD_MODULE = ModuleStub(
             nl="Cirkelaanvallen herkennen als zone met hogere aandacht zonder regeltekst te citeren.",
             en="Recognise circle attacks as a higher-attention zone without quoting rule text.",
         ),
+        LocalizedText(
+            nl="Voordeel lezen wanneer de aanval nog ruimte en tempo heeft (na veiligheid).",
+            en="Read advantage when the attack still has space and tempo (after safety).",
+        ),
     ],
     instruction_outline=[
         LocalizedText(
@@ -461,6 +575,10 @@ FIELD_MODULE = ModuleStub(
         LocalizedText(
             nl="Cirkel: hogere scan-dichtheid, partner-check.",
             en="Circle: denser scan, partner check.",
+        ),
+        LocalizedText(
+            nl="Voordeel: contest → lens → ruimte (na veiligheid).",
+            en="Advantage: contest → lens → space (after safety).",
         ),
     ],
     content_status="full",
@@ -657,6 +775,46 @@ FIELD_MODULE = ModuleStub(
             visual_id="viz-field-attack",
         ),
         LearningSection(
+            id="sec-advantage-lens",
+            title=LocalizedText(
+                nl="Voordeel lezen zonder de standaard te verliezen",
+                en="Read advantage without losing the standard",
+            ),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Niet elke overtreding vraagt om een fluit. Als de "
+                        "aanval na een lichte fout nog duidelijk ruimte en "
+                        "tempo heeft — en veiligheid niet in het geding is — "
+                        "houd je het speelbeeld leesbaar door voordeel te "
+                        "geven. Dat is flow ná veiligheid en eerlijkheid, "
+                        "geen vrijbrief."
+                    ),
+                    en=(
+                        "Not every offence needs a whistle. If after a light "
+                        "fault the attack still has clear space and tempo — "
+                        "and safety is not at risk — you keep the picture "
+                        "readable by playing advantage. That is flow after "
+                        "safety and fairness, not a free pass."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Officiële FIH-/KNHB-voorschriften en interpretaties "
+                        "blijven bij hun bronnen (zie Verder lezen). Hier "
+                        "oefen je alleen de voordeellens als cursusmodel."
+                    ),
+                    en=(
+                        "Official FIH/KNHB prescriptions and interpretations "
+                        "stay with their sources (see Further reading). Here "
+                        "you practise only the advantage lens as a course "
+                        "model."
+                    ),
+                ),
+            ],
+            visual_id="viz-advantage-lens",
+        ),
+        LearningSection(
             id="sec-field-practice-next",
             title=LocalizedText(
                 nl="Oefenen en verder",
@@ -665,20 +823,25 @@ FIELD_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Maak de quiz hieronder. Sla voortgang op via je "
-                        "cursussessie. Gebruik daarna de zaalmodule; houd "
+                        "Als je de lesstof hebt gelezen, open je de modulequiz "
+                        "via de knop onderaan — op een aparte pagina, met "
+                        "meerkeuze én open vragen, uitleg en visuals. Sla "
+                        "voortgang op via je cursussessie zodat je later kunt "
+                        "hervatten. Ga daarna door naar de zaalmodule; houd "
                         "officiële FIH/KNHB-bronnen bij de hand voor concrete "
                         "regelvragen."
                     ),
                     en=(
-                        "Take the quiz below. Save progress via your course "
-                        "session. Then continue into the indoor module; keep "
-                        "official FIH/KNHB sources handy for concrete rules "
-                        "questions."
+                        "When you have finished the reading, open the module "
+                        "quiz via the button below — on a separate page, with "
+                        "multiple-choice and written items, explanations and "
+                        "visuals. Save progress via your course session so you "
+                        "can resume later. Then continue into the indoor "
+                        "module; keep official FIH/KNHB sources handy for "
+                        "concrete rules questions."
                     ),
                 ),
             ],
-            visual_id="viz-knhb-field-interpretations-slot",
         ),
     ],
     visuals=FIELD_VISUALS,

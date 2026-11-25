@@ -56,6 +56,10 @@ describe("ModuleVisual", () => {
     const svg = document.querySelector("svg.viz-pitch");
     expect(svg).toBeTruthy();
     expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(svg?.querySelector(".viz-pitch-circle-a")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("helft")).toBeInTheDocument();
     expect(screen.getAllByText("23m")).toHaveLength(2);
     expect(screen.getAllByText("cirkel")).toHaveLength(2);
@@ -73,6 +77,10 @@ describe("ModuleVisual", () => {
       knhb_illustration_placeholder: false,
     };
     const { rerender } = render(<ModuleVisual visual={cone} locale="en" />);
+    expect(document.querySelector("svg.viz-danger-cone .viz-cone")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("direction")).toBeInTheDocument();
     expect(screen.getByText("distance")).toBeInTheDocument();
     expect(screen.getByText("speed")).toBeInTheDocument();
@@ -88,6 +96,9 @@ describe("ModuleVisual", () => {
       knhb_illustration_placeholder: false,
     };
     rerender(<ModuleVisual visual={bubble} locale="nl" />);
+    expect(
+      document.querySelector("svg.viz-restart-bubble .viz-bubble"),
+    ).toHaveAttribute("pathLength", "1");
     expect(screen.getByText("bubbel")).toBeInTheDocument();
     expect(screen.getByText("herstart")).toBeInTheDocument();
   });
@@ -173,6 +184,33 @@ describe("ModuleVisual", () => {
     expect(document.querySelector("svg.viz-call-clarity")).toBeTruthy();
     expect(screen.getByText("decide")).toBeInTheDocument();
     expect(screen.getByText("communicate")).toBeInTheDocument();
+  });
+
+  it("renders the field advantage-lens SVG", () => {
+    const lens: VisualPlaceholder = {
+      id: "viz-advantage-lens",
+      kind: "svg_animation",
+      title: { nl: "Voordeel", en: "Advantage" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "advantage-lens",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    render(<ModuleVisual visual={lens} locale="en" />);
+    const svg = document.querySelector("svg.viz-advantage-lens");
+    expect(svg).toBeTruthy();
+    expect(svg?.querySelector(".viz-advantage-lens-ring")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(svg?.querySelector(".viz-advantage-path")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(screen.getByText("advantage")).toBeInTheDocument();
+    expect(screen.getByText("contest")).toBeInTheDocument();
+    expect(screen.getByText("space")).toBeInTheDocument();
   });
 
   it("renders indoor court-boards, lift-limit, and board-play SVGs", () => {

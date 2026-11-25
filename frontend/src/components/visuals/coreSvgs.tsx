@@ -108,17 +108,23 @@ export function PitchZonesSvg({ locale }: { locale: Locale }) {
         d="M 74 56 A 34 34 0 0 1 74 124"
         fill="none"
         strokeWidth="2"
+        pathLength={1}
       />
       <path
         className="viz-pitch-circle viz-pitch-circle-b"
         d="M 206 56 A 34 34 0 0 0 206 124"
         fill="none"
         strokeWidth="2"
+        pathLength={1}
       />
+      <circle className="viz-glow viz-pitch-glow" cx="140" cy="90" r="58" />
       <circle className="viz-ball-travel viz-ball-pitch" cx="110" cy="90" r="5" />
       <UmpireMarker x={140} y={90} />
       <PlayerMarker x={70} y={90} className="viz-actor viz-player viz-player-a" />
       <PlayerMarker x={210} y={90} className="viz-actor viz-player viz-player-b" />
+      <StepBadge x={140} y={90} n={1} />
+      <StepBadge x={51} y={90} n={2} />
+      <StepBadge x={229} y={90} n={3} />
       <text x="140" y="22" textAnchor="middle" className="viz-label viz-label-fade">
         {label("half", locale)}
       </text>
@@ -140,15 +146,19 @@ export function PitchZonesSvg({ locale }: { locale: Locale }) {
 
 export function DangerConeSvg({ locale }: { locale: Locale }) {
   return (
-    <svg className="viz-svg" viewBox="0 0 280 190" aria-hidden="true">
+    <svg className="viz-svg viz-danger-cone" viewBox="0 0 280 190" aria-hidden="true">
       <rect className="viz-canvas" x="8" y="8" width="264" height="174" rx="10" />
+      <circle className="viz-glow viz-cone-glow" cx="150" cy="110" r="64" />
       <polygon className="viz-cone-fill" points="56,150 220,52 220,150" />
+      {/* pathLength keeps the draw animation complete regardless of pixel perimeter. */}
       <polygon
         className="viz-cone"
         points="56,150 220,52 220,150"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
+        strokeLinejoin="round"
+        pathLength={1}
       />
       <circle className="viz-node viz-node-a" cx="56" cy="150" r="7" />
       <circle className="viz-node viz-node-b" cx="220" cy="52" r="7" />
@@ -177,9 +187,10 @@ export function DangerConeSvg({ locale }: { locale: Locale }) {
 
 export function RestartBubbleSvg({ locale }: { locale: Locale }) {
   return (
-    <svg className="viz-svg" viewBox="0 0 260 180" aria-hidden="true">
+    <svg className="viz-svg viz-restart-bubble" viewBox="0 0 260 180" aria-hidden="true">
       <rect className="viz-canvas" x="8" y="8" width="244" height="164" rx="10" />
       <circle className="viz-glow viz-bubble-glow" cx="130" cy="90" r="60" />
+      {/* pathLength keeps the draw animation complete regardless of pixel perimeter. */}
       <circle
         className="viz-bubble"
         cx="130"
@@ -187,6 +198,7 @@ export function RestartBubbleSvg({ locale }: { locale: Locale }) {
         r="54"
         fill="none"
         strokeWidth="2.5"
+        pathLength={1}
       />
       <circle className="viz-core viz-bubble-core" cx="130" cy="90" r="10" />
       <BallMarker x={130} y={90} className="viz-ball-mark" />
@@ -196,6 +208,9 @@ export function RestartBubbleSvg({ locale }: { locale: Locale }) {
       <PlayerMarker x={76} y={120} className="viz-actor viz-player viz-player-a" />
       <PlayerMarker x={184} y={120} className="viz-actor viz-player viz-player-b" />
       <UmpireMarker x={130} y={148} />
+      <StepBadge x={130} y={90} n={1} />
+      <StepBadge x={76} y={120} n={2} />
+      <StepBadge x={184} y={120} n={3} />
       <text x="130" y="24" textAnchor="middle" className="viz-label viz-label-fade">
         {label("bubble", locale)}
       </text>
