@@ -23,6 +23,7 @@ export const KNOWN_ANIMATION_KEYS = [
   "presence-arc",
   "call-clarity",
   "advantage-lens",
+  "tempo-proximity",
 ] as const;
 
 export type AnimationKey = (typeof KNOWN_ANIMATION_KEYS)[number];

@@ -213,7 +213,7 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("space")).toBeInTheDocument();
   });
 
-  it("renders indoor court-boards, lift-limit, and board-play SVGs", () => {
+  it("renders indoor court-boards, lift-limit, board-play, and tempo-proximity SVGs", () => {
     const court: VisualPlaceholder = {
       id: "viz-court-boards",
       kind: "svg_animation",
@@ -228,6 +228,10 @@ describe("ModuleVisual", () => {
     const svg = document.querySelector("svg.viz-court");
     expect(svg).toBeTruthy();
     expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(svg?.querySelector(".viz-court-circle-a")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("helft")).toBeInTheDocument();
     expect(screen.getAllByText("banden")).toHaveLength(2);
     expect(screen.getAllByText("cirkel")).toHaveLength(2);
@@ -243,6 +247,10 @@ describe("ModuleVisual", () => {
       knhb_illustration_placeholder: false,
     };
     rerender(<ModuleVisual visual={lift} locale="en" />);
+    expect(document.querySelector(".viz-lift-arc")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("flat")).toBeInTheDocument();
     expect(screen.getByText("raised")).toBeInTheDocument();
 
@@ -257,9 +265,43 @@ describe("ModuleVisual", () => {
       knhb_illustration_placeholder: false,
     };
     rerender(<ModuleVisual visual={board} locale="nl" />);
+    expect(document.querySelector(".viz-board-path")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("banden")).toBeInTheDocument();
     expect(screen.getByText("rebound")).toBeInTheDocument();
     expect(screen.getByText("herstel")).toBeInTheDocument();
+
+    const tempo: VisualPlaceholder = {
+      id: "viz-tempo-proximity",
+      kind: "svg_animation",
+      title: { nl: "Tempo", en: "Tempo" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "tempo-proximity",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={tempo} locale="en" />);
+    const tempoSvg = document.querySelector("svg.viz-tempo-proximity");
+    expect(tempoSvg).toBeTruthy();
+    expect(tempoSvg?.querySelector(".viz-tempo-ring")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(tempoSvg?.querySelector(".viz-tempo-path")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(tempoSvg?.querySelector(".viz-tempo-partner")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(screen.getByText("closer")).toBeInTheDocument();
+    expect(screen.getByText("tempo")).toBeInTheDocument();
+    expect(screen.getByText("partner")).toBeInTheDocument();
+    expect(screen.getByText("communicate")).toBeInTheDocument();
   });
 
   it("renders pathway match-cadence, partner-handoff, and consistency-loop SVGs", () => {

@@ -101,25 +101,25 @@ INDOOR_VISUALS: list[VisualPlaceholder] = [
         animation_key="indoor-rebound",
     ),
     VisualPlaceholder(
-        id="viz-knhb-indoor-interpretations-slot",
-        kind="official_link_slot",
+        id="viz-tempo-proximity",
+        kind="svg_animation",
         title=LocalizedText(
-            nl="Officiële zaalinterpretaties (plaatshouder)",
-            en="Official indoor interpretations (placeholder)",
+            nl="Tempo & nabijheid (zaalritme)",
+            en="Tempo & proximity (indoor cadence)",
         ),
         caption=LocalizedText(
             nl=(
-                "Link naar KNHB/FIH-materiaal. Geen KNHB-illustratie in deze "
-                "repo. EN-vertaling van NL-interpretaties: volgt later."
+                "Originele cursusillustratie: dichterbij → tempo lezen → "
+                "sneller met je partner communiceren. Geen KNHB-/FIH-plaat — "
+                "officiële bronnen staan onder Verder lezen."
             ),
             en=(
-                "Link to KNHB/FIH materials. No KNHB illustration ships in this "
-                "repo. EN translation of NL interpretations: TBD."
+                "Original course illustration: closer → read tempo → "
+                "communicate sooner with your partner. Not a KNHB/FIH chart — "
+                "official sources are under Further reading."
             ),
         ),
-        official_source_url=KNHB_HOME_URL,
-        official_source_name="KNHB",
-        knhb_illustration_placeholder=True,
+        animation_key="tempo-proximity",
     ),
 ]
 
@@ -396,6 +396,109 @@ INDOOR_QUIZ = Quiz(
                 visualization_hint="court-boards",
             ),
         ),
+        QuizQuestion(
+            id="q5-tempo-when",
+            type="multiple_choice",
+            prompt=LocalizedText(
+                nl=(
+                    "De zaal speelt snel en dichtbij. Wat past het best bij de "
+                    "tempo- & nabijheidslens in dit cursusmodel (pedagogisch)?"
+                ),
+                en=(
+                    "Indoor play is fast and close. What best matches the "
+                    "tempo & proximity lens in this course model "
+                    "(pedagogical)?"
+                ),
+            ),
+            options=[
+                QuizOption(
+                    id="a",
+                    text=LocalizedText(
+                        nl="Blijf ver weg zodat je het hele veld overziet zonder te bewegen.",
+                        en="Stay far away so you can see the whole court without moving.",
+                    ),
+                ),
+                QuizOption(
+                    id="b",
+                    text=LocalizedText(
+                        nl=(
+                            "Dichter bij blijven, sneller scannen, en eerder "
+                            "met je partner communiceren wanneer tempo oploopt."
+                        ),
+                        en=(
+                            "Stay closer, scan sooner, and communicate earlier "
+                            "with your partner when tempo rises."
+                        ),
+                    ),
+                ),
+                QuizOption(
+                    id="c",
+                    text=LocalizedText(
+                        nl="Negeer je partner; zaal is altijd solo-werk.",
+                        en="Ignore your partner; indoor is always solo work.",
+                    ),
+                ),
+                QuizOption(
+                    id="d",
+                    text=LocalizedText(
+                        nl="Wacht tot coaches aangeven wanneer je dichterbij mag.",
+                        en="Wait for coaches to say when you may move closer.",
+                    ),
+                ),
+            ],
+            correct_option_id="b",
+            feedback_correct=QuizFeedback(
+                explanation=LocalizedText(
+                    nl=(
+                        "Juist. De tempo-lens weegt nabijheid en snellere "
+                        "partnercommunicatie — ná veiligheid, niet in plaats "
+                        "ervan."
+                    ),
+                    en=(
+                        "Correct. The tempo lens weighs proximity and faster "
+                        "partner communication — after safety, not instead of "
+                        "it."
+                    ),
+                ),
+                visualization_hint="tempo-proximity",
+            ),
+            feedback_incorrect={
+                "a": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl=(
+                            "Te ver weg maakt bandenrebound en lift moeilijker "
+                            "leesbaar in kleine ruimte."
+                        ),
+                        en=(
+                            "Too far away makes board rebounds and lifts harder "
+                            "to read in tight space."
+                        ),
+                    ),
+                    visualization_hint="tempo-proximity",
+                ),
+                "c": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl="Partnercommunicatie blijft kern — ook in de zaal.",
+                        en="Partner communication stays core — indoors too.",
+                    ),
+                    visualization_hint="tempo-proximity",
+                ),
+                "d": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl="Jij stuurt je positionering; coaches sturen niet jouw tempo-lens.",
+                        en="You drive positioning; coaches do not own your tempo lens.",
+                    ),
+                    visualization_hint="tempo-proximity",
+                ),
+            },
+            feedback_incorrect_default=QuizFeedback(
+                explanation=LocalizedText(
+                    nl="Herlees tempo & nabijheid: dichterbij → tempo → partner.",
+                    en="Revisit tempo & proximity: closer → tempo → partner.",
+                ),
+                visualization_hint="tempo-proximity",
+            ),
+        ),
     ],
 )
 
@@ -408,12 +511,14 @@ INDOOR_MODULE = ModuleStub(
     ),
     summary=LocalizedText(
         nl=(
-            "Volledige module: zaalbaan met banden, liftaccent, bandenscan en "
-            "tempo — met visuals, oefenquiz en officiële bronlinks."
+            "Showcase-module: rijke NL/EN-lesstof in klikstappen, originele "
+            "zaalanimaties en een aparte nagekeken quiz — banden, lift, "
+            "rebound en tempo."
         ),
         en=(
-            "Full module: court with boards, lift emphasis, board scan and "
-            "tempo — with visuals, practice quiz and official source links."
+            "Showcase module: rich NL/EN reading in click-steps, original "
+            "indoor animations and a separate graded quiz — boards, lift, "
+            "rebound and tempo."
         ),
     ),
     learning_objectives=[
@@ -601,13 +706,13 @@ INDOOR_MODULE = ModuleStub(
                     ),
                 ),
             ],
-            visual_id="viz-indoor-rebound",
+            visual_id="viz-board-play",
         ),
         LearningSection(
-            id="sec-indoor-tempo",
+            id="sec-tempo-proximity",
             title=LocalizedText(
-                nl="Tempo & nabijheid",
-                en="Tempo & proximity",
+                nl="Tempo & nabijheid zonder de standaard te verliezen",
+                en="Tempo & proximity without losing the standard",
             ),
             paragraphs=[
                 LocalizedText(
@@ -615,27 +720,33 @@ INDOOR_MODULE = ModuleStub(
                         "Kleinere ruimte betekent kortere besliscycli: dichter "
                         "bij het spel blijven, eerder oogcontact met je "
                         "partner, en sneller communiceren bij herstarten of "
-                        "escalatie."
+                        "escalatie. Dat is flow ná veiligheid — geen vrijbrief "
+                        "om te dicht op het duel te staan."
                     ),
                     en=(
                         "Less space means shorter decision cycles: stay closer "
                         "to play, seek partner eye contact earlier, and "
-                        "communicate sooner on restarts or escalation."
+                        "communicate sooner on restarts or escalation. That is "
+                        "flow after safety — not a free pass to crowd the "
+                        "contest."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Gebruik de KNHB/FIH-plaatshouder hieronder voor "
-                        "officiële interpretaties; deze cursus bundelt geen "
-                        "KNHB-kunst."
+                        "Officiële FIH-/KNHB-voorschriften en interpretaties "
+                        "blijven bij hun bronnen (zie Verder lezen). Hier "
+                        "oefen je alleen de tempo- & nabijheidslens als "
+                        "cursusmodel."
                     ),
                     en=(
-                        "Use the KNHB/FIH placeholder below for official "
-                        "interpretations; this course ships no KNHB art."
+                        "Official FIH/KNHB prescriptions and interpretations "
+                        "stay with their sources (see Further reading). Here "
+                        "you practise only the tempo & proximity lens as a "
+                        "course model."
                     ),
                 ),
             ],
-            visual_id="viz-knhb-indoor-interpretations-slot",
+            visual_id="viz-tempo-proximity",
         ),
         LearningSection(
             id="sec-indoor-practice-next",
@@ -646,18 +757,23 @@ INDOOR_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Maak de quiz hieronder. Sla voortgang op via je "
-                        "cursussessie. Daarna: het pad naar professioneel "
-                        "niveau (match management & consistentie). Houd "
-                        "officiële FIH Indoor / KNHB-bronnen bij de hand "
-                        "voor concrete regelvragen."
+                        "Als je de lesstof hebt gelezen, open je de modulequiz "
+                        "via de knop onderaan — op een aparte pagina, met "
+                        "meerkeuze én open vragen, uitleg en visuals. Sla "
+                        "voortgang op via je cursussessie zodat je later kunt "
+                        "hervatten. Ga daarna door naar het pad naar "
+                        "professioneel niveau; houd officiële FIH Indoor / "
+                        "KNHB-bronnen bij de hand voor concrete regelvragen."
                     ),
                     en=(
-                        "Take the quiz below. Save progress via your course "
-                        "session. Next: the pathway toward professional "
-                        "standard (match management & consistency). Keep "
-                        "official FIH Indoor / KNHB sources handy for "
-                        "concrete rules questions."
+                        "When you have finished the reading, open the module "
+                        "quiz via the button below — on a separate page, with "
+                        "multiple-choice and written items, explanations and "
+                        "visuals. Save progress via your course session so you "
+                        "can resume later. Then continue into the pathway "
+                        "toward professional standard; keep official FIH "
+                        "Indoor / KNHB sources handy for concrete rules "
+                        "questions."
                     ),
                 ),
             ],
