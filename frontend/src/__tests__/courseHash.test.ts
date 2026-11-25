@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   courseHashFor,
   isKnownModuleId,
+  isKnownScenarioId,
   parseCourseHash,
 } from "../nav/courseHash";
 
@@ -42,13 +43,31 @@ describe("courseHash", () => {
     ).toBe("#/modules/mod-intro-role/quiz");
   });
 
+  it("parses practice bank and scenario hashes", () => {
+    expect(parseCourseHash("#/practice")).toEqual({ kind: "practice" });
+    expect(parseCourseHash("#practice")).toEqual({ kind: "practice" });
+    expect(parseCourseHash("#/practice/field-raised")).toEqual({
+      kind: "practice-scenario",
+      scenarioId: "field-raised",
+    });
+    expect(
+      courseHashFor({
+        kind: "practice-scenario",
+        scenarioId: "practice-field-raised-circle",
+      }),
+    ).toBe("#/practice/practice-field-raised-circle");
+    expect(courseHashFor({ kind: "practice" })).toBe("#/practice");
+  });
+
   it("falls back to overview for unknown paths", () => {
     expect(parseCourseHash("#/nope")).toEqual({ kind: "overview" });
     expect(parseCourseHash("#/modules/")).toEqual({ kind: "overview" });
   });
 
-  it("checks known module ids", () => {
+  it("checks known module and scenario ids", () => {
     expect(isKnownModuleId("a", ["a", "b"])).toBe(true);
     expect(isKnownModuleId("c", new Set(["a"]))).toBe(false);
+    expect(isKnownScenarioId("s1", ["s1"])).toBe(true);
+    expect(isKnownScenarioId("s2", new Set(["s1"]))).toBe(false);
   });
 });

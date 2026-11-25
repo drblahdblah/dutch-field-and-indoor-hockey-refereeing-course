@@ -62,6 +62,53 @@ const ui = {
     nl: "Cursusoverzicht",
     en: "Course overview",
   },
+  practiceBank: {
+    nl: "Oefenscenario's",
+    en: "Practice scenarios",
+  },
+  practiceBankIntro: {
+    nl: "Losstaande beslissingsscenario's — apart van de modulelessen.",
+    en: "Standalone decision scenarios — separate from module lessons.",
+  },
+  openPracticeBank: {
+    nl: "Open oefenscenario's",
+    en: "Open practice scenarios",
+  },
+  backToPractice: {
+    nl: "Terug naar oefenscenario's",
+    en: "Back to practice scenarios",
+  },
+  practiceSituation: {
+    nl: "Situatie",
+    en: "Situation",
+  },
+  practiceFocus: {
+    nl: "Focus",
+    en: "Focus",
+  },
+  practiceStep: {
+    nl: "Scenario {current} van {total}",
+    en: "Scenario {current} of {total}",
+  },
+  goToNextScenario: {
+    nl: "Volgend scenario",
+    en: "Next scenario",
+  },
+  practiceNav: {
+    nl: "Oefenscenario-navigatie",
+    en: "Practice scenario navigation",
+  },
+  practiceProgress: {
+    nl: "{done} van {total} scenario's afgerond",
+    en: "{done} of {total} scenarios completed",
+  },
+  practiceFilterAll: { nl: "Alles", en: "All" },
+  practiceFilterField: { nl: "Veld", en: "Field" },
+  practiceFilterIndoor: { nl: "Zaal", en: "Indoor" },
+  openScenario: {
+    nl: "Open scenario",
+    en: "Open scenario",
+  },
   statusNotStarted: { nl: "niet gestart", en: "not started" },
   statusInProgress: { nl: "bezig", en: "in progress" },
   statusCompleted: { nl: "voltooid", en: "completed" },
@@ -285,6 +332,30 @@ export const QUIZ_VIZ_TITLES = {
   "tempo-proximity": {
     nl: "Visualisatie: tempo & nabijheid",
     en: "Visualization: tempo & proximity",
+  },
+  "practice-circle-entry": {
+    nl: "Visualisatie: cirkelaanloop",
+    en: "Visualization: circle entry",
+  },
+  "practice-freehit-23": {
+    nl: "Visualisatie: herstart bij 23m",
+    en: "Visualization: free hit near 23m",
+  },
+  "practice-advantage-wave": {
+    nl: "Visualisatie: voordeel",
+    en: "Visualization: advantage",
+  },
+  "practice-board-lift": {
+    nl: "Visualisatie: band + lift",
+    en: "Visualization: board + lift",
+  },
+  "practice-indoor-restart": {
+    nl: "Visualisatie: zaalherstart",
+    en: "Visualization: indoor restart",
+  },
+  "practice-side-board": {
+    nl: "Visualisatie: zijbandduel",
+    en: "Visualization: side-board contest",
   },
 } as const satisfies Record<string, Localized>;
 

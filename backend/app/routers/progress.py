@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.data.course_seed import get_course_outline
+from app.data.practice_scenarios import practice_scenario_ids
 from app.database import get_db
 from app.models import ModuleProgress, UserSession
 from app.rate_limit import enforce_session_create_limit
@@ -58,8 +59,9 @@ def _progress_out(row: ModuleProgress) -> ProgressOut:
     )
 
 
-def _known_module_ids() -> set[str]:
-    return {m.id for m in get_course_outline().modules}
+def _known_progress_ids() -> set[str]:
+    """Course modules plus practice scenario ids (optional practice progress)."""
+    return {m.id for m in get_course_outline().modules} | practice_scenario_ids()
 
 
 @router.post("/sessions", response_model=SessionCreatedOut, status_code=201)
@@ -104,7 +106,7 @@ def upsert_progress(
     session: UserSession = Depends(require_session),
     db: Session = Depends(get_db),
 ) -> ProgressOut:
-    if payload.module_id not in _known_module_ids():
+    if payload.module_id not in _known_progress_ids():
         raise HTTPException(status_code=400, detail=f"Unknown module_id: {payload.module_id}")
 
     row = (

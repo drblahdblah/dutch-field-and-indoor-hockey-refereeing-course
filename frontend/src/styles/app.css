@@ -87,7 +87,11 @@ main:focus-visible {
 #module-heading:focus,
 #module-heading:focus-visible,
 #course-progress-heading:focus,
-#course-progress-heading:focus-visible {
+#course-progress-heading:focus-visible,
+#practice-bank-heading:focus,
+#practice-bank-heading:focus-visible,
+#practice-scenario-heading:focus,
+#practice-scenario-heading:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 4px;
 }
@@ -555,6 +559,46 @@ main:focus-visible {
 .quiz-view .panel {
   animation: rise 0.45s ease both;
 }
+
+.practice-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.practice-filters .btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.practice-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.practice-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.practice-card h3 {
+  font-family: var(--font-display);
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+}
+
+.practice-scenario-detail .pill {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
 
 .lesson-step-head {
   display: flex;

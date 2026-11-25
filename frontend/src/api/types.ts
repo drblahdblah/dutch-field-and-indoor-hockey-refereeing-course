@@ -129,3 +129,21 @@ export type QuizSubmitResult = {
   results: QuizAnswerResult[];
   progress_saved: boolean;
 };
+
+export type PracticeScenario = {
+  id: string;
+  kind: "field" | "indoor";
+  title: LocalizedText;
+  situation: LocalizedText;
+  focus: LocalizedText;
+  order: number;
+  visual_key: string;
+  quiz: Quiz;
+};
+
+export type PracticeBank = {
+  id: string;
+  title: LocalizedText;
+  description: LocalizedText;
+  scenarios: PracticeScenario[];
+};

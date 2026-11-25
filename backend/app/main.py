@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import init_db
-from app.routers import course, progress, quiz
+from app.routers import course, practice, progress, quiz
 from app.schemas import HealthOut
 
 
@@ -29,6 +29,7 @@ app.add_middleware(
 )
 
 app.include_router(course.router)
+app.include_router(practice.router)
 app.include_router(progress.router)
 app.include_router(quiz.router)
 

@@ -6,6 +6,7 @@ from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.data.course_seed import get_course_outline
+from app.data.practice_scenarios import scenario_id_for_quiz
 from app.database import get_db
 from app.models import ModuleProgress, UserSession
 from app.rate_limit import enforce_quiz_submit_limit
@@ -70,19 +71,20 @@ def _persist_quiz_progress(
     results: list[QuizAnswerResult],
 ) -> bool:
     module = next((m for m in get_course_outline().modules if m.quiz_id == quiz_id), None)
-    if not module:
+    progress_key = module.id if module else scenario_id_for_quiz(quiz_id)
+    if not progress_key:
         return False
 
     row = (
         db.query(ModuleProgress)
         .filter(
             ModuleProgress.session_id == session.id,
-            ModuleProgress.module_id == module.id,
+            ModuleProgress.module_id == progress_key,
         )
         .one_or_none()
     )
     if row is None:
-        row = ModuleProgress(session_id=session.id, module_id=module.id)
+        row = ModuleProgress(session_id=session.id, module_id=progress_key)
         db.add(row)
 
     total = len(quiz.questions)

@@ -24,6 +24,12 @@ export const KNOWN_ANIMATION_KEYS = [
   "call-clarity",
   "advantage-lens",
   "tempo-proximity",
+  "practice-circle-entry",
+  "practice-freehit-23",
+  "practice-advantage-wave",
+  "practice-board-lift",
+  "practice-indoor-restart",
+  "practice-side-board",
 ] as const;
 
 export type AnimationKey = (typeof KNOWN_ANIMATION_KEYS)[number];
