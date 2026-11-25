@@ -102,13 +102,21 @@ describe("App course / module navigation", () => {
     expect(
       screen.queryByRole("navigation", { name: /Cursusmodules/i }),
     ).not.toBeInTheDocument();
-    const backButtons = screen.getAllByRole("button", {
-      name: /Terug naar cursusoverzicht/i,
-    });
-    expect(backButtons.length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getByRole("navigation", { name: /Modulenavigatie/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Terug naar cursusoverzicht/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Module 1 van 2/i)).toBeInTheDocument();
 
-    fireEvent.click(backButtons[0]!);
+    await waitFor(() => {
+      expect(document.activeElement?.id).toBe("module-heading");
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Terug naar cursusoverzicht/i }),
+    );
 
     await waitFor(() => {
       expect(
@@ -117,6 +125,10 @@ describe("App course / module navigation", () => {
     });
     expect(screen.queryByRole("heading", { name: /Intro NL/i })).not.toBeInTheDocument();
     expect(window.location.hash).toBe("#/");
+
+    await waitFor(() => {
+      expect(document.activeElement?.id).toBe("course-progress-heading");
+    });
   });
 
   it("opens a module from a deep-link hash", async () => {
@@ -129,5 +141,38 @@ describe("App course / module navigation", () => {
     expect(
       screen.queryByRole("navigation", { name: /Cursusmodules/i }),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("navigation", { name: /Modulenavigatie/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("replaces an unknown module hash with the overview", async () => {
+    window.location.hash = "#/modules/does-not-exist";
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("navigation", { name: /Cursusmodules/i }),
+      ).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/");
+  });
+
+  it("advances to the next module from the module footer", async () => {
+    window.location.hash = "#/modules/mod-a";
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /Intro NL/i })).toBeInTheDocument();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Volgende module:.*Veld NL/i }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /Veld NL/i })).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/modules/mod-b");
   });
 });

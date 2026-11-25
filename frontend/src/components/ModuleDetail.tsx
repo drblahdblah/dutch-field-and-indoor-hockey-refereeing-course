@@ -96,7 +96,9 @@ export function ModuleDetail({
           {isFull ? uiT("contentFull", locale) : uiT("contentStub", locale)}
         </span>
       </p>
-      <h2 id="module-heading">{t(module.title, locale)}</h2>
+      <h2 id="module-heading" tabIndex={-1}>
+        {t(module.title, locale)}
+      </h2>
       <p>{t(module.summary, locale)}</p>
 
       <h3>{uiT("learningObjectives", locale)}</h3>

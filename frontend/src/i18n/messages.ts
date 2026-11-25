@@ -46,10 +46,6 @@ const ui = {
     nl: "Terug naar cursusoverzicht",
     en: "Back to course overview",
   },
-  openModule: {
-    nl: "Open module",
-    en: "Open module",
-  },
   moduleStep: {
     nl: "Module {current} van {total}",
     en: "Module {current} of {total}",
@@ -57,6 +53,10 @@ const ui = {
   goToNextModule: {
     nl: "Volgende module",
     en: "Next module",
+  },
+  moduleChrome: {
+    nl: "Modulenavigatie",
+    en: "Module navigation",
   },
   courseOverview: {
     nl: "Cursusoverzicht",

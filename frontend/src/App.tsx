@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   api,
   clearAccessToken,
@@ -14,6 +14,7 @@ import { ModuleDetail } from "./components/ModuleDetail";
 import { t, uiT, type Locale } from "./i18n/messages";
 import {
   courseHashFor,
+  isKnownModuleId,
   parseCourseHash,
   type CourseView,
 } from "./nav/courseHash";
@@ -21,6 +22,13 @@ import {
 function readViewFromLocation(): CourseView {
   if (typeof window === "undefined") return { kind: "overview" };
   return parseCourseHash(window.location.hash);
+}
+
+function focusById(id: string) {
+  const el = document.getElementById(id);
+  if (el && "focus" in el) {
+    (el as HTMLElement).focus();
+  }
 }
 
 export default function App() {
@@ -35,7 +43,8 @@ export default function App() {
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const moduleNavId = useId();
+  const progressGenRef = useRef(0);
+  const lastModuleIdRef = useRef<string | null>(null);
 
   const selectedId = view.kind === "module" ? view.moduleId : null;
 
@@ -114,9 +123,10 @@ export default function App() {
 
   useEffect(() => {
     if (!course || view.kind !== "module") return;
-    const known = course.modules.some((m) => m.id === view.moduleId);
-    if (!known) {
-      navigate({ kind: "overview" }, true);
+    const ids = course.modules.map((m) => m.id);
+    if (!isKnownModuleId(view.moduleId, ids)) {
+      setView({ kind: "overview" });
+      window.history.replaceState(null, "", courseHashFor({ kind: "overview" }));
     }
   }, [course, view]);
 
@@ -187,13 +197,19 @@ export default function App() {
     const token = opts?.token ?? accessToken;
     const track = opts?.trackProgress ?? hasSession;
     if (!track) return;
+    const gen = ++progressGenRef.current;
     try {
       await api.updateProgress(
         { module_id: moduleId, status: "in_progress" },
         token,
       );
-      await refreshProgress(token);
+      if (gen !== progressGenRef.current) return;
+      const data = await api.getProgress(token);
+      if (gen !== progressGenRef.current) return;
+      setProgress(data.progress);
+      setHasSession(true);
     } catch (err) {
+      if (gen !== progressGenRef.current) return;
       handleApiFailure(err);
     }
   }
@@ -232,6 +248,19 @@ export default function App() {
       ? modules[selectedIndex + 1]
       : null;
   const showingModule = view.kind === "module" && selected != null;
+
+  useLayoutEffect(() => {
+    if (loading || !course) return;
+    if (showingModule && selectedId) {
+      lastModuleIdRef.current = selectedId;
+      focusById("module-heading");
+      return;
+    }
+    if (lastModuleIdRef.current) {
+      lastModuleIdRef.current = null;
+      focusById("course-progress-heading");
+    }
+  }, [showingModule, selectedId, loading, course]);
 
   return (
     <div className="app">
@@ -336,8 +365,7 @@ export default function App() {
           <div className="module-view">
             <nav
               className="module-view-nav"
-              aria-label={uiT("courseOverview", locale)}
-              id={moduleNavId}
+              aria-label={uiT("moduleChrome", locale)}
             >
               <button
                 type="button"
@@ -370,9 +398,6 @@ export default function App() {
             />
 
             <div className="module-view-footer">
-              <button type="button" className="btn" onClick={backToCourse}>
-                {uiT("backToCourse", locale)}
-              </button>
               {nextModule && (
                 <button
                   type="button"

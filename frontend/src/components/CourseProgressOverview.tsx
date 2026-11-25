@@ -39,7 +39,8 @@ export function CourseProgressOverview({
   onSelectModule,
 }: Props) {
   const baseId = useId();
-  const headingId = `${baseId}-heading`;
+  // Stable focus target after returning from a module view (see App focus restore).
+  const headingId = "course-progress-heading";
   const summaryId = `${baseId}-summary`;
 
   const ordered = [...modules].sort((a, b) => a.order - b.order);
@@ -58,7 +59,7 @@ export function CourseProgressOverview({
   return (
     <section className="course-progress" aria-labelledby={headingId}>
       <div className="course-progress-head">
-        <h2 id={headingId} className="section-title">
+        <h2 id={headingId} className="section-title" tabIndex={-1}>
           {uiT("progressOverview", locale)}
         </h2>
         {hasSession ? (
