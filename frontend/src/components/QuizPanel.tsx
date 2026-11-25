@@ -108,7 +108,10 @@ export function QuizPanel({
               />
             )}
             {feedback && (
-              <div className={`feedback ${feedback.correct ? "ok" : "bad"}`}>
+              <div
+                className={`feedback ${feedback.correct ? "ok" : "bad"}`}
+                role="status"
+              >
                 <strong>
                   {feedback.correct ? uiT("correct", locale) : uiT("incorrect", locale)}
                 </strong>
@@ -125,8 +128,15 @@ export function QuizPanel({
           </div>
         );
       })}
-      <button className="btn btn-primary" type="button" disabled={busy} onClick={submit}>
-        {uiT("submit", locale)}
+      <button
+        className="btn btn-primary"
+        type="button"
+        disabled={busy}
+        aria-busy={busy || undefined}
+        aria-label={busy ? uiT("submitting", locale) : undefined}
+        onClick={submit}
+      >
+        {busy ? uiT("submitting", locale) : uiT("submit", locale)}
       </button>
       {result && (
         <p className="muted">

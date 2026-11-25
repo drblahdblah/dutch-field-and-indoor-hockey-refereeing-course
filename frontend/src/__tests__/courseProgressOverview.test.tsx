@@ -134,6 +134,12 @@ describe("CourseProgressOverview", () => {
       /Course path complete/i,
     );
     expect(screen.getByRole("progressbar").getAttribute("aria-describedby")).toBeTruthy();
+    expect(
+      screen.getByRole("navigation", { name: /Course modules/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Intro EN/i }),
+    ).toHaveAttribute("aria-current", "page");
     const doneSteps = document.querySelectorAll(".pathway-row.is-done .pathway-step");
     expect(doneSteps.length).toBe(2);
     expect([...doneSteps].every((el) => el.textContent === "✓")).toBe(true);

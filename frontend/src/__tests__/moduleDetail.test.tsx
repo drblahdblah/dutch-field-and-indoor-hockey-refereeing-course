@@ -137,10 +137,9 @@ describe("ModuleDetail", () => {
     expect(
       screen.queryByText(/EN translation slot — no authorized legal translation/i),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "KNHB" })).toHaveAttribute(
-      "href",
-      "https://www.knhb.nl/",
-    );
+    expect(
+      screen.getByRole("link", { name: /KNHB.*opens in new tab/i }),
+    ).toHaveAttribute("href", "https://www.knhb.nl/");
     const card = document.querySelector('[data-interp-id="interp-demo"]');
     expect(card).toBeTruthy();
     expect(card?.querySelector("svg.viz-svg")).toBeTruthy();

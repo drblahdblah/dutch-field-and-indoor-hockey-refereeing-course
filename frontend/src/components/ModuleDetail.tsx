@@ -62,6 +62,7 @@ function InterpretationCard({
         {href ? (
           <a href={href} target="_blank" rel="noopener noreferrer">
             {refItem.official_source_name}
+            <span className="sr-only"> {uiT("opensInNewTab", locale)}</span>
           </a>
         ) : (
           <span>{refItem.official_source_name}</span>
@@ -170,6 +171,7 @@ export function ModuleDetail({
                   {href ? (
                     <a href={href} target="_blank" rel="noopener noreferrer">
                       {t(item.title, locale)}
+                      <span className="sr-only"> {uiT("opensInNewTab", locale)}</span>
                     </a>
                   ) : (
                     <span>{t(item.title, locale)}</span>
