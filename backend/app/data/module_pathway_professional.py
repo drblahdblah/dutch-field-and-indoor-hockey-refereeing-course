@@ -99,25 +99,25 @@ PATHWAY_VISUALS: list[VisualPlaceholder] = [
         animation_key="match-pressure",
     ),
     VisualPlaceholder(
-        id="viz-knhb-pathway-slot",
-        kind="official_link_slot",
+        id="viz-standard-ladder",
+        kind="svg_animation",
         title=LocalizedText(
-            nl="KNHB-ontwikkelpad (plaatshouder)",
-            en="KNHB development pathway (placeholder)",
+            nl="Standaardladder: club → competitie → top",
+            en="Standard ladder: club → competition → top",
         ),
         caption=LocalizedText(
             nl=(
-                "Link naar KNHB-scheidsrechters-/opleidingsmateriaal. Geen "
-                "KNHB-illustratie in deze repo. EN-vertaling: volgt later."
+                "Originele cursusillustratie: omhoog naar topstandaard via "
+                "ritme, samenwerking en consistentie. Geen KNHB-/FIH-plaat — "
+                "officiële bronnen staan onder Verder lezen."
             ),
             en=(
-                "Link to KNHB umpire / education materials. No KNHB "
-                "illustration ships in this repo. EN translation: TBD."
+                "Original course illustration: climb toward top standard via "
+                "cadence, collaboration and consistency. Not a KNHB/FIH chart "
+                "— official sources are under Further reading."
             ),
         ),
-        official_source_url=KNHB_HOME_URL,
-        official_source_name="KNHB",
-        knhb_illustration_placeholder=True,
+        animation_key="standard-ladder",
     ),
 ]
 
@@ -377,14 +377,124 @@ PATHWAY_QUIZ = Quiz(
                     nl="Juist — pathway (ontwikkelpad).",
                     en="Correct — pathway.",
                 ),
-                visualization_hint=None,
+                visualization_hint="standard-ladder",
             ),
             feedback_incorrect_default=QuizFeedback(
                 explanation=LocalizedText(
                     nl="Verwacht antwoord: pathway.",
                     en="Expected answer: pathway.",
                 ),
-                visualization_hint=None,
+                visualization_hint="standard-ladder",
+            ),
+        ),
+        QuizQuestion(
+            id="q5-standard-when",
+            type="multiple_choice",
+            prompt=LocalizedText(
+                nl=(
+                    "Op de standaardladder (cursusmodel) is de beste manier om "
+                    "richting topniveau te groeien:"
+                ),
+                en=(
+                    "On the standard ladder (course model), the best way to "
+                    "grow toward top level is:"
+                ),
+            ),
+            options=[
+                QuizOption(
+                    id="a",
+                    text=LocalizedText(
+                        nl="Alleen strengere fluiten zonder briefing of nabespreking.",
+                        en="Only stricter whistling, without briefing or debrief.",
+                    ),
+                ),
+                QuizOption(
+                    id="b",
+                    text=LocalizedText(
+                        nl=(
+                            "Ritme, samenwerking en consistentie stap voor "
+                            "stap verhogen — en officiële KNHB/FIH-eisen elders "
+                            "checken."
+                        ),
+                        en=(
+                            "Raise cadence, collaboration and consistency step "
+                            "by step — and check official KNHB/FIH requirements "
+                            "elsewhere."
+                        ),
+                    ),
+                ),
+                QuizOption(
+                    id="c",
+                    text=LocalizedText(
+                        nl="Partner overslaan; topniveau is solo-werk.",
+                        en="Skip the partner; top level is solo work.",
+                    ),
+                ),
+                QuizOption(
+                    id="d",
+                    text=LocalizedText(
+                        nl="Wachten tot coaches zeggen dat je ‘klaar’ bent voor Hoofdklasse.",
+                        en="Wait until coaches say you are ‘ready’ for Hoofdklasse.",
+                    ),
+                ),
+            ],
+            correct_option_id="b",
+            feedback_correct=QuizFeedback(
+                explanation=LocalizedText(
+                    nl=(
+                        "Juist. De ladder weegt ritme → samenwerking → "
+                        "consistentie; licenties en routes blijven bij KNHB "
+                        "(zie Verder lezen)."
+                    ),
+                    en=(
+                        "Correct. The ladder weighs cadence → collaboration → "
+                        "consistency; licences and routes stay with KNHB "
+                        "(see Further reading)."
+                    ),
+                ),
+                visualization_hint="standard-ladder",
+            ),
+            feedback_incorrect={
+                "a": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl=(
+                            "Strenger fluiten zonder ritme/review is geen "
+                            "professioneel ontwikkelpad."
+                        ),
+                        en=(
+                            "Stricter whistling without cadence/review is not "
+                            "a professional development path."
+                        ),
+                    ),
+                    visualization_hint="standard-ladder",
+                ),
+                "c": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl="Samenwerking blijft kern — ook op topniveau.",
+                        en="Collaboration stays core — at top level too.",
+                    ),
+                    visualization_hint="partner-handoff",
+                ),
+                "d": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl=(
+                            "Jij bouwt de standaard; coaches helpen, maar "
+                            "officiële stappen staan bij KNHB."
+                        ),
+                        en=(
+                            "You build the standard; coaches help, but "
+                            "official steps live with KNHB."
+                        ),
+                    ),
+                    visualization_hint="standard-ladder",
+                ),
+            },
+            feedback_incorrect_default=QuizFeedback(
+                explanation=LocalizedText(
+                    nl="Herlees de standaardladder: club → competitie → top.",
+                    en="Revisit the standard ladder: club → competition → top.",
+                ),
+                visualization_hint="standard-ladder",
             ),
         ),
     ],
@@ -399,14 +509,14 @@ PATHWAY_MODULE = ModuleStub(
     ),
     summary=LocalizedText(
         nl=(
-            "Volledige module: match management, samenwerking, "
-            "beslissingsconsistentie en KNHB-padwijzers — met visuals, "
-            "oefenquiz en officiële bronlinks."
+            "Showcase-module: rijke NL/EN-lesstof in klikstappen, originele "
+            "pathway-animaties en een aparte nagekeken quiz — ritme, "
+            "samenwerking, consistentie en standaardladder."
         ),
         en=(
-            "Full module: match management, collaboration, decision "
-            "consistency and KNHB pathway pointers — with visuals, practice "
-            "quiz and official source links."
+            "Showcase module: rich NL/EN reading in click-steps, original "
+            "pathway animations and a separate graded quiz — cadence, "
+            "collaboration, consistency and the standard ladder."
         ),
     ),
     learning_objectives=[
@@ -423,8 +533,8 @@ PATHWAY_MODULE = ModuleStub(
             en="Apply a consistency criterion across a whole match.",
         ),
         LocalizedText(
-            nl="KNHB/FIH-bronnen aanwijzen voor officiële opleidingsstappen.",
-            en="Point to KNHB/FIH sources for official education steps.",
+            nl="De standaardladder beschrijven en KNHB/FIH-bronnen aanwijzen.",
+            en="Describe the standard ladder and point to KNHB/FIH sources.",
         ),
     ],
     instruction_outline=[
@@ -441,8 +551,8 @@ PATHWAY_MODULE = ModuleStub(
             en="Consistency: same criterion, repeatable.",
         ),
         LocalizedText(
-            nl="Padwijzers: KNHB/FIH-links (geen auteursrechtelijke kunst).",
-            en="Pathway pointers: KNHB/FIH links (no copyrighted art).",
+            nl="Standaardladder: club → competitie → top (bronnen elders).",
+            en="Standard ladder: club → competition → top (sources elsewhere).",
         ),
     ],
     content_status="full",
@@ -485,6 +595,7 @@ PATHWAY_MODULE = ModuleStub(
                     ),
                 ),
             ],
+            visual_id="viz-match-cadence",
         ),
         LearningSection(
             id="sec-match-management",
@@ -598,40 +709,46 @@ PATHWAY_MODULE = ModuleStub(
             visual_id="viz-consistency-loop",
         ),
         LearningSection(
-            id="sec-knhb-pathway",
+            id="sec-standard-ladder",
             title=LocalizedText(
-                nl="KNHB-padwijzers (attributie)",
-                en="KNHB pathway pointers (attribution)",
+                nl="Standaardladder zonder de bron te verliezen",
+                en="Standard ladder without losing the source",
             ),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Concrete opleidingsstappen, licenties en "
-                        "aanmeldroutes staan bij de KNHB — niet in deze "
-                        "repo. Gebruik de plaatshouder-link hieronder; "
-                        "controleer altijd de actuele KNHB-pagina."
+                        "Denk in treden: clubritme → competitie-samenwerking "
+                        "→ topconsistentie. Elke trede vraagt dezelfde "
+                        "bouwstenen (vóór/tijdens/ná, lead/support, "
+                        "observeer→besluit→communiceer→review) op een "
+                        "hogere standaard — niet een andere sport."
                     ),
                     en=(
-                        "Concrete education steps, licences and application "
-                        "routes live with the KNHB — not in this repo. Use "
-                        "the placeholder link below; always check the "
-                        "current KNHB page."
+                        "Think in rungs: club cadence → competition "
+                        "collaboration → top consistency. Each rung asks for "
+                        "the same building blocks (before/during/after, "
+                        "lead/support, observe→decide→communicate→review) at "
+                        "a higher standard — not a different sport."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "FIH Rules blijven de internationale regelbasis; "
-                        "KNHB-interpretaties en opleidingen vertalen die "
-                        "naar NL-competities. Geen KNHB-illustraties hier."
+                        "Concrete opleidingsstappen, licenties en "
+                        "aanmeldroutes blijven bij de KNHB; FIH Rules zijn "
+                        "de internationale regelbasis (zie Verder lezen). "
+                        "Hier oefen je alleen de standaardladder als "
+                        "cursusmodel — geen KNHB-kunst."
                     ),
                     en=(
-                        "FIH Rules remain the international rules base; "
-                        "KNHB interpretations and education translate them "
-                        "for NL competitions. No KNHB illustrations here."
+                        "Concrete education steps, licences and application "
+                        "routes stay with the KNHB; FIH Rules are the "
+                        "international rules base (see Further reading). "
+                        "Here you practise only the standard ladder as a "
+                        "course model — no KNHB art."
                     ),
                 ),
             ],
-            visual_id="viz-knhb-pathway-slot",
+            visual_id="viz-standard-ladder",
         ),
         LearningSection(
             id="sec-pathway-practice-next",
@@ -642,18 +759,24 @@ PATHWAY_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Maak de quiz hieronder. Sla voortgang op via je "
-                        "cursussessie. Daarna: de KNHB-interpretatielaag "
-                        "(attributie + EN-vertaalslots). Houd KNHB- en "
-                        "FIH-bronnen bij de hand; deze module is een "
-                        "besliskader, geen vervanging van bondscursussen."
+                        "Als je de lesstof hebt gelezen, open je de modulequiz "
+                        "via de knop onderaan — op een aparte pagina, met "
+                        "meerkeuze én open vragen, uitleg en visuals. Sla "
+                        "voortgang op via je cursussessie zodat je later kunt "
+                        "hervatten. Ga daarna door naar de "
+                        "KNHB-interpretatielaag; houd KNHB- en FIH-bronnen "
+                        "bij de hand — deze module is een besliskader, geen "
+                        "vervanging van bondscursussen."
                     ),
                     en=(
-                        "Take the quiz below. Save progress via your course "
-                        "session. Next: the KNHB interpretation layer "
-                        "(attribution + EN translation slots). Keep KNHB and "
-                        "FIH sources handy; this module is a decision frame, "
-                        "not a replacement for federation courses."
+                        "When you have finished the reading, open the module "
+                        "quiz via the button below — on a separate page, with "
+                        "multiple-choice and written items, explanations and "
+                        "visuals. Save progress via your course session so you "
+                        "can resume later. Then continue into the KNHB "
+                        "interpretation layer; keep KNHB and FIH sources "
+                        "handy — this module is a decision frame, not a "
+                        "replacement for federation courses."
                     ),
                 ),
             ],

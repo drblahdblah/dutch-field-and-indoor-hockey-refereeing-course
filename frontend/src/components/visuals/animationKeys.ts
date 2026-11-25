@@ -24,6 +24,7 @@ export const KNOWN_ANIMATION_KEYS = [
   "call-clarity",
   "advantage-lens",
   "tempo-proximity",
+  "standard-ladder",
   "practice-circle-entry",
   "practice-freehit-23",
   "practice-advantage-wave",

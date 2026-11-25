@@ -18,6 +18,7 @@ import {
   MatchCadenceSvg,
   PartnerHandoffSvg,
   SourceStackSvg,
+  StandardLadderSvg,
   TranslationSlotSvg,
 } from "./pathwaySvgs";
 import {
@@ -69,6 +70,7 @@ const ANIMATIONS = {
   "call-clarity": CallClaritySvg,
   "advantage-lens": AdvantageLensSvg,
   "tempo-proximity": TempoProximitySvg,
+  "standard-ladder": StandardLadderSvg,
   "practice-circle-entry": PracticeCircleEntrySvg,
   "practice-freehit-23": PracticeFreehit23Svg,
   "practice-advantage-wave": PracticeAdvantageWaveSvg,
