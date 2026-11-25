@@ -859,5 +859,5 @@ CAPSTONE_MODULE = ModuleStub(
             attribution=KNHB_ATTR,
         ),
     ],
-    order=7,
+    order=8,
 )

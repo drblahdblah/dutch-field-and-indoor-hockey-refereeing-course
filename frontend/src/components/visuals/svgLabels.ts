@@ -73,6 +73,23 @@ export const SVG_LABELS = {
   path: { nl: "pad", en: "path" },
   timing: { nl: "timing", en: "timing" },
   contact: { nl: "contact", en: "contact" },
+  push: { nl: "push", en: "push" },
+  slap: { nl: "slap", en: "slap" },
+  hit: { nl: "hit", en: "hit" },
+  strokeTypes: { nl: "slagtypes", en: "stroke types" },
+  stickObs: { nl: "stick", en: "stick" },
+  bodyObs: { nl: "lichaam", en: "body" },
+  shadowObs: { nl: "schaduw", en: "shadow" },
+  penaltyCorner: { nl: "strafcorner", en: "penalty corner" },
+  penaltyStroke: { nl: "strafbal", en: "penalty stroke" },
+  greenCard: { nl: "groen", en: "green" },
+  yellowCard: { nl: "geel", en: "yellow" },
+  redCard: { nl: "rood", en: "red" },
+  countPlayers: { nl: "tellen", en: "count" },
+  toss: { nl: "toss", en: "toss" },
+  chooseSide: { nl: "kant", en: "side" },
+  positioning: { nl: "positie", en: "positioning" },
+  gkRights: { nl: "keeperrechten", en: "keeper rights" },
 } as const;
 
 export function label(

@@ -695,6 +695,23 @@ main:focus-visible {
   border-color: rgba(255, 122, 122, 0.45);
 }
 
+.module-visual-title {
+  display: block;
+  margin-bottom: 0.65rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.module-visual-situation {
+  margin: 0.65rem 0 0;
+}
+
+.module-visual-situation p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+}
+
 .module-visual figcaption strong {
   display: block;
   margin-bottom: 0.25rem;
@@ -1668,6 +1685,72 @@ main:focus-visible {
   fill: var(--warn);
 }
 
+.viz-hit-arc {
+  stroke: var(--accent);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.3s ease forwards;
+}
+
+.viz-hit-slap {
+  animation-delay: 0.15s;
+  stroke: var(--warn);
+}
+
+.viz-hit-full {
+  animation-delay: 0.3s;
+  stroke: var(--danger);
+}
+
+.viz-ball-hit-a {
+  offset-path: path("M 40 130 Q 70 100 100 130");
+  animation: ball-slide 2.2s ease-in-out infinite alternate;
+}
+
+.viz-ball-hit-b {
+  offset-path: path("M 120 130 Q 150 70 180 130");
+  animation: ball-slide 2.4s ease-in-out infinite alternate;
+}
+
+.viz-ball-hit-c {
+  offset-path: path("M 200 130 Q 230 50 260 130");
+  animation: ball-slide 2.6s ease-in-out infinite alternate;
+}
+
+.viz-ball-pc {
+  offset-path: path("M 70 108 L 160 120");
+  animation: ball-slide 2.4s ease-in-out infinite alternate;
+}
+
+.viz-ball-pos {
+  offset-path: path("M 60 80 L 140 80");
+  animation: ball-slide 2.5s ease-in-out infinite alternate;
+}
+
+.viz-card {
+  animation: pop-node 0.45s ease both;
+}
+
+.viz-card-green {
+  fill: rgba(110, 231, 168, 0.55);
+  stroke: var(--ok);
+  stroke-width: 1.5;
+}
+
+.viz-card-yellow {
+  fill: rgba(255, 180, 84, 0.55);
+  stroke: var(--warn);
+  stroke-width: 1.5;
+  animation-delay: 0.12s;
+}
+
+.viz-card-red {
+  fill: rgba(255, 122, 122, 0.55);
+  stroke: var(--danger);
+  stroke-width: 1.5;
+  animation-delay: 0.24s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .viz-tri,
   .viz-cone,
@@ -1732,6 +1815,8 @@ main:focus-visible {
   .viz-hard-gk-path,
   .viz-hard-possess-glow,
   .viz-hard-board-hint,
+  .viz-hit-arc,
+  .viz-card,
   .viz-label-fade,
   .viz-glow,
   .viz-ball-travel,
@@ -1809,8 +1894,13 @@ main:focus-visible {
   .viz-hard-contest-ring,
   .viz-hard-contest-stick-a,
   .viz-hard-contest-stick-b,
-  .viz-hard-gk-path {
+  .viz-hard-gk-path,
+  .viz-hit-arc {
     stroke-dashoffset: 0;
+  }
+
+  .viz-card {
+    opacity: 1;
   }
 
   .viz-node,

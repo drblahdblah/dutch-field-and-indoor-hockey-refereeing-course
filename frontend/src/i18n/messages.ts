@@ -381,6 +381,38 @@ export const QUIZ_VIZ_TITLES = {
     nl: "Visualisatie: keeperslide / duik",
     en: "Visualization: keeper slide / dive",
   },
+  "hit-types": {
+    nl: "Visualisatie: slagtypes",
+    en: "Visualization: stroke types",
+  },
+  "obstruction-types": {
+    nl: "Visualisatie: obstructietypes",
+    en: "Visualization: obstruction types",
+  },
+  "penalty-corner": {
+    nl: "Visualisatie: strafcorner",
+    en: "Visualization: penalty corner",
+  },
+  "penalty-stroke": {
+    nl: "Visualisatie: strafbal",
+    en: "Visualization: penalty stroke",
+  },
+  "card-ladder": {
+    nl: "Visualisatie: kaartenladder",
+    en: "Visualization: card ladder",
+  },
+  "match-start": {
+    nl: "Visualisatie: wedstrijdstart",
+    en: "Visualization: match start",
+  },
+  "umpire-position": {
+    nl: "Visualisatie: scheidsrechterpositie",
+    en: "Visualization: umpire positioning",
+  },
+  "gk-limits": {
+    nl: "Visualisatie: keepergrenzen",
+    en: "Visualization: keeper limits",
+  },
 } as const satisfies Record<string, Localized>;
 
 export type UiKey = keyof typeof ui;

@@ -23,101 +23,122 @@ KNHB_HOME_URL = "https://www.knhb.nl/"
 
 FIELD_VISUALS: list[VisualPlaceholder] = [
     VisualPlaceholder(
-        id="viz-pitch-zones",
+        id="viz-match-start",
         kind="svg_animation",
-        title=LocalizedText(
-            nl="Veldzones (scheidsrechterlijk overzicht)",
-            en="Pitch zones (umpire overview)",
-        ),
+        title=LocalizedText(nl="Wedstrijdstart", en="Match start"),
         caption=LocalizedText(
-            nl=(
-                "Originele SVG: helften, 23m-band, cirkels. Geen officiële "
-                "FIH/KNHB-veldmaat illustratie — raadpleeg officiële bronnen "
-                "voor exacte afmetingen."
-            ),
-            en=(
-                "Original SVG: halves, 23m band, circles. Not an official "
-                "FIH/KNHB pitch diagram — consult official sources for exact "
-                "dimensions."
-            ),
+            nl="Voor de aftrap: spelers tellen, doelen checken, toss met de stick, kant en aftrap kiezen.",
+            en="Before push-back: count players, check goals, toss with the stick, choose side and who starts.",
         ),
-        animation_key="pitch-zones",
+        animation_key="match-start",
+    ),
+    VisualPlaceholder(
+        id="viz-umpire-position",
+        kind="svg_animation",
+        title=LocalizedText(nl="Waar je staat", en="Where you stand"),
+        caption=LocalizedText(
+            nl="Lead-scheidsrechter dicht bij de bal op de eigen helft; support dekt de andere helft en de diepte.",
+            en="Lead umpire near the ball on their half; support covers the other half and depth.",
+        ),
+        animation_key="umpire-position",
+    ),
+    VisualPlaceholder(
+        id="viz-hit-types",
+        kind="svg_animation",
+        title=LocalizedText(nl="Slagtypes", en="Stroke types"),
+        caption=LocalizedText(
+            nl="Drie basisbewegingen: push (duwen), slap (korte slag), hit (volle slag) — lees kracht en richting.",
+            en="Three basic strokes: push, slap, hit — read power and direction.",
+        ),
+        animation_key="hit-types",
+    ),
+    VisualPlaceholder(
+        id="viz-obstruction-types",
+        kind="svg_animation",
+        title=LocalizedText(nl="Obstructie", en="Obstruction"),
+        caption=LocalizedText(
+            nl="Stick-obstructie, lichaamsobstructie, en schaduw/derde-man die de opponent wegblokkeert van de bal.",
+            en="Stick obstruction, body obstruction, and shadow/third-man blocking the opponent from the ball.",
+        ),
+        animation_key="obstruction-types",
     ),
     VisualPlaceholder(
         id="viz-danger-cone",
         kind="svg_animation",
-        title=LocalizedText(
-            nl="Gevaarskegel: richting × afstand × snelheid",
-            en="Danger cone: direction × distance × speed",
-        ),
+        title=LocalizedText(nl="Omhoog / gevaar (basis)", en="Raised / danger (basics)"),
         caption=LocalizedText(
-            nl=(
-                "Originele cursusanimatie voor omhoog/hard gespeelde ballen. "
-                "Geen overgenomen regeltekst of KNHB-kunst."
-            ),
-            en=(
-                "Original course animation for raised/hard balls. No reproduced "
-                "rule text or KNHB art."
-            ),
+            nl="Bal speelt hard of omhoog richting een dichtbij staande speler — weeg richting, afstand en snelheid.",
+            en="Ball played hard or raised toward a nearby player — weigh direction, distance and speed.",
         ),
         animation_key="danger-cone",
     ),
     VisualPlaceholder(
+        id="viz-card-ladder",
+        kind="svg_animation",
+        title=LocalizedText(nl="Kaarten", en="Cards"),
+        caption=LocalizedText(
+            nl="Escalatie: groen (waarschuwing), geel (tijdstraf), rood (uitsluiting) — koppel aan ernst en herhaling.",
+            en="Escalation: green (warning), yellow (time penalty), red (dismissal) — tie to severity and repetition.",
+        ),
+        animation_key="card-ladder",
+    ),
+    VisualPlaceholder(
+        id="viz-penalty-corner",
+        kind="svg_animation",
+        title=LocalizedText(nl="Strafcorner", en="Penalty corner"),
+        caption=LocalizedText(
+            nl="Aanval zet klaar buiten de cirkel; verdediging en keeper op de lijn — jij checkt aantallen en ruimte vóór de injectie.",
+            en="Attack set outside the circle; defence and keeper on the line — you check numbers and space before the injection.",
+        ),
+        animation_key="penalty-corner",
+    ),
+    VisualPlaceholder(
+        id="viz-penalty-stroke",
+        kind="svg_animation",
+        title=LocalizedText(nl="Strafbal", en="Penalty stroke"),
+        caption=LocalizedText(
+            nl="Eén aanvaller tegen de keeper op de strafbalstip — jij controleert stilstand en signaleert duidelijk.",
+            en="One attacker versus the keeper at the stroke spot — you check stillness and signal clearly.",
+        ),
+        animation_key="penalty-stroke",
+    ),
+    VisualPlaceholder(
+        id="viz-gk-limits",
+        kind="svg_animation",
+        title=LocalizedText(nl="Keeper: wat mag", en="Keeper: what is allowed"),
+        caption=LocalizedText(
+            nl="In de eigen cirkel mag de keeper met lichaam/uitrusting verdedigen; buiten die zone gelden veldspelersregels.",
+            en="Inside their own circle the keeper may defend with body/equipment; outside that zone outfield rules apply.",
+        ),
+        animation_key="gk-limits",
+    ),
+    VisualPlaceholder(
+        id="viz-pitch-zones",
+        kind="svg_animation",
+        title=LocalizedText(nl="Veldzones", en="Pitch zones"),
+        caption=LocalizedText(
+            nl="Helft, 23m-band en cirkel — dichter bij het doel betekent kortere scan-cycli en vaker partner-check.",
+            en="Half, 23m band and circle — closer to goal means shorter scan cycles and more partner checks.",
+        ),
+        animation_key="pitch-zones",
+    ),
+    VisualPlaceholder(
         id="viz-restart-bubble",
         kind="svg_animation",
-        title=LocalizedText(
-            nl="Herstartbubbel (afstand tot tegenstanders)",
-            en="Restart bubble (space from opponents)",
-        ),
+        title=LocalizedText(nl="Herstart", en="Restart"),
         caption=LocalizedText(
-            nl=(
-                "Originele SVG: denk in een ‘bubbel’ rond de herstartplek. "
-                "Exacte meters en procedures: FIH/KNHB."
-            ),
-            en=(
-                "Original SVG: think in a ‘bubble’ around the restart spot. "
-                "Exact metres and procedures: FIH/KNHB."
-            ),
+            nl="Vrije slag: eerst een leesbare ruimtebubbel rond de bal, dan het speelbeeld.",
+            en="Free hit: first a readable space bubble around the ball, then the play.",
         ),
         animation_key="restart-bubble",
     ),
     VisualPlaceholder(
-        id="viz-field-attack",
-        kind="svg_animation",
-        title=LocalizedText(
-            nl="Scenario: aanval richting cirkel",
-            en="Scenario: attack toward the circle",
-        ),
-        caption=LocalizedText(
-            nl=(
-                "Originele scenario-SVG: aanvalspad + gevaarskegel in de "
-                "23m/cirkel. Geen KNHB-kunst of officiële veldmaat."
-            ),
-            en=(
-                "Original scenario SVG: attack path + danger cone in the "
-                "23m/circle. No KNHB art or official pitch diagram."
-            ),
-        ),
-        animation_key="field-attack",
-    ),
-    VisualPlaceholder(
         id="viz-advantage-lens",
         kind="svg_animation",
-        title=LocalizedText(
-            nl="Voordeellens (leesbaar doorlaten)",
-            en="Advantage lens (readable play-on)",
-        ),
+        title=LocalizedText(nl="Voordeel", en="Advantage"),
         caption=LocalizedText(
-            nl=(
-                "Originele cursusillustratie: contest → voordeel lezen → "
-                "ruimte houden. Geen KNHB-/FIH-gebarenplaat — officiële "
-                "bronnen staan onder Verder lezen."
-            ),
-            en=(
-                "Original course illustration: contest → read advantage → "
-                "keep space. Not a KNHB/FIH signals chart — official sources "
-                "are under Further reading."
-            ),
+            nl="Lichte fout, maar de aanval houdt ruimte en tempo — speel voordeel ná veiligheid.",
+            en="Light fault, but the attack keeps space and tempo — play advantage after safety.",
         ),
         animation_key="advantage-lens",
     ),
@@ -527,14 +548,14 @@ FIELD_MODULE = ModuleStub(
     ),
     summary=LocalizedText(
         nl=(
-            "Showcase-module: rijke NL/EN-lesstof in klikstappen, originele "
-            "veldanimaties en een aparte nagekeken quiz — zones, herstarten, "
-            "gevaar en voordeel."
+            "Veldkern: wedstrijdstart, positie, slagtypes, obstructie, "
+            "omhoog, kaarten, PC/PS, keeper, zones, herstarten en voordeel "
+            "— met situatiediagrammen en een aparte quiz."
         ),
         en=(
-            "Showcase module: rich NL/EN reading in click-steps, original "
-            "field animations and a separate graded quiz — zones, restarts, "
-            "danger and advantage."
+            "Field core: match start, positioning, stroke types, "
+            "obstruction, raised, cards, PC/PS, keeper, zones, restarts "
+            "and advantage — with situation diagrams and a separate quiz."
         ),
     ),
     learning_objectives=[
@@ -585,74 +606,389 @@ FIELD_MODULE = ModuleStub(
     sections=[
         LearningSection(
             id="sec-field-why",
-            title=LocalizedText(
-                nl="Waarom veldregels als kernmodule",
-                en="Why field rules as a core module",
-            ),
+            title=LocalizedText(nl="Wat je in deze module leert", en="What this module teaches"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Na het gedeelde besliskader (veiligheid → eerlijkheid → "
-                        "flow) vertaal je dat naar het veld: waar gebeurt wat, "
-                        "wanneer verscherp je je scan, en hoe blijf je "
-                        "leesbaar bij herstarten en gevaar."
+                        "Dit is de veldkern: wedstrijdstart, positie, slagtypes, "
+                        "obstructie, omhoog (basis), kaarten, strafcorner, "
+                        "strafbal, keeperrechten, zones, herstarten en voordeel. "
+                        "Elke stap: diagram van de situatie, dan uitleg. Geen "
+                        "overgenomen FIH-/KNHB-citaat — officiële tekst onder "
+                        "Verder lezen. Harde scenario’s volgen in de module "
+                        "Veld: harde beslissingen."
                     ),
                     en=(
-                        "After the shared decision frame (safety → fairness → "
-                        "flow) you translate it outdoors: where things happen, "
-                        "when you tighten your scan, and how you stay readable "
-                        "on restarts and danger."
-                    ),
-                ),
-                LocalizedText(
-                    nl=(
-                        "Deze module citeert geen auteursrechtelijk beschermde "
-                        "FIH- of KNHB-regeltekst. We bouwen pedagogische "
-                        "kaarten en verwijzen naar officiële documenten voor "
-                        "de actuele standaard."
-                    ),
-                    en=(
-                        "This module does not reproduce copyrighted FIH or KNHB "
-                        "rule text. We build pedagogical maps and point to "
-                        "official documents for the current standard."
+                        "This is field core: match start, positioning, stroke "
+                        "types, obstruction, raised (basics), cards, penalty "
+                        "corner, penalty stroke, keeper rights, zones, "
+                        "restarts and advantage. Each step: situation diagram, "
+                        "then explanation. No reproduced FIH/KNHB quotation — "
+                        "official text under Further reading. Hard scenarios "
+                        "follow in Field: hard decisions."
                     ),
                 ),
             ],
+            visual_id="viz-match-start",
         ),
         LearningSection(
-            id="sec-pitch-zones",
-            title=LocalizedText(
-                nl="Veldzones: waar je aandacht verandert",
-                en="Pitch zones: where your attention shifts",
-            ),
+            id="sec-match-start",
+            title=LocalizedText(nl="Wedstrijdstart", en="Match start"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Denk in lagen: eigen helft / andere helft, de 23m-band "
-                        "als overgang naar aanvalsdruk, en de cirkels als "
-                        "zones waar scoringskansen en contactrisico’s dichter "
-                        "op elkaar zitten. Exacte lijnen en afmetingen staan "
-                        "in de officiële FIH Rules — hier alleen het "
-                        "aandachtsmodel."
+                        "Voor de aftrap: (1) tel de spelers per team — "
+                        "officieel maximum veldspelers staat in FIH/KNHB "
+                        "(meestal 11 inclusief keeper; check actuele "
+                        "competitieregels); (2) check doelen, netten en "
+                        "veldlijnen op veilige speelbaarheid; (3) doe de "
+                        "toss met de stick (of munt): de winnaar kiest kant "
+                        "óf aftrap (bal), de ander krijgt het restant."
                     ),
                     en=(
-                        "Think in layers: own half / other half, the 23m band "
-                        "as the shift into attacking pressure, and the circles "
-                        "as zones where scoring chances and contact risks sit "
-                        "closer together. Exact lines and dimensions live in "
-                        "the official FIH Rules — here only the attention model."
+                        "Before push-back: (1) count players per team — the "
+                        "official outfield maximum is in FIH/KNHB (usually 11 "
+                        "including the keeper; check current competition "
+                        "rules); (2) check goals, nets and pitch lines for "
+                        "safe playability; (3) do the toss with the stick "
+                        "(or coin): the winner chooses side or push-back "
+                        "(ball), the other gets the remainder."
                     ),
                 ),
                 LocalizedText(
                     nl=(
-                        "Gebruik de zones om je cadans te sturen: meer ruimte "
-                        "middenveld → bredere scan; dichter bij de cirkel → "
-                        "kortere cycli en vaker partner-check."
+                        "Noteer wie aftrapt en welke kant. Stem kort met je "
+                        "partner over lead/support-helften. Exacte "
+                        "wedstrijdformules (speeltijd, time-outs) horen in "
+                        "bond-/competitieregels."
                     ),
                     en=(
-                        "Use the zones to drive your cadence: more midfield "
-                        "space → wider scan; closer to the circle → shorter "
-                        "cycles and more frequent partner checks."
+                        "Note who pushes back and which side. Briefly agree "
+                        "lead/support halves with your partner. Exact match "
+                        "formats (playing time, time-outs) live in "
+                        "federation/competition rules."
+                    ),
+                ),
+            ],
+            visual_id="viz-match-start",
+        ),
+        LearningSection(
+            id="sec-positioning",
+            title=LocalizedText(nl="Waar staan tijdens het spel", en="Where to stand during play"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Basis: jij hebt een helft als lead — blijf dichter "
+                        "bij de bal wanneer die op jouw helft speelt, met "
+                        "zicht op cirkel én sideline. Je partner support: "
+                        "diepte, tweede duel, en overdracht wanneer de bal "
+                        "de middellijn kruist."
+                    ),
+                    en=(
+                        "Basics: you own a half as lead — stay closer to the "
+                        "ball when it is on your half, with sight of circle "
+                        "and sideline. Your partner supports: depth, second "
+                        "contest, and handoff when the ball crosses halfway."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Bij set pieces (PC, stroke, herstart dicht bij de "
+                        "cirkel) verplaats je vóór de uitvoering naar een "
+                        "hoek met zicht op injectie/schot én keeper. Beweeg "
+                        "actief; sta niet vast op de sideline."
+                    ),
+                    en=(
+                        "On set pieces (PC, stroke, restart near the circle) "
+                        "move before the play to an angle with sight of "
+                        "injection/shot and keeper. Move actively; do not "
+                        "freeze on the sideline."
+                    ),
+                ),
+            ],
+            visual_id="viz-umpire-position",
+        ),
+        LearningSection(
+            id="sec-hit-types",
+            title=LocalizedText(nl="Slagtypes: push, slap, hit", en="Stroke types: push, slap, hit"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Push: bal wordt geduwd zonder slagbeweging — vaak "
+                        "controle, minder kracht. Slap: korte, gecontroleerde "
+                        "slag met beperkte backswing. Hit: volle slag met "
+                        "langere backswing en meer kracht/snelheid."
+                    ),
+                    en=(
+                        "Push: ball is pushed without a striking swing — "
+                        "often control, less power. Slap: short controlled "
+                        "strike with limited backswing. Hit: full strike with "
+                        "longer backswing and more power/speed."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Waarom dit telt: een hit of harde slap omhoog/in "
+                        "iemand weegt zwaarder op gevaar dan een zachte push. "
+                        "Lees type + richting + nabijheid samen. Exacte "
+                        "techniekdefinities: FIH/KNHB."
+                    ),
+                    en=(
+                        "Why it matters: a hit or hard slap raised/into "
+                        "someone weighs heavier on danger than a soft push. "
+                        "Read type + direction + proximity together. Exact "
+                        "technique definitions: FIH/KNHB."
+                    ),
+                ),
+            ],
+            visual_id="viz-hit-types",
+        ),
+        LearningSection(
+            id="sec-obstruction",
+            title=LocalizedText(
+                nl="Obstructie: stick, lichaam, schaduw",
+                en="Obstruction: stick, body, shadow",
+            ),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Stick-obstructie: de stick blokkeert de opponent "
+                        "onrechtmatig van de bal. Lichaamsobstructie "
+                        "(normaal): lichaam schermt de bal af zodat de "
+                        "opponent er niet legaal bij kan. Schaduw/derde-man: "
+                        "een derde speler blokkeert of ‘schaduwt’ de "
+                        "opponent weg van de balbezitter."
+                    ),
+                    en=(
+                        "Stick obstruction: the stick unlawfully blocks the "
+                        "opponent from the ball. Body obstruction (normal): "
+                        "the body screens the ball so the opponent cannot "
+                        "legally reach it. Shadow/third-man: a third player "
+                        "blocks or ‘shadows’ the opponent away from the "
+                        "ball carrier."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Lees: had de opponent een reële kans op de bal? "
+                        "Was er actieve afscherming? Fluit als de afscherming "
+                        "de duel oneerlijk maakt; speel door als de opponent "
+                        "geen echte route had. Exacte criteria: FIH/KNHB."
+                    ),
+                    en=(
+                        "Read: did the opponent have a real chance at the "
+                        "ball? Was there active screening? Whistle if the "
+                        "screen makes the contest unfair; play on if the "
+                        "opponent had no real route. Exact criteria: FIH/KNHB."
+                    ),
+                ),
+            ],
+            visual_id="viz-obstruction-types",
+        ),
+        LearningSection(
+            id="sec-danger-raised",
+            title=LocalizedText(nl="Omhoog spelen (basis)", en="Raised ball (basics)"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Een omhoog of hard gespeelde bal is niet "
+                        "automatisch fout. Weeg richting (naar wie?), "
+                        "afstand (hoe dicht?) en snelheid (hoe hard?). "
+                        "Gevaar kan zonder contact. Prioriteit: veiligheid "
+                        "→ eerlijk sanctioneren → flow."
+                    ),
+                    en=(
+                        "A raised or hard ball is not automatically illegal. "
+                        "Weigh direction (toward whom?), distance (how "
+                        "close?) and speed (how hard?). Danger can exist "
+                        "without contact. Priority: safety → fair sanction "
+                        "→ flow."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Basisvoorbeeld: zachte push over een lege zone → "
+                        "vaak speel door. Harde hit kniehoogte op iemand "
+                        "dichtbij → fluit. Verdieping (drukke zones, "
+                        "kaarten) volgt in Veld: harde beslissingen."
+                    ),
+                    en=(
+                        "Basic example: soft push across empty space → "
+                        "often play on. Hard hit at knee height into someone "
+                        "nearby → whistle. Deepening (crowded zones, cards) "
+                        "follows in Field: hard decisions."
+                    ),
+                ),
+            ],
+            visual_id="viz-danger-cone",
+        ),
+        LearningSection(
+            id="sec-cards",
+            title=LocalizedText(nl="Kaarten: wanneer en hoe", en="Cards: when and how"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Groen: waarschuwing / korte time-out van de speler "
+                        "(exacte duur: bond). Geel: zwaardere tijdelijke "
+                        "uitsluiting. Rood: permanente uitsluiting. Kaarten "
+                        "escaleren bij herhaling of ernst; communiceer "
+                        "zichtbaar (kaart omhoog, kort signaal)."
+                    ),
+                    en=(
+                        "Green: warning / short player time-out (exact "
+                        "duration: federation). Yellow: heavier temporary "
+                        "suspension. Red: permanent dismissal. Cards "
+                        "escalate with repetition or severity; communicate "
+                        "visibly (card up, short signal)."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Wanneer: na een leesbare fout die waarschuwing of "
+                        "straf verdient — niet als vervanging voor een "
+                        "ontbrekende gevaarlezing. Hoe: stop het spel waar "
+                        "nodig, toon de kaart aan speler en tafel, noteer. "
+                        "Exacte procedures: KNHB/competitie."
+                    ),
+                    en=(
+                        "When: after a readable foul that deserves warning "
+                        "or penalty — not as a substitute for a missing "
+                        "danger read. How: stop play where needed, show the "
+                        "card to player and table, record it. Exact "
+                        "procedures: KNHB/competition."
+                    ),
+                ),
+            ],
+            visual_id="viz-card-ladder",
+        ),
+        LearningSection(
+            id="sec-penalty-corner",
+            title=LocalizedText(nl="Strafcorner (basis)", en="Penalty corner (basics)"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Een strafcorner volgt op bepaalde fouten van de "
+                        "verdediging in de eigen 23m/cirkel (exacte lijst: "
+                        "FIH). Opstelling: aanvallers buiten de cirkel tot "
+                        "de injectie; verdedigers/keeper achter de "
+                        "achterlijn tot de bal gespeeld is — aantallen en "
+                        "posities volgens officiële regels."
+                    ),
+                    en=(
+                        "A penalty corner follows certain defensive fouls in "
+                        "their own 23m/circle (exact list: FIH). Setup: "
+                        "attackers outside the circle until injection; "
+                        "defenders/keeper behind the backline until the ball "
+                        "is played — numbers and positions per official rules."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Jouw job vóór de injectie: check aantallen, "
+                        "afstanden, stilte/klaar-signaal; tijdens: gevaar "
+                        "bij schot/omhoog, feet in de cirkel, vroege run. "
+                        "Na een goal of herstart: herstel het beeld met je "
+                        "partner."
+                    ),
+                    en=(
+                        "Your job before injection: check numbers, "
+                        "distances, ready signal; during: danger on "
+                        "shot/raised, feet in the circle, early run. After "
+                        "a goal or restart: reset the picture with your "
+                        "partner."
+                    ),
+                ),
+            ],
+            visual_id="viz-penalty-corner",
+        ),
+        LearningSection(
+            id="sec-penalty-stroke",
+            title=LocalizedText(nl="Strafbal (basis)", en="Penalty stroke (basics)"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Strafbal volgt op ernstige fouten die een "
+                        "duidelijke scoringskans ontnemen in de cirkel "
+                        "(exacte gronden: FIH). Eén aanvaller neemt de bal "
+                        "vanuit de strafbalstip; alleen de keeper verdedigt "
+                        "op de lijn tot de bal gespeeld is."
+                    ),
+                    en=(
+                        "A penalty stroke follows serious fouls that deny a "
+                        "clear goal-scoring opportunity in the circle "
+                        "(exact grounds: FIH). One attacker takes from the "
+                        "stroke spot; only the keeper defends on the line "
+                        "until the ball is played."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Check: stilstand van bal en keeper, juiste plek, "
+                        "geen vroege beweging. Signaleer duidelijk. Na de "
+                        "stroke: goal, herstart of herneming volgens "
+                        "uitkomst — zie officiële tabel."
+                    ),
+                    en=(
+                        "Check: stillness of ball and keeper, correct spot, "
+                        "no early movement. Signal clearly. After the "
+                        "stroke: goal, restart or retake per the outcome — "
+                        "see the official table."
+                    ),
+                ),
+            ],
+            visual_id="viz-penalty-stroke",
+        ),
+        LearningSection(
+            id="sec-gk-basics",
+            title=LocalizedText(nl="Keeper: wat mag / niet mag", en="Keeper: what is / is not allowed"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "In de eigen cirkel mag de keeper de bal verdedigen "
+                        "met stick, pads, body en (waar toegestaan) handen/"
+                        "bescherming volgens keeperregels. Buiten de cirkel "
+                        "gedraagt de keeper zich als veldspeler tenzij de "
+                        "regels een uitzondering geven."
+                    ),
+                    en=(
+                        "Inside their own circle the keeper may defend the "
+                        "ball with stick, pads, body and (where allowed) "
+                        "hands/protection per keeper rules. Outside the "
+                        "circle the keeper acts as an outfield player unless "
+                        "rules give an exception."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Niet: de aanvaller raken zonder de bal te spelen, "
+                        "gevaarlijk contact, of rechten claimen buiten de "
+                        "zone. Slide/duik komt dieper in Veld: harde "
+                        "beslissingen. Exacte keeperrechten: FIH/KNHB."
+                    ),
+                    en=(
+                        "Not allowed: hitting the attacker without playing "
+                        "the ball, dangerous contact, or claiming rights "
+                        "outside the zone. Slide/dive is deepened in Field: "
+                        "hard decisions. Exact keeper rights: FIH/KNHB."
+                    ),
+                ),
+            ],
+            visual_id="viz-gk-limits",
+        ),
+        LearningSection(
+            id="sec-pitch-zones",
+            title=LocalizedText(nl="Veldzones & aandacht", en="Pitch zones & attention"),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Helft → 23m → cirkel: dichter bij het doel betekent "
+                        "meer contactrisico en scoringskans. Verhoog "
+                        "scan-frequentie en partner-checks nabij de cirkel."
+                    ),
+                    en=(
+                        "Half → 23m → circle: closer to goal means more "
+                        "contact risk and scoring chance. Raise scan "
+                        "frequency and partner checks near the circle."
                     ),
                 ),
             ],
@@ -660,155 +996,37 @@ FIELD_MODULE = ModuleStub(
         ),
         LearningSection(
             id="sec-restarts",
-            title=LocalizedText(
-                nl="Herstarten: eerst ruimte, dan speelbeeld",
-                en="Restarts: space first, then the play",
-            ),
+            title=LocalizedText(nl="Herstarten", en="Restarts"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Vrije slagen en andere herstarten vragen om een "
-                        "leesbaar startbeeld. In dit cursusmodel check je "
-                        "eerst of er een ‘bubbel’ van ruimte rond de "
-                        "herstartplek is — genoeg afstand tot tegenstanders "
-                        "om veilig en eerlijk te starten — en pas daarna "
-                        "lees je het aanvallende/verdedigende speelbeeld."
+                        "Vrije slag: check eerst ruimte (bubbel) tot "
+                        "tegenstanders, dan speelbeeld. Meters en "
+                        "zelfpass-regels: FIH/KNHB."
                     ),
                     en=(
-                        "Free hits and other restarts need a readable starting "
-                        "picture. In this course model you first check for a "
-                        "‘bubble’ of space around the restart spot — enough "
-                        "distance from opponents to start safely and fairly — "
-                        "and only then read the attacking/defending picture."
-                    ),
-                ),
-                LocalizedText(
-                    nl=(
-                        "Meters, zelfpass-opties en speciale situaties "
-                        "(bijvoorbeeld dicht bij de cirkel) horen in de "
-                        "officiële bronnen. Hier train je de volgorde: "
-                        "ruimte → veiligheid → flow."
-                    ),
-                    en=(
-                        "Metres, self-pass options and special situations "
-                        "(for example near the circle) belong in the official "
-                        "sources. Here you train the order: space → safety → "
-                        "flow."
+                        "Free hit: first check space (bubble) from "
+                        "opponents, then the play. Metres and self-pass "
+                        "rules: FIH/KNHB."
                     ),
                 ),
             ],
             visual_id="viz-restart-bubble",
         ),
         LearningSection(
-            id="sec-danger-raised",
-            title=LocalizedText(
-                nl="Gevaarlijk spel & omhoog spelen",
-                en="Dangerous play & raised ball",
-            ),
-            paragraphs=[
-                LocalizedText(
-                    nl=(
-                        "Een harde of omhoog gespeelde bal is niet automatisch "
-                        "fout — en niet automatisch oké. Weeg richting "
-                        "(naar wie?), afstand (hoe dichtbij?) en snelheid "
-                        "(hoe hard?). Gevaar kan bestaan zonder contact."
-                    ),
-                    en=(
-                        "A hard or raised ball is not automatically illegal — "
-                        "and not automatically fine. Weigh direction (toward "
-                        "whom?), distance (how close?) and speed (how hard?). "
-                        "Danger can exist without contact."
-                    ),
-                ),
-                LocalizedText(
-                    nl=(
-                        "Koppel dit terug aan de prioriteitsdriehoek: "
-                        "veiligheid eerst, dan eerlijk sanctioneren, dan flow "
-                        "als het speelbeeld het toelaat. Kaarten zijn middelen, "
-                        "geen automatische reflex."
-                    ),
-                    en=(
-                        "Tie this back to the priority triangle: safety first, "
-                        "then fair sanctioning, then flow if the picture "
-                        "allows. Cards are tools, not an automatic reflex."
-                    ),
-                ),
-            ],
-            visual_id="viz-danger-cone",
-        ),
-        LearningSection(
-            id="sec-circle-context",
-            title=LocalizedText(
-                nl="Cirkelcontext (hoog niveau)",
-                en="Circle context (high level)",
-            ),
-            paragraphs=[
-                LocalizedText(
-                    nl=(
-                        "In en rond de cirkel stijgt de dichtheid: schoten, "
-                        "blokken, sticks dicht bij voeten, en snellere "
-                        "escalatie. Verhoog je scan-frequentie, zoek eerder "
-                        "oogcontact met je partner, en wees scherp op "
-                        "herstarten die de bubbel raken."
-                    ),
-                    en=(
-                        "In and around the circle density rises: shots, "
-                        "blocks, sticks near feet, and faster escalation. "
-                        "Raise your scan frequency, seek partner eye contact "
-                        "earlier, and stay sharp on restarts that touch the "
-                        "bubble."
-                    ),
-                ),
-                LocalizedText(
-                    nl=(
-                        "Strafcorners en andere set pieces krijgen later "
-                        "eigen verdieping. Voor nu: herken de zone, "
-                        "bescherm veiligheid, houd beslissingen leesbaar."
-                    ),
-                    en=(
-                        "Penalty corners and other set pieces get deeper "
-                        "treatment later. For now: recognise the zone, "
-                        "protect safety, keep decisions readable."
-                    ),
-                ),
-            ],
-            visual_id="viz-field-attack",
-        ),
-        LearningSection(
             id="sec-advantage-lens",
-            title=LocalizedText(
-                nl="Voordeel lezen zonder de standaard te verliezen",
-                en="Read advantage without losing the standard",
-            ),
+            title=LocalizedText(nl="Voordeel (basis)", en="Advantage (basics)"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Niet elke overtreding vraagt om een fluit. Als de "
-                        "aanval na een lichte fout nog duidelijk ruimte en "
-                        "tempo heeft — en veiligheid niet in het geding is — "
-                        "houd je het speelbeeld leesbaar door voordeel te "
-                        "geven. Dat is flow ná veiligheid en eerlijkheid, "
-                        "geen vrijbrief."
+                        "Niet elke lichte fout vraagt om een fluit. Als "
+                        "veiligheid oké is en de aanval ruimte/tempo houdt, "
+                        "geef voordeel. Geen vrijbrief bij gevaar."
                     ),
                     en=(
-                        "Not every offence needs a whistle. If after a light "
-                        "fault the attack still has clear space and tempo — "
-                        "and safety is not at risk — you keep the picture "
-                        "readable by playing advantage. That is flow after "
-                        "safety and fairness, not a free pass."
-                    ),
-                ),
-                LocalizedText(
-                    nl=(
-                        "Officiële FIH-/KNHB-voorschriften en interpretaties "
-                        "blijven bij hun bronnen (zie Verder lezen). Hier "
-                        "oefen je alleen de voordeellens als cursusmodel."
-                    ),
-                    en=(
-                        "Official FIH/KNHB prescriptions and interpretations "
-                        "stay with their sources (see Further reading). Here "
-                        "you practise only the advantage lens as a course "
-                        "model."
+                        "Not every light fault needs a whistle. If safety is "
+                        "ok and the attack keeps space/tempo, play "
+                        "advantage. Not a free pass on danger."
                     ),
                 ),
             ],
@@ -816,29 +1034,20 @@ FIELD_MODULE = ModuleStub(
         ),
         LearningSection(
             id="sec-field-practice-next",
-            title=LocalizedText(
-                nl="Oefenen en verder",
-                en="Practice and next steps",
-            ),
+            title=LocalizedText(nl="Quiz en volgende module", en="Quiz and next module"),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Als je de lesstof hebt gelezen, open je de modulequiz "
-                        "via de knop onderaan — op een aparte pagina, met "
-                        "meerkeuze én open vragen, uitleg en visuals. Sla "
-                        "voortgang op via je cursussessie zodat je later kunt "
-                        "hervatten. Ga daarna door naar de zaalmodule; houd "
-                        "officiële FIH/KNHB-bronnen bij de hand voor concrete "
-                        "regelvragen."
+                        "Open de veldquiz hieronder. Ga daarna naar "
+                        "Zaalkernregels, of naar Veld: harde beslissingen "
+                        "voor drukke omhoog-situaties, keeperslide en "
+                        "kaarten bij push/pirouette."
                     ),
                     en=(
-                        "When you have finished the reading, open the module "
-                        "quiz via the button below — on a separate page, with "
-                        "multiple-choice and written items, explanations and "
-                        "visuals. Save progress via your course session so you "
-                        "can resume later. Then continue into the indoor "
-                        "module; keep official FIH/KNHB sources handy for "
-                        "concrete rules questions."
+                        "Open the field quiz below. Then go to Indoor core "
+                        "rules, or to Field: hard decisions for crowded "
+                        "raised situations, keeper slide and cards on "
+                        "push/pirouette."
                     ),
                 ),
             ],

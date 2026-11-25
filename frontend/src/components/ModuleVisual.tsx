@@ -35,10 +35,7 @@ export function ModuleVisual({
       data-visual-id={visual.id}
       data-outcome={outcome ?? undefined}
     >
-      <figcaption>
-        <strong>{t(visual.title, locale)}</strong>
-        <p className="muted">{t(visual.caption, locale)}</p>
-      </figcaption>
+      <strong className="module-visual-title">{t(visual.title, locale)}</strong>
 
       {visual.kind === "svg_animation" && pickAnimation(visual.animation_key, locale)}
 
@@ -53,6 +50,10 @@ export function ModuleVisual({
           )}
         </div>
       )}
+
+      <figcaption className="module-visual-situation">
+        <p>{t(visual.caption, locale)}</p>
+      </figcaption>
     </figure>
   );
 }

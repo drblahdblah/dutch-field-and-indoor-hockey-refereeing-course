@@ -825,5 +825,5 @@ PATHWAY_MODULE = ModuleStub(
             ),
         ),
     ],
-    order=5,
+    order=6,
 )

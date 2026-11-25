@@ -2,7 +2,7 @@
 
 Browser-based course for Netherlands referees (field + indoor), bilingual **NL / EN** from day one, building toward professional standard (e.g. Hoofdklasse).
 
-This repository ships **full bilingual learning modules** (umpire role + field rules core + indoor rules core + **hard umpiring decisions** + professional / Hoofdklasse pathway + KNHB interpretation layer + **capstone assessment**) plus a separate **practice scenario bank** (`#/practice`): field and indoor decision scenarios with MC + written grading and explanations, original CSS/SVG visuals (no copyrighted KNHB art), course-path progress overview, session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
+This repository ships **full bilingual learning modules** (umpire role + **field core** + **indoor core** + **field hard decisions** + **indoor hard decisions** + professional / Hoofdklasse pathway + KNHB interpretation layer + **capstone assessment**) plus a separate **practice scenario bank** (`#/practice`): field and indoor decision scenarios with MC + written grading and explanations, original CSS/SVG visuals (no copyrighted KNHB art), course-path progress overview, session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
 
 ## Architecture
 
