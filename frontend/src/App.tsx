@@ -8,14 +8,22 @@ import {
 } from "./api/client";
 import { ApiError } from "./api/errors";
 import { safeHttpUrl } from "./api/urls";
-import type { CourseOutline, ProgressOut, Quiz } from "./api/types";
+import type {
+  CourseOutline,
+  PracticeBank as PracticeBankData,
+  ProgressOut,
+  Quiz,
+} from "./api/types";
 import { CourseProgressOverview } from "./components/CourseProgressOverview";
 import { ModuleDetail } from "./components/ModuleDetail";
+import { PracticeBank } from "./components/PracticeBank";
+import { PracticeScenarioDetail } from "./components/PracticeScenarioDetail";
 import { QuizPanel } from "./components/QuizPanel";
 import { t, uiT, type Locale } from "./i18n/messages";
 import {
   courseHashFor,
   isKnownModuleId,
+  isKnownScenarioId,
   parseCourseHash,
   type CourseView,
 } from "./nav/courseHash";
@@ -35,6 +43,7 @@ function focusById(id: string) {
 export default function App() {
   const [locale, setLocale] = useState<Locale>("nl");
   const [course, setCourse] = useState<CourseOutline | null>(null);
+  const [practiceBank, setPracticeBank] = useState<PracticeBankData | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(() =>
     getStoredAccessToken(),
   );
@@ -47,11 +56,14 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const progressGenRef = useRef(0);
   const lastModuleIdRef = useRef<string | null>(null);
+  const lastScenarioIdRef = useRef<string | null>(null);
 
   const selectedId =
     view.kind === "module" || view.kind === "module-quiz"
       ? view.moduleId
       : null;
+  const selectedScenarioId =
+    view.kind === "practice-scenario" ? view.scenarioId : null;
 
   function navigate(next: CourseView, replace = false) {
     setView(next);
@@ -115,6 +127,22 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const bank = await api.practice();
+        if (!cancelled) setPracticeBank(bank);
+      } catch {
+        // Practice is a separate flow — do not block course overview.
+        if (!cancelled) setPracticeBank(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
@@ -146,6 +174,15 @@ export default function App() {
   }, [course, view]);
 
   useEffect(() => {
+    if (!practiceBank || view.kind !== "practice-scenario") return;
+    const ids = practiceBank.scenarios.map((s) => s.id);
+    if (!isKnownScenarioId(view.scenarioId, ids)) {
+      setView({ kind: "practice" });
+      window.history.replaceState(null, "", courseHashFor({ kind: "practice" }));
+    }
+  }, [practiceBank, view]);
+
+  useEffect(() => {
     setQuiz(null);
     setQuizLoadError(false);
     if (view.kind !== "module-quiz") return;
@@ -175,6 +212,12 @@ export default function App() {
   function orderedModules() {
     return course
       ? [...course.modules].sort((a, b) => a.order - b.order)
+      : [];
+  }
+
+  function orderedScenarios() {
+    return practiceBank
+      ? [...practiceBank.scenarios].sort((a, b) => a.order - b.order)
       : [];
   }
 
@@ -210,18 +253,14 @@ export default function App() {
     }
   }
 
-  async function openModule(
-    moduleId: string,
-    opts?: { token?: string | null; trackProgress?: boolean },
+  async function trackProgressId(
+    progressId: string,
+    token?: string | null,
   ) {
-    navigate({ kind: "module", moduleId });
-    const token = opts?.token ?? accessToken;
-    const track = opts?.trackProgress ?? hasSession;
-    if (!track) return;
     const gen = ++progressGenRef.current;
     try {
       await api.updateProgress(
-        { module_id: moduleId, status: "in_progress" },
+        { module_id: progressId, status: "in_progress" },
         token,
       );
       if (gen !== progressGenRef.current) return;
@@ -235,6 +274,28 @@ export default function App() {
     }
   }
 
+  async function openModule(
+    moduleId: string,
+    opts?: { token?: string | null; trackProgress?: boolean },
+  ) {
+    navigate({ kind: "module", moduleId });
+    const token = opts?.token ?? accessToken;
+    const track = opts?.trackProgress ?? hasSession;
+    if (!track) return;
+    await trackProgressId(moduleId, token);
+  }
+
+  async function openScenario(
+    scenarioId: string,
+    opts?: { token?: string | null; trackProgress?: boolean },
+  ) {
+    navigate({ kind: "practice-scenario", scenarioId });
+    const token = opts?.token ?? accessToken;
+    const track = opts?.trackProgress ?? hasSession;
+    if (!track) return;
+    await trackProgressId(scenarioId, token);
+  }
+
   function openModuleQuiz(moduleId: string) {
     navigate({ kind: "module-quiz", moduleId });
   }
@@ -245,6 +306,14 @@ export default function App() {
 
   function backToCourse() {
     navigate({ kind: "overview" });
+  }
+
+  function openPracticeBank() {
+    navigate({ kind: "practice" });
+  }
+
+  function backToPractice() {
+    navigate({ kind: "practice" });
   }
 
   async function endSession() {
@@ -269,6 +338,7 @@ export default function App() {
   }
 
   const modules = orderedModules();
+  const scenarios = orderedScenarios();
   const selected = modules.find((m) => m.id === selectedId) ?? null;
   const selectedIndex = selected
     ? modules.findIndex((m) => m.id === selected.id)
@@ -277,8 +347,27 @@ export default function App() {
     selectedIndex >= 0 && selectedIndex < modules.length - 1
       ? modules[selectedIndex + 1]
       : null;
+  const selectedScenario =
+    scenarios.find((s) => s.id === selectedScenarioId) ?? null;
+  const selectedScenarioIndex = selectedScenario
+    ? scenarios.findIndex((s) => s.id === selectedScenario.id)
+    : -1;
+  const nextScenario =
+    selectedScenarioIndex >= 0 && selectedScenarioIndex < scenarios.length - 1
+      ? scenarios[selectedScenarioIndex + 1]
+      : null;
+
   const showingModule = view.kind === "module" && selected != null;
   const showingModuleQuiz = view.kind === "module-quiz" && selected != null;
+  const showingPracticeBank = view.kind === "practice" && practiceBank != null;
+  const showingPracticeScenario =
+    view.kind === "practice-scenario" && selectedScenario != null;
+  const showingOverview =
+    Boolean(course) &&
+    !showingModule &&
+    !showingModuleQuiz &&
+    !showingPracticeBank &&
+    !showingPracticeScenario;
   const matchedQuiz =
     showingModuleQuiz &&
     quiz &&
@@ -299,15 +388,29 @@ export default function App() {
       focusById("module-heading");
       return;
     }
-    if (lastModuleIdRef.current) {
+    if (showingPracticeScenario && selectedScenarioId) {
+      lastScenarioIdRef.current = selectedScenarioId;
+      focusById("practice-scenario-heading");
+      return;
+    }
+    if (showingPracticeBank) {
+      lastScenarioIdRef.current = null;
+      focusById("practice-bank-heading");
+      return;
+    }
+    if (lastModuleIdRef.current || lastScenarioIdRef.current) {
       lastModuleIdRef.current = null;
+      lastScenarioIdRef.current = null;
       focusById("course-progress-heading");
     }
   }, [
     showingModule,
     showingModuleQuiz,
     matchedQuiz,
+    showingPracticeBank,
+    showingPracticeScenario,
     selectedId,
+    selectedScenarioId,
     loading,
     course,
   ]);
@@ -350,13 +453,18 @@ export default function App() {
           </p>
         )}
 
-        {course && !showingModule && !showingModuleQuiz && (
+        {showingOverview && course && (
           <>
             <p className="muted">{t(course.description, locale)}</p>
             <div className="hero-actions">
               <button className="btn btn-primary" type="button" onClick={startOrResume}>
                 {hasSession ? uiT("resume", locale) : uiT("start", locale)}
               </button>
+              {practiceBank && (
+                <button className="btn" type="button" onClick={openPracticeBank}>
+                  {uiT("openPracticeBank", locale)}
+                </button>
+              )}
               {hasSession && (
                 <>
                   <button className="btn" type="button" onClick={endSession}>
@@ -529,6 +637,38 @@ export default function App() {
               )}
             </div>
           </div>
+        )}
+
+        {showingPracticeBank && practiceBank && (
+          <PracticeBank
+            scenarios={practiceBank.scenarios}
+            progress={progress}
+            locale={locale}
+            hasSession={hasSession}
+            onSelectScenario={(id) => {
+              void openScenario(id);
+            }}
+            onBackToCourse={backToCourse}
+          />
+        )}
+
+        {showingPracticeScenario && selectedScenario && (
+          <PracticeScenarioDetail
+            scenario={selectedScenario}
+            scenarioIndex={selectedScenarioIndex}
+            scenarioTotal={scenarios.length}
+            nextScenario={nextScenario}
+            locale={locale}
+            accessToken={accessToken}
+            hasSession={hasSession}
+            onBackToBank={backToPractice}
+            onOpenNext={(id) => {
+              void openScenario(id);
+            }}
+            onGraded={() => {
+              void refreshProgress(accessToken).catch((err) => handleApiFailure(err));
+            }}
+          />
         )}
       </main>
     </div>

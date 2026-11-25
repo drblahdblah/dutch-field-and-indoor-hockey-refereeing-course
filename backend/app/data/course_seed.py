@@ -13,11 +13,13 @@ from app.data.module_knhb_interpretations import (
     INTERPRETATION_QUIZ,
 )
 from app.data.module_pathway_professional import PATHWAY_MODULE, PATHWAY_QUIZ
+from app.data.practice_scenarios import practice_quizzes
 from app.schemas import (
     Attribution,
     CourseOutline,
     LocalizedText,
     ModuleStub,
+    Quiz,
 )
 
 KNHB_RULES_NOTE = LocalizedText(
@@ -109,13 +111,19 @@ def get_course_outline() -> CourseOutline:
             ),
         ),
         modules=MODULES,
-        quizzes={
-            INTRO_QUIZ.id: INTRO_QUIZ,
-            FIELD_QUIZ.id: FIELD_QUIZ,
-            INDOOR_QUIZ.id: INDOOR_QUIZ,
-            PATHWAY_QUIZ.id: PATHWAY_QUIZ,
-            INTERPRETATION_QUIZ.id: INTERPRETATION_QUIZ,
-            CAPSTONE_QUIZ.id: CAPSTONE_QUIZ,
-        },
+        quizzes=_all_quizzes(),
         attributions=OFFICIAL_ATTRIBUTIONS,
     )
+
+
+def _all_quizzes() -> dict[str, Quiz]:
+    """Module quizzes plus practice-bank quizzes (for GET/submit)."""
+    return {
+        INTRO_QUIZ.id: INTRO_QUIZ,
+        FIELD_QUIZ.id: FIELD_QUIZ,
+        INDOOR_QUIZ.id: INDOOR_QUIZ,
+        PATHWAY_QUIZ.id: PATHWAY_QUIZ,
+        INTERPRETATION_QUIZ.id: INTERPRETATION_QUIZ,
+        CAPSTONE_QUIZ.id: CAPSTONE_QUIZ,
+        **practice_quizzes(),
+    }

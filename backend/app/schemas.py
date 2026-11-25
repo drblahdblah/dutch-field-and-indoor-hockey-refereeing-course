@@ -212,6 +212,53 @@ class ModuleStub(BaseModel):
         return self
 
 
+class PracticeScenario(BaseModel):
+    """Standalone decision scenario — not a course module lesson."""
+
+    id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    kind: Literal["field", "indoor"]
+    title: LocalizedText
+    situation: LocalizedText
+    focus: LocalizedText
+    order: int
+    visual_key: str = Field(
+        min_length=1,
+        max_length=64,
+        pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        description="SPA animation key for the scenario diagram.",
+    )
+    quiz: Quiz
+
+
+class PracticeBank(BaseModel):
+    """Practice scenario catalogue (separate flow from module lessons)."""
+
+    id: str
+    title: LocalizedText
+    description: LocalizedText
+    scenarios: list[PracticeScenario]
+
+
+class PracticeScenarioPublic(BaseModel):
+    """Learner-facing scenario — quiz prompts without answer keys."""
+
+    id: str
+    kind: Literal["field", "indoor"]
+    title: LocalizedText
+    situation: LocalizedText
+    focus: LocalizedText
+    order: int
+    visual_key: str
+    quiz: QuizPublic
+
+
+class PracticeBankPublic(BaseModel):
+    id: str
+    title: LocalizedText
+    description: LocalizedText
+    scenarios: list[PracticeScenarioPublic]
+
+
 class CourseOutline(BaseModel):
     """Internal / seed shape — includes full quizzes with answer keys."""
 

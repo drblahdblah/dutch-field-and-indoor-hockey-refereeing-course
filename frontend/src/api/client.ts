@@ -1,5 +1,7 @@
 import type {
   CourseOutline,
+  PracticeBank,
+  PracticeScenario,
   ProgressOut,
   Quiz,
   QuizSubmitResult,
@@ -75,6 +77,9 @@ function authHeaders(token: string | null | undefined): Record<string, string> {
 export const api = {
   health: () => request<{ status: string }>("/api/health"),
   course: () => request<CourseOutline>("/api/course"),
+  practice: () => request<PracticeBank>("/api/practice"),
+  practiceScenario: (id: string) =>
+    request<PracticeScenario>(`/api/practice/${encodeURIComponent(id)}`),
   quiz: (id: string) => request<Quiz>(`/api/course/quizzes/${id}`),
   createSession: (displayName?: string, locale = "nl") =>
     request<SessionCreatedOut>("/api/progress/sessions", {

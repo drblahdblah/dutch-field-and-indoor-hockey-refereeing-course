@@ -11,6 +11,13 @@ vi.mock("../api/client", () => ({
       modules: [],
       attributions: [],
     })),
+    practice: vi.fn(async () => ({
+      id: "practice",
+      title: { nl: "Oefenbank", en: "Practice bank" },
+      description: { nl: "Oefen", en: "Practice" },
+      scenarios: [],
+    })),
+    practiceScenario: vi.fn(),
     getProgress: vi.fn(async () => ({ progress: [] })),
     quiz: vi.fn(),
     createSession: vi.fn(),

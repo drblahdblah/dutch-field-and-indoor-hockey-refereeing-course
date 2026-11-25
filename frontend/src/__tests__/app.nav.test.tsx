@@ -35,6 +35,37 @@ const modules = [
   },
 ];
 
+const practiceScenarios = [
+  {
+    id: "practice-field-a",
+    kind: "field" as const,
+    title: { nl: "Veldscenario NL", en: "Field scenario EN" },
+    situation: { nl: "Situatie A", en: "Situation A" },
+    focus: { nl: "Focus A", en: "Focus A" },
+    order: 1,
+    visual_key: "practice-circle-entry",
+    quiz: {
+      id: "quiz-practice-field-a",
+      title: { nl: "Quiz A", en: "Quiz A" },
+      questions: [],
+    },
+  },
+  {
+    id: "practice-indoor-b",
+    kind: "indoor" as const,
+    title: { nl: "Zaalscenario NL", en: "Indoor scenario EN" },
+    situation: { nl: "Situatie B", en: "Situation B" },
+    focus: { nl: "Focus B", en: "Focus B" },
+    order: 2,
+    visual_key: "practice-board-lift",
+    quiz: {
+      id: "quiz-practice-indoor-b",
+      title: { nl: "Quiz B", en: "Quiz B" },
+      questions: [],
+    },
+  },
+];
+
 vi.mock("../api/client", () => ({
   api: {
     course: vi.fn(async () => ({
@@ -44,6 +75,13 @@ vi.mock("../api/client", () => ({
       modules,
       attributions: [],
     })),
+    practice: vi.fn(async () => ({
+      id: "practice",
+      title: { nl: "Oefenbank", en: "Practice bank" },
+      description: { nl: "Oefen", en: "Practice" },
+      scenarios: practiceScenarios,
+    })),
+    practiceScenario: vi.fn(),
     getProgress: vi.fn(async () => ({ progress: [] })),
     quiz: vi.fn(async () => ({
       id: "quiz-intro-a",
@@ -228,6 +266,52 @@ describe("App course / module navigation", () => {
     });
   });
 
+  it("opens the practice bank from the overview and a scenario detail", async () => {
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Beschrijving/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Open oefenscenario's/i }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /Oefenscenario's/i }),
+      ).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/practice");
+    expect(
+      screen.getByRole("heading", { name: /Veldscenario NL/i }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /Open scenario/i })[0],
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /Veldscenario NL/i }),
+      ).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/practice/practice-field-a");
+    expect(screen.getByText(/Situatie A/i)).toBeInTheDocument();
+    expect(screen.getByText(/Scenario 1 van 2/i)).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /Terug naar oefenscenario's/i })[0],
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /Oefenscenario's/i }),
+      ).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/practice");
+  });
+
   it("deep-links the module quiz hash", async () => {
     window.location.hash = "#/modules/mod-a/quiz";
     render(<App />);
@@ -247,5 +331,29 @@ describe("App course / module navigation", () => {
     });
     expect(window.location.hash).toBe("#/modules/mod-b");
     expect(screen.queryByRole("heading", { name: /Quiz/i })).not.toBeInTheDocument();
+  });
+
+  it("opens a practice scenario from a deep-link hash", async () => {
+    window.location.hash = "#/practice/practice-indoor-b";
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /Zaalscenario NL/i }),
+      ).toBeInTheDocument();
+    });
+    expect(screen.getByText(/Situatie B/i)).toBeInTheDocument();
+  });
+
+  it("replaces an unknown practice scenario hash with the practice bank", async () => {
+    window.location.hash = "#/practice/does-not-exist";
+    render(<App />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: /Oefenscenario's/i }),
+      ).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/practice");
   });
 });

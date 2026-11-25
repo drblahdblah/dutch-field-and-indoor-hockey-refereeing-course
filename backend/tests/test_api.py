@@ -738,6 +738,12 @@ _SPA_ANIMATION_KEYS = frozenset(
         "call-clarity",
         "advantage-lens",
         "tempo-proximity",
+        "practice-circle-entry",
+        "practice-freehit-23",
+        "practice-advantage-wave",
+        "practice-board-lift",
+        "practice-indoor-restart",
+        "practice-side-board",
     }
 )
 
@@ -1062,3 +1068,85 @@ def test_capstone_quiz_progress_save_and_resume(client):
 def test_invalid_locale_rejected(client):
     res = client.post("/api/progress/sessions", json={"locale": "de"})
     assert res.status_code == 422
+
+
+def test_practice_bank_lists_field_and_indoor_without_answers(client):
+    res = client.get("/api/practice")
+    assert res.status_code == 200
+    body = res.json()
+    assert body["title"]["nl"]
+    assert body["title"]["en"]
+    assert len(body["scenarios"]) >= 6
+    kinds = {s["kind"] for s in body["scenarios"]}
+    assert kinds == {"field", "indoor"}
+    module_ids = {m["id"] for m in client.get("/api/course").json()["modules"]}
+    for scenario in body["scenarios"]:
+        assert scenario["id"] not in module_ids
+        assert scenario["situation"]["nl"] and scenario["situation"]["en"]
+        assert scenario["visual_key"] in _SPA_ANIMATION_KEYS
+        quiz = scenario["quiz"]
+        assert quiz["questions"]
+        types = {q["type"] for q in quiz["questions"]}
+        assert "multiple_choice" in types
+        assert "written" in types
+        for q in quiz["questions"]:
+            assert "correct_option_id" not in q
+            assert "accepted_answers" not in q
+            assert "feedback_correct" not in q
+
+
+def test_practice_scenario_grades_and_saves_progress(client):
+    detail = client.get("/api/practice/practice-field-raised-circle")
+    assert detail.status_code == 200
+    scenario = detail.json()
+    assert scenario["kind"] == "field"
+    quiz_id = scenario["quiz"]["id"]
+
+    created = client.post("/api/progress/sessions", json={"locale": "en"})
+    token = created.json()["access_token"]
+    headers = _auth_headers(token)
+
+    opened = client.put(
+        "/api/progress/session",
+        headers=headers,
+        json={"module_id": "practice-field-raised-circle", "status": "in_progress"},
+    )
+    assert opened.status_code == 200
+
+    submit = client.post(
+        f"/api/quizzes/{quiz_id}/submit",
+        headers=headers,
+        json={
+            "save_progress": True,
+            "answers": [
+                {"question_id": "q1-first-read", "selected_option_id": "b"},
+                {"question_id": "q2-danger-axes", "written_answer": "direction"},
+            ],
+        },
+    )
+    assert submit.status_code == 200
+    body = submit.json()
+    assert body["score"] == 2
+    assert body["total"] == 2
+    assert body["progress_saved"] is True
+    by_id = {r["question_id"]: r for r in body["results"]}
+    assert by_id["q1-first-read"]["correct"] is True
+    assert by_id["q1-first-read"]["explanation"]["nl"]
+    assert by_id["q1-first-read"]["explanation"]["en"]
+    assert by_id["q1-first-read"]["visualization_hint"] == "practice-circle-entry"
+    assert by_id["q2-danger-axes"]["correct"] is True
+
+    progress = client.get("/api/progress/session", headers=headers)
+    row = next(
+        p
+        for p in progress.json()["progress"]
+        if p["module_id"] == "practice-field-raised-circle"
+    )
+    assert row["status"] == "completed"
+    assert row["quiz_score"] == 2
+    assert row["quiz_total"] == 2
+
+
+def test_practice_scenario_not_found(client):
+    res = client.get("/api/practice/does-not-exist")
+    assert res.status_code == 404
