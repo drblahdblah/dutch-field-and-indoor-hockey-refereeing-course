@@ -526,6 +526,113 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("before")).toBeInTheDocument();
   });
 
+  it("renders hard-decision showcase SVGs", () => {
+    const frame: VisualPlaceholder = {
+      id: "viz-hard-frame",
+      kind: "svg_animation",
+      title: { nl: "Kader", en: "Frame" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "hard-decision-frame",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    const { rerender } = render(<ModuleVisual visual={frame} locale="en" />);
+    expect(document.querySelector("svg.viz-hard-decision-frame")).toBeTruthy();
+    expect(document.querySelector(".viz-hard-frame-arc")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(screen.getByText("whistle")).toBeInTheDocument();
+    expect(screen.getByText("hard read")).toBeInTheDocument();
+
+    const raised: VisualPlaceholder = {
+      id: "viz-hard-raised",
+      kind: "svg_animation",
+      title: { nl: "Omhoog", en: "Raised" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "hard-raised-danger",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={raised} locale="nl" />);
+    expect(document.querySelector("svg.viz-hard-raised-danger")).toBeTruthy();
+    expect(document.querySelector(".viz-cone")).toHaveAttribute("pathLength", "1");
+    expect(document.querySelector(".viz-hard-raised-path")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(screen.getByText("veld")).toBeInTheDocument();
+    expect(screen.getByText("zaal")).toBeInTheDocument();
+
+    const pressure: VisualPlaceholder = {
+      id: "viz-hard-pressure",
+      kind: "svg_animation",
+      title: { nl: "Druk", en: "Pressure" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "hard-pressure-clear",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={pressure} locale="en" />);
+    expect(document.querySelector("svg.viz-hard-pressure-clear")).toBeTruthy();
+    expect(document.querySelector(".viz-hard-press-arc")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(screen.getByText("possession")).toBeInTheDocument();
+    expect(screen.getByText("clear ball")).toBeInTheDocument();
+
+    const contested: VisualPlaceholder = {
+      id: "viz-hard-contested",
+      kind: "svg_animation",
+      title: { nl: "Betwist", en: "Contested" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "hard-contested",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={contested} locale="en" />);
+    expect(document.querySelector("svg.viz-hard-contested")).toBeTruthy();
+    expect(document.querySelector(".viz-hard-contest-ring")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(document.querySelector(".viz-hard-contest-stick-a")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(screen.getByText("no bias")).toBeInTheDocument();
+
+    const gk: VisualPlaceholder = {
+      id: "viz-hard-gk",
+      kind: "svg_animation",
+      title: { nl: "Keeper", en: "Keeper" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "hard-gk-dive",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={gk} locale="en" />);
+    expect(document.querySelector("svg.viz-hard-gk-dive")).toBeTruthy();
+    expect(document.querySelector(".viz-hard-gk-path")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(document.querySelector(".viz-pitch-circle")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(screen.getByText("keeper")).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes("path") && content.includes("timing")),
+    ).toBeInTheDocument();
+  });
+
   it("tints QuizVizHook compact visuals by graded outcome", () => {
     const { rerender } = render(
       <QuizVizHook hint="field-attack" locale="en" correct />,

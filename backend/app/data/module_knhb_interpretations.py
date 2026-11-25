@@ -774,5 +774,5 @@ INTERPRETATION_MODULE = ModuleStub(
             attribution=KNHB_ATTR,
         ),
     ],
-    order=5,
+    order=6,
 )

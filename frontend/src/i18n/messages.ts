@@ -361,6 +361,26 @@ export const QUIZ_VIZ_TITLES = {
     nl: "Visualisatie: zijbandduel",
     en: "Visualization: side-board contest",
   },
+  "hard-decision-frame": {
+    nl: "Visualisatie: besliskader",
+    en: "Visualization: decision frame",
+  },
+  "hard-raised-danger": {
+    nl: "Visualisatie: omhoog / gevaar",
+    en: "Visualization: raised / danger",
+  },
+  "hard-pressure-clear": {
+    nl: "Visualisatie: druk bij duidelijk bezit",
+    en: "Visualization: pressure with clear possession",
+  },
+  "hard-contested": {
+    nl: "Visualisatie: betwist bezit",
+    en: "Visualization: contested possession",
+  },
+  "hard-gk-dive": {
+    nl: "Visualisatie: keeperslide / duik",
+    en: "Visualization: keeper slide / dive",
+  },
 } as const satisfies Record<string, Localized>;
 
 export type UiKey = keyof typeof ui;

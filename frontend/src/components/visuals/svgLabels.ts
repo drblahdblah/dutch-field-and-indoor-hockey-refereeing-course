@@ -62,6 +62,17 @@ export const SVG_LABELS = {
   presence: { nl: "aanwezigheid", en: "presence" },
   posture: { nl: "houding", en: "posture" },
   voice: { nl: "stem", en: "voice" },
+  whistle: { nl: "fluit", en: "whistle" },
+  hardRead: { nl: "harde lezing", en: "hard read" },
+  possession: { nl: "bezit", en: "possession" },
+  clearBall: { nl: "duidelijke bal", en: "clear ball" },
+  unclear: { nl: "onduidelijk", en: "unclear" },
+  noBias: { nl: "geen bias", en: "no bias" },
+  waitControl: { nl: "wacht op controle", en: "wait for control" },
+  keeper: { nl: "keeper", en: "keeper" },
+  path: { nl: "pad", en: "path" },
+  timing: { nl: "timing", en: "timing" },
+  contact: { nl: "contact", en: "contact" },
 } as const;
 
 export function label(

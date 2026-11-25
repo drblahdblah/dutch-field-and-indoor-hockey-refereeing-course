@@ -31,6 +31,11 @@ export const KNOWN_ANIMATION_KEYS = [
   "practice-board-lift",
   "practice-indoor-restart",
   "practice-side-board",
+  "hard-decision-frame",
+  "hard-raised-danger",
+  "hard-pressure-clear",
+  "hard-contested",
+  "hard-gk-dive",
 ] as const;
 
 export type AnimationKey = (typeof KNOWN_ANIMATION_KEYS)[number];

@@ -1580,6 +1580,94 @@ main:focus-visible {
   animation: ball-slide 2.2s ease-in-out infinite alternate;
 }
 
+/* Hard-decision showcase animations */
+.viz-hard-frame-arc {
+  stroke: var(--accent);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.5s ease forwards;
+}
+
+.viz-ball-hard-frame {
+  offset-path: path("M 70 120 Q 150 40 230 120");
+  animation: ball-slide 2.8s ease-in-out infinite alternate;
+}
+
+.viz-hard-raised-path {
+  animation-delay: 0.15s;
+}
+
+.viz-ball-hard-raised {
+  offset-path: path("M 40 140 Q 90 90 128 96");
+  animation: ball-slide 2.4s ease-in-out infinite alternate;
+}
+
+.viz-ball-hard-raised-in {
+  offset-path: path("M 176 130 Q 210 70 250 100");
+  animation: ball-slide 2.5s ease-in-out infinite alternate;
+}
+
+.viz-hard-possess-glow {
+  animation: glow-pulse 2.6s ease-in-out infinite;
+}
+
+.viz-hard-press-arc {
+  stroke: var(--warn);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.4s ease 0.25s forwards;
+}
+
+.viz-ball-hard-pressure {
+  offset-path: path("M 70 120 L 120 108");
+  animation: ball-slide 2.2s ease-in-out infinite alternate;
+}
+
+.viz-hard-contest-ring {
+  stroke: var(--warn);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.5s ease forwards;
+}
+
+.viz-hard-contest-stick-a,
+.viz-hard-contest-stick-b {
+  stroke: var(--accent);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.2s ease 0.2s forwards;
+}
+
+.viz-hard-contest-stick-b {
+  animation-delay: 0.35s;
+  stroke: var(--warn);
+}
+
+.viz-ball-hard-contested {
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+.viz-hard-gk-path {
+  stroke: var(--danger);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.5s ease forwards;
+}
+
+.viz-ball-hard-gk {
+  offset-path: path("M 248 108 Q 200 130 150 118");
+  animation: ball-slide 2.6s ease-in-out infinite alternate;
+}
+
+.viz-hard-board-hint {
+  opacity: 0.55;
+  animation: band-fade 1.2s ease 0.4s both;
+}
+
+.viz-player.viz-gk .viz-actor-head {
+  fill: var(--warn);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .viz-tri,
   .viz-cone,
@@ -1636,6 +1724,14 @@ main:focus-visible {
   .viz-ladder-rail,
   .viz-ladder-rung,
   .viz-ladder-glow,
+  .viz-hard-frame-arc,
+  .viz-hard-press-arc,
+  .viz-hard-contest-ring,
+  .viz-hard-contest-stick-a,
+  .viz-hard-contest-stick-b,
+  .viz-hard-gk-path,
+  .viz-hard-possess-glow,
+  .viz-hard-board-hint,
   .viz-label-fade,
   .viz-glow,
   .viz-ball-travel,
@@ -1707,7 +1803,13 @@ main:focus-visible {
   .viz-tempo-path,
   .viz-tempo-partner,
   .viz-ladder-rail,
-  .viz-ladder-rung {
+  .viz-ladder-rung,
+  .viz-hard-frame-arc,
+  .viz-hard-press-arc,
+  .viz-hard-contest-ring,
+  .viz-hard-contest-stick-a,
+  .viz-hard-contest-stick-b,
+  .viz-hard-gk-path {
     stroke-dashoffset: 0;
   }
 

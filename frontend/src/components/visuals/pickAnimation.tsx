@@ -30,6 +30,13 @@ import {
 import { AdvantageLensSvg } from "./fieldSvgs";
 import { TempoProximitySvg } from "./indoorSvgs";
 import {
+  HardContestedSvg,
+  HardDecisionFrameSvg,
+  HardGkDiveSvg,
+  HardPressureClearSvg,
+  HardRaisedDangerSvg,
+} from "./hardDecisionSvgs";
+import {
   PracticeAdvantageWaveSvg,
   PracticeBoardLiftSvg,
   PracticeCircleEntrySvg,
@@ -77,6 +84,11 @@ const ANIMATIONS = {
   "practice-board-lift": PracticeBoardLiftSvg,
   "practice-indoor-restart": PracticeIndoorRestartSvg,
   "practice-side-board": PracticeSideBoardSvg,
+  "hard-decision-frame": HardDecisionFrameSvg,
+  "hard-raised-danger": HardRaisedDangerSvg,
+  "hard-pressure-clear": HardPressureClearSvg,
+  "hard-contested": HardContestedSvg,
+  "hard-gk-dive": HardGkDiveSvg,
 } as const satisfies Record<AnimationKey, ComponentType<SvgProps>>;
 
 export function pickAnimation(
