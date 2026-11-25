@@ -11,6 +11,7 @@ import { safeHttpUrl } from "./api/urls";
 import type { CourseOutline, ProgressOut, Quiz } from "./api/types";
 import { CourseProgressOverview } from "./components/CourseProgressOverview";
 import { ModuleDetail } from "./components/ModuleDetail";
+import { QuizPanel } from "./components/QuizPanel";
 import { t, uiT, type Locale } from "./i18n/messages";
 import {
   courseHashFor,
@@ -41,12 +42,16 @@ export default function App() {
   const [progress, setProgress] = useState<ProgressOut[]>([]);
   const [view, setView] = useState<CourseView>(() => readViewFromLocation());
   const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [quizLoadError, setQuizLoadError] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const progressGenRef = useRef(0);
   const lastModuleIdRef = useRef<string | null>(null);
 
-  const selectedId = view.kind === "module" ? view.moduleId : null;
+  const selectedId =
+    view.kind === "module" || view.kind === "module-quiz"
+      ? view.moduleId
+      : null;
 
   function navigate(next: CourseView, replace = false) {
     setView(next);
@@ -122,34 +127,50 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!course || view.kind !== "module") return;
+    if (!course) return;
+    if (view.kind !== "module" && view.kind !== "module-quiz") return;
     const ids = course.modules.map((m) => m.id);
     if (!isKnownModuleId(view.moduleId, ids)) {
       setView({ kind: "overview" });
       window.history.replaceState(null, "", courseHashFor({ kind: "overview" }));
+      return;
+    }
+    if (view.kind === "module-quiz") {
+      const mod = course.modules.find((m) => m.id === view.moduleId);
+      if (!mod?.quiz_id) {
+        const lesson: CourseView = { kind: "module", moduleId: view.moduleId };
+        setView(lesson);
+        window.history.replaceState(null, "", courseHashFor(lesson));
+      }
     }
   }, [course, view]);
 
   useEffect(() => {
     setQuiz(null);
-    const module = course?.modules.find((m) => m.id === selectedId);
-    if (!module?.quiz_id) {
-      return;
-    }
+    setQuizLoadError(false);
+    if (view.kind !== "module-quiz") return;
+    const module = course?.modules.find((m) => m.id === view.moduleId);
+    if (!module?.quiz_id) return;
     const quizId = module.quiz_id;
     let cancelled = false;
     (async () => {
       try {
         const q = await api.quiz(quizId);
-        if (!cancelled) setQuiz(q);
+        if (!cancelled) {
+          setQuiz(q);
+          setQuizLoadError(false);
+        }
       } catch (err) {
-        if (!cancelled) handleApiFailure(err);
+        if (!cancelled) {
+          setQuizLoadError(true);
+          handleApiFailure(err);
+        }
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [selectedId, course]);
+  }, [view, course]);
 
   function orderedModules() {
     return course
@@ -214,6 +235,14 @@ export default function App() {
     }
   }
 
+  function openModuleQuiz(moduleId: string) {
+    navigate({ kind: "module-quiz", moduleId });
+  }
+
+  function backToLesson(moduleId: string) {
+    navigate({ kind: "module", moduleId });
+  }
+
   function backToCourse() {
     navigate({ kind: "overview" });
   }
@@ -234,6 +263,7 @@ export default function App() {
       setHasSession(false);
       setProgress([]);
       setQuiz(null);
+      setQuizLoadError(false);
       navigate({ kind: "overview" }, true);
     }
   }
@@ -248,9 +278,22 @@ export default function App() {
       ? modules[selectedIndex + 1]
       : null;
   const showingModule = view.kind === "module" && selected != null;
+  const showingModuleQuiz = view.kind === "module-quiz" && selected != null;
+  const matchedQuiz =
+    showingModuleQuiz &&
+    quiz &&
+    selected?.quiz_id &&
+    quiz.id === selected.quiz_id
+      ? quiz
+      : null;
 
   useLayoutEffect(() => {
     if (loading || !course) return;
+    if (showingModuleQuiz && selectedId) {
+      lastModuleIdRef.current = selectedId;
+      focusById(matchedQuiz ? "quiz-heading" : "quiz-view-heading");
+      return;
+    }
     if (showingModule && selectedId) {
       lastModuleIdRef.current = selectedId;
       focusById("module-heading");
@@ -260,7 +303,14 @@ export default function App() {
       lastModuleIdRef.current = null;
       focusById("course-progress-heading");
     }
-  }, [showingModule, selectedId, loading, course]);
+  }, [
+    showingModule,
+    showingModuleQuiz,
+    matchedQuiz,
+    selectedId,
+    loading,
+    course,
+  ]);
 
   return (
     <div className="app">
@@ -300,7 +350,7 @@ export default function App() {
           </p>
         )}
 
-        {course && !showingModule && (
+        {course && !showingModule && !showingModuleQuiz && (
           <>
             <p className="muted">{t(course.description, locale)}</p>
             <div className="hero-actions">
@@ -388,16 +438,84 @@ export default function App() {
 
             <ModuleDetail
               module={selected}
-              quiz={quiz}
               locale={locale}
-              accessToken={accessToken}
-              hasSession={hasSession}
-              onGraded={() => {
-                void refreshProgress(accessToken).catch((err) => handleApiFailure(err));
-              }}
+              onOpenQuiz={
+                selected.quiz_id
+                  ? () => openModuleQuiz(selected.id)
+                  : undefined
+              }
             />
 
             <div className="module-view-footer">
+              {nextModule && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    void openModule(nextModule.id);
+                  }}
+                >
+                  {uiT("goToNextModule", locale)}: {t(nextModule.title, locale)}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {course && showingModuleQuiz && selected && (
+          <div className="module-view quiz-view">
+            <nav
+              className="module-view-nav"
+              aria-label={uiT("quizChrome", locale)}
+            >
+              <button
+                type="button"
+                className="btn btn-back"
+                onClick={() => backToLesson(selected.id)}
+              >
+                ← {uiT("backToLesson", locale)}
+              </button>
+              <p className="module-step muted" aria-live="polite">
+                {t(selected.title, locale)}
+              </p>
+              {hasSession && (
+                <button className="btn" type="button" onClick={endSession}>
+                  {uiT("endSession", locale)}
+                </button>
+              )}
+            </nav>
+
+            {matchedQuiz ? (
+              <QuizPanel
+                key={matchedQuiz.id}
+                quiz={matchedQuiz}
+                locale={locale}
+                accessToken={accessToken}
+                hasSession={hasSession}
+                onGraded={() => {
+                  void refreshProgress(accessToken).catch((err) =>
+                    handleApiFailure(err),
+                  );
+                }}
+              />
+            ) : quizLoadError ? (
+              <p id="quiz-view-heading" className="error" role="alert" tabIndex={-1}>
+                {uiT("quizLoadFailed", locale)}
+              </p>
+            ) : (
+              <p id="quiz-view-heading" className="muted" tabIndex={-1}>
+                {uiT("quizLoading", locale)}
+              </p>
+            )}
+
+            <div className="module-view-footer">
+              <button
+                type="button"
+                className="btn"
+                onClick={() => backToLesson(selected.id)}
+              >
+                ← {uiT("backToLesson", locale)}
+              </button>
               {nextModule && (
                 <button
                   type="button"

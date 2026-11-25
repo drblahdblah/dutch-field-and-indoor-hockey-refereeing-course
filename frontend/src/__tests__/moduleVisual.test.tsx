@@ -92,6 +92,89 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("herstart")).toBeInTheDocument();
   });
 
+  it("renders a complete safety-triangle pathLength for the draw animation", () => {
+    const visual: VisualPlaceholder = {
+      id: "viz-safety-triangle",
+      kind: "svg_animation",
+      title: { nl: "Driehoek", en: "Triangle" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "safety-triangle",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    render(<ModuleVisual visual={visual} locale="en" />);
+    const tri = document.querySelector("polygon.viz-tri");
+    expect(tri).toBeTruthy();
+    expect(tri).toHaveAttribute("pathLength", "1");
+    expect(screen.getByText("safety")).toBeInTheDocument();
+    expect(screen.getByText("fairness")).toBeInTheDocument();
+    expect(screen.getByText("flow")).toBeInTheDocument();
+  });
+
+  it("renders intro calm-signal, context-split, presence-arc, and call-clarity SVGs", () => {
+    const calm: VisualPlaceholder = {
+      id: "viz-calm-signal",
+      kind: "svg_animation",
+      title: { nl: "Calm", en: "Calm" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "calm-signal",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    const { rerender } = render(<ModuleVisual visual={calm} locale="en" />);
+    expect(document.querySelector("svg.viz-calm-signal")).toBeTruthy();
+    expect(screen.getByText("calm")).toBeInTheDocument();
+    expect(screen.getByText("brief")).toBeInTheDocument();
+    expect(screen.getByText("visible")).toBeInTheDocument();
+
+    const split: VisualPlaceholder = {
+      id: "viz-context-split",
+      kind: "svg_animation",
+      title: { nl: "Context", en: "Context" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "context-split",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={split} locale="nl" />);
+    expect(document.querySelector("svg.viz-context-split")).toBeTruthy();
+    expect(screen.getByText("veld")).toBeInTheDocument();
+    expect(screen.getByText("zaal")).toBeInTheDocument();
+
+    const presence: VisualPlaceholder = {
+      id: "viz-presence-arc",
+      kind: "svg_animation",
+      title: { nl: "Aanwezigheid", en: "Presence" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "presence-arc",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={presence} locale="en" />);
+    expect(document.querySelector("svg.viz-presence-arc")).toBeTruthy();
+    expect(screen.getByText("posture")).toBeInTheDocument();
+    expect(screen.getByText("presence")).toBeInTheDocument();
+
+    const call: VisualPlaceholder = {
+      id: "viz-call-clarity",
+      kind: "svg_animation",
+      title: { nl: "Leesbaar", en: "Readable" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "call-clarity",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={call} locale="en" />);
+    expect(document.querySelector("svg.viz-call-clarity")).toBeTruthy();
+    expect(screen.getByText("decide")).toBeInTheDocument();
+    expect(screen.getByText("communicate")).toBeInTheDocument();
+  });
+
   it("renders indoor court-boards, lift-limit, and board-play SVGs", () => {
     const court: VisualPlaceholder = {
       id: "viz-court-boards",

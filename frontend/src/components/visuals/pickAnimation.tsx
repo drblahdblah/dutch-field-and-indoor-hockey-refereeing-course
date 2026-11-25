@@ -21,6 +21,12 @@ import {
   TranslationSlotSvg,
 } from "./pathwaySvgs";
 import {
+  CallClaritySvg,
+  CalmSignalSvg,
+  ContextSplitSvg,
+  PresenceArcSvg,
+} from "./introSvgs";
+import {
   FieldAttackSvg,
   IndoorReboundSvg,
   MatchPressureSvg,
@@ -47,6 +53,10 @@ const ANIMATIONS = {
   "field-attack": FieldAttackSvg,
   "indoor-rebound": IndoorReboundSvg,
   "match-pressure": MatchPressureSvg,
+  "calm-signal": CalmSignalSvg,
+  "context-split": ContextSplitSvg,
+  "presence-arc": PresenceArcSvg,
+  "call-clarity": CallClaritySvg,
 } as const satisfies Record<AnimationKey, ComponentType<SvgProps>>;
 
 export function pickAnimation(

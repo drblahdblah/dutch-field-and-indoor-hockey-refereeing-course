@@ -66,6 +66,50 @@ const ui = {
   statusInProgress: { nl: "bezig", en: "in progress" },
   statusCompleted: { nl: "voltooid", en: "completed" },
   quiz: { nl: "Quiz", en: "Quiz" },
+  lessonPart: {
+    nl: "Deel {current} van {total}",
+    en: "Part {current} of {total}",
+  },
+  lessonPrev: {
+    nl: "Vorige",
+    en: "Previous",
+  },
+  lessonNext: {
+    nl: "Volgende",
+    en: "Next",
+  },
+  lessonPartsNav: {
+    nl: "Lesdelen",
+    en: "Lesson parts",
+  },
+  quizReadyHeading: {
+    nl: "Klaar om te oefenen?",
+    en: "Ready to practise?",
+  },
+  quizReadyBody: {
+    nl: "Je hebt de lesstof gelezen. Open de quiz op een aparte pagina — antwoorden worden nagekeken met uitleg en visuals.",
+    en: "You’ve finished the reading. Open the quiz on a separate page — answers are graded with explanations and visuals.",
+  },
+  openModuleQuiz: {
+    nl: "Ga naar de modulequiz",
+    en: "Go to the module quiz",
+  },
+  backToLesson: {
+    nl: "Terug naar de lesstof",
+    en: "Back to the lesson",
+  },
+  quizChrome: {
+    nl: "Quiznavigatie",
+    en: "Quiz navigation",
+  },
+  quizLoading: {
+    nl: "Quiz laden…",
+    en: "Loading quiz…",
+  },
+  quizLoadFailed: {
+    nl: "De quiz kon niet worden geladen. Ga terug naar de lesstof en probeer opnieuw.",
+    en: "The quiz could not be loaded. Go back to the lesson and try again.",
+  },
   submit: { nl: "Antwoorden indienen", en: "Submit answers" },
   furtherReading: { nl: "Verder lezen", en: "Further reading" },
   attribution: { nl: "Bronnen & vermelding", en: "Sources & attribution" },
@@ -217,6 +261,22 @@ export const QUIZ_VIZ_TITLES = {
   "match-pressure": {
     nl: "Visualisatie: wedstrijddruk",
     en: "Visualization: match pressure",
+  },
+  "calm-signal": {
+    nl: "Visualisatie: calm-signaal",
+    en: "Visualization: calm signal",
+  },
+  "context-split": {
+    nl: "Visualisatie: veld vs zaal",
+    en: "Visualization: field vs indoor",
+  },
+  "presence-arc": {
+    nl: "Visualisatie: professionele aanwezigheid",
+    en: "Visualization: professional presence",
+  },
+  "call-clarity": {
+    nl: "Visualisatie: leesbare beslissing",
+    en: "Visualization: readable call",
   },
 } as const satisfies Record<string, Localized>;
 

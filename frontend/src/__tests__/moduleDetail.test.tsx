@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import type { ModuleStub, Quiz } from "../api/types";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import type { ModuleStub } from "../api/types";
 import { ModuleDetail } from "../components/ModuleDetail";
 
 const fullModule: ModuleStub = {
@@ -37,56 +37,71 @@ const fullModule: ModuleStub = {
   order: 1,
 };
 
-const matchingQuiz: Quiz = {
-  id: "quiz-intro-umpire-role",
-  title: { nl: "Quiz NL", en: "Quiz EN" },
-  questions: [
-    {
-      id: "q1",
-      type: "written",
-      prompt: { nl: "Vraag?", en: "Question?" },
-      options: null,
-    },
-  ],
-};
-
-const staleQuiz: Quiz = {
-  id: "quiz-other",
-  title: { nl: "Verkeerde quiz", en: "Wrong quiz" },
-  questions: matchingQuiz.questions,
-};
-
 describe("ModuleDetail", () => {
-  it("renders full module sections and visuals", () => {
+  it("renders full module sections and visuals without an inline quiz", () => {
+    const onOpenQuiz = vi.fn();
     render(
-      <ModuleDetail
-        module={fullModule}
-        quiz={matchingQuiz}
-        locale="en"
-        accessToken={null}
-        hasSession={false}
-      />,
+      <ModuleDetail module={fullModule} locale="en" onOpenQuiz={onOpenQuiz} />,
     );
     expect(screen.getByRole("heading", { name: "Intro EN" })).toBeInTheDocument();
     expect(screen.getByText("Section one")).toBeInTheDocument();
     expect(screen.getByText("Paragraph EN")).toBeInTheDocument();
     expect(screen.getByText("Triangle")).toBeInTheDocument();
     expect(document.querySelector("svg.viz-svg")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Quiz EN" })).toBeInTheDocument();
-    expect(screen.getByLabelText("Question?")).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /Quiz/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/Part 1 of 1/i)).toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: /Go to the module quiz/i }),
+    );
+    expect(onOpenQuiz).toHaveBeenCalledTimes(1);
   });
 
-  it("does not render a quiz that belongs to another module", () => {
+  it("advances lesson parts by click instead of showing all sections at once", () => {
+    const multi: ModuleStub = {
+      ...fullModule,
+      sections: [
+        {
+          id: "sec-one",
+          title: { nl: "Eén", en: "One" },
+          paragraphs: [{ nl: "A", en: "A" }],
+          visual_id: null,
+        },
+        {
+          id: "sec-two",
+          title: { nl: "Twee", en: "Two" },
+          paragraphs: [{ nl: "B", en: "B" }],
+          visual_id: null,
+        },
+      ],
+    };
+    const onOpenQuiz = vi.fn();
+    render(<ModuleDetail module={multi} locale="en" onOpenQuiz={onOpenQuiz} />);
+
+    expect(screen.getByText("One")).toBeInTheDocument();
+    expect(screen.queryByText("Two")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Go to the module quiz/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/Part 1 of 2/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Next/i }));
+
+    expect(screen.getByText("Two")).toBeInTheDocument();
+    expect(screen.queryByText("One")).not.toBeInTheDocument();
+    expect(screen.getByText(/Part 2 of 2/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Go to the module quiz/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides the quiz CTA when the module has no quiz", () => {
     render(
       <ModuleDetail
-        module={fullModule}
-        quiz={staleQuiz}
+        module={{ ...fullModule, quiz_id: null }}
         locale="nl"
-        accessToken={null}
-        hasSession={false}
       />,
     );
-    expect(screen.queryByText("Verkeerde quiz")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Ga naar de modulequiz/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders interpretation references with translation slots", () => {
@@ -116,15 +131,7 @@ describe("ModuleDetail", () => {
         },
       ],
     };
-    render(
-      <ModuleDetail
-        module={withRefs}
-        quiz={null}
-        locale="en"
-        accessToken={null}
-        hasSession={false}
-      />,
-    );
+    render(<ModuleDetail module={withRefs} locale="en" />);
     expect(
       screen.getByRole("heading", { name: "Interpretation references" }),
     ).toBeInTheDocument();
@@ -170,15 +177,7 @@ describe("ModuleDetail", () => {
         },
       ],
     };
-    render(
-      <ModuleDetail
-        module={unsafe}
-        quiz={null}
-        locale="en"
-        accessToken={null}
-        hasSession={false}
-      />,
-    );
+    render(<ModuleDetail module={unsafe} locale="en" />);
     expect(screen.queryByRole("link", { name: "BadSource" })).not.toBeInTheDocument();
     expect(screen.getByText("BadSource")).toBeInTheDocument();
     expect(

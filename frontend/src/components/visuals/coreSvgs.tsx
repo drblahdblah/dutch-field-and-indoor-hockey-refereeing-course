@@ -12,12 +12,15 @@ export function SafetyTriangleSvg({ locale }: { locale: Locale }) {
     <svg className="viz-svg" viewBox="0 0 280 190" aria-hidden="true">
       <rect className="viz-canvas" x="8" y="8" width="264" height="174" rx="10" />
       <circle className="viz-glow" cx="140" cy="100" r="68" />
+      {/* pathLength keeps the draw animation complete regardless of pixel perimeter. */}
       <polygon
         className="viz-tri"
         points="140,28 238,162 42,162"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.5"
+        strokeLinejoin="round"
+        pathLength={1}
       />
       <path
         className="viz-hint-path"
@@ -26,20 +29,20 @@ export function SafetyTriangleSvg({ locale }: { locale: Locale }) {
         strokeWidth="1"
       />
       <circle className="viz-node viz-node-a" cx="140" cy="36" r="8" />
-      <circle className="viz-node viz-node-b" cx="228" cy="154" r="8" />
-      <circle className="viz-node viz-node-c" cx="52" cy="154" r="8" />
+      <circle className="viz-node viz-node-b" cx="52" cy="154" r="8" />
+      <circle className="viz-node viz-node-c" cx="228" cy="154" r="8" />
       <StepBadge x={140} y={36} n={1} />
-      <StepBadge x={228} y={154} n={2} />
-      <StepBadge x={52} y={154} n={3} />
+      <StepBadge x={52} y={154} n={2} />
+      <StepBadge x={228} y={154} n={3} />
       <UmpireMarker x={140} y={108} />
       <text x="140" y="62" textAnchor="middle" className="viz-label viz-label-fade">
         {label("safety", locale)}
       </text>
-      <text x="210" y="148" textAnchor="middle" className="viz-label viz-label-fade">
-        {label("flow", locale)}
-      </text>
       <text x="70" y="148" textAnchor="middle" className="viz-label viz-label-fade">
         {label("fairness", locale)}
+      </text>
+      <text x="210" y="148" textAnchor="middle" className="viz-label viz-label-fade">
+        {label("flow", locale)}
       </text>
       <text x="140" y="178" textAnchor="middle" className="viz-label viz-caption">
         {label("umpire", locale)}

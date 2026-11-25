@@ -14,7 +14,7 @@ const modules = [
     sections: [],
     visuals: [],
     interpretation_references: [],
-    quiz_id: null,
+    quiz_id: "quiz-intro-a",
     further_reading: [],
     order: 1,
   },
@@ -45,7 +45,18 @@ vi.mock("../api/client", () => ({
       attributions: [],
     })),
     getProgress: vi.fn(async () => ({ progress: [] })),
-    quiz: vi.fn(),
+    quiz: vi.fn(async () => ({
+      id: "quiz-intro-a",
+      title: { nl: "Quiz A NL", en: "Quiz A EN" },
+      questions: [
+        {
+          id: "q1",
+          type: "written" as const,
+          prompt: { nl: "Vraag A?", en: "Question A?" },
+          options: null,
+        },
+      ],
+    })),
     createSession: vi.fn(async () => ({
       access_token: null,
       session_id: "s1",
@@ -174,5 +185,67 @@ describe("App course / module navigation", () => {
       expect(screen.getByRole("heading", { name: /Veld NL/i })).toBeInTheDocument();
     });
     expect(window.location.hash).toBe("#/modules/mod-b");
+  });
+
+  it("opens the module quiz on a separate route after the lesson CTA", async () => {
+    window.location.hash = "#/modules/mod-a";
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /Intro NL/i })).toBeInTheDocument();
+    });
+    expect(screen.queryByRole("heading", { name: /Quiz A NL/i })).not.toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Ga naar de modulequiz/i }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /Quiz A NL/i })).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/modules/mod-a/quiz");
+    expect(screen.queryByRole("heading", { name: /Intro NL/i })).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/Vraag A\?/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("navigation", { name: /Quiznavigatie/i }),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(document.activeElement?.id).toBe("quiz-heading");
+    });
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /Terug naar de lesstof/i })[0],
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /Intro NL/i })).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/modules/mod-a");
+    expect(screen.queryByRole("heading", { name: /Quiz A NL/i })).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(document.activeElement?.id).toBe("module-heading");
+    });
+  });
+
+  it("deep-links the module quiz hash", async () => {
+    window.location.hash = "#/modules/mod-a/quiz";
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /Quiz A NL/i })).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/modules/mod-a/quiz");
+  });
+
+  it("replaces a quiz hash for a module without a quiz with the lesson", async () => {
+    window.location.hash = "#/modules/mod-b/quiz";
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /Veld NL/i })).toBeInTheDocument();
+    });
+    expect(window.location.hash).toBe("#/modules/mod-b");
+    expect(screen.queryByRole("heading", { name: /Quiz/i })).not.toBeInTheDocument();
   });
 });

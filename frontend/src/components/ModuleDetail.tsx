@@ -1,21 +1,17 @@
+import { useEffect, useState } from "react";
 import type {
   InterpretationReference,
   ModuleStub,
-  Quiz,
   VisualPlaceholder,
 } from "../api/types";
 import { safeHttpUrl } from "../api/urls";
 import { t, uiT, type Locale } from "../i18n/messages";
 import { ModuleVisual } from "./ModuleVisual";
-import { QuizPanel } from "./QuizPanel";
 
 type Props = {
   module: ModuleStub;
-  quiz: Quiz | null;
   locale: Locale;
-  accessToken: string | null;
-  hasSession: boolean;
-  onGraded?: () => void;
+  onOpenQuiz?: () => void;
 };
 
 function kindLabel(kind: ModuleStub["kind"], locale: Locale): string {
@@ -74,19 +70,27 @@ function InterpretationCard({
   );
 }
 
-export function ModuleDetail({
-  module,
-  quiz,
-  locale,
-  accessToken,
-  hasSession,
-  onGraded,
-}: Props) {
+export function ModuleDetail({ module, locale, onOpenQuiz }: Props) {
   const isFull = module.content_status === "full";
   const byVisualId = visualMap(module);
-  const matchedQuiz =
-    quiz && module.quiz_id && quiz.id === module.quiz_id ? quiz : null;
   const refs = module.interpretation_references ?? [];
+  const hasQuiz = Boolean(module.quiz_id);
+  const sections = isFull ? module.sections : [];
+  const stepped = sections.length > 0;
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    setStep(0);
+  }, [module.id]);
+
+  const safeStep =
+    stepped && sections.length > 0
+      ? Math.min(step, sections.length - 1)
+      : 0;
+  const section = stepped ? sections[safeStep] : null;
+  const isLastStep = stepped && safeStep === sections.length - 1;
+  const visual =
+    section?.visual_id != null ? byVisualId[section.visual_id] : undefined;
 
   return (
     <article className="panel" aria-labelledby="module-heading">
@@ -108,27 +112,52 @@ export function ModuleDetail({
         ))}
       </ul>
 
-      {isFull && module.sections.length > 0 ? (
-        <div className="learning-sections">
-          <h3>{uiT("learningContent", locale)}</h3>
-          {module.sections.map((section) => {
-            const visual = section.visual_id
-              ? byVisualId[section.visual_id]
-              : undefined;
-            return (
-              <section
-                key={section.id}
-                className="learning-section"
-                aria-labelledby={`section-${section.id}`}
-              >
-                <h4 id={`section-${section.id}`}>{t(section.title, locale)}</h4>
-                {section.paragraphs.map((para, i) => (
-                  <p key={i}>{t(para, locale)}</p>
-                ))}
-                {visual && <ModuleVisual visual={visual} locale={locale} />}
-              </section>
-            );
-          })}
+      {stepped && section ? (
+        <div className="learning-sections learning-sections-stepped">
+          <div className="lesson-step-head">
+            <h3>{uiT("learningContent", locale)}</h3>
+            <p className="module-step muted" aria-live="polite">
+              {uiT("lessonPart", locale)
+                .replace("{current}", String(safeStep + 1))
+                .replace("{total}", String(sections.length))}
+            </p>
+          </div>
+
+          <section
+            key={section.id}
+            className="learning-section is-active-step"
+            aria-labelledby={`section-${section.id}`}
+          >
+            <h4 id={`section-${section.id}`}>{t(section.title, locale)}</h4>
+            {section.paragraphs.map((para, i) => (
+              <p key={i}>{t(para, locale)}</p>
+            ))}
+            {visual && <ModuleVisual visual={visual} locale={locale} />}
+          </section>
+
+          <nav
+            className="lesson-step-nav"
+            aria-label={uiT("lessonPartsNav", locale)}
+          >
+            <button
+              type="button"
+              className="btn"
+              disabled={safeStep === 0}
+              onClick={() => setStep((s) => Math.max(0, s - 1))}
+            >
+              ← {uiT("lessonPrev", locale)}
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={isLastStep}
+              onClick={() =>
+                setStep((s) => Math.min(sections.length - 1, s + 1))
+              }
+            >
+              {uiT("lessonNext", locale)} →
+            </button>
+          </nav>
         </div>
       ) : (
         <>
@@ -141,7 +170,7 @@ export function ModuleDetail({
         </>
       )}
 
-      {refs.length > 0 && (
+      {(!stepped || isLastStep) && refs.length > 0 && (
         <section
           className="interpretation-refs"
           aria-labelledby="interp-refs-heading"
@@ -162,7 +191,7 @@ export function ModuleDetail({
         </section>
       )}
 
-      {module.further_reading.length > 0 && (
+      {(!stepped || isLastStep) && module.further_reading.length > 0 && (
         <>
           <h3>{uiT("furtherReading", locale)}</h3>
           <ul>
@@ -191,15 +220,18 @@ export function ModuleDetail({
         </>
       )}
 
-      {matchedQuiz && (
-        <QuizPanel
-          key={matchedQuiz.id}
-          quiz={matchedQuiz}
-          locale={locale}
-          accessToken={accessToken}
-          hasSession={hasSession}
-          onGraded={onGraded}
-        />
+      {hasQuiz && onOpenQuiz && (!stepped || isLastStep) && (
+        <aside className="quiz-cta" aria-labelledby="quiz-cta-heading">
+          <h3 id="quiz-cta-heading">{uiT("quizReadyHeading", locale)}</h3>
+          <p className="muted">{uiT("quizReadyBody", locale)}</p>
+          <button
+            type="button"
+            className="btn btn-primary quiz-cta-btn"
+            onClick={onOpenQuiz}
+          >
+            {uiT("openModuleQuiz", locale)}
+          </button>
+        </aside>
       )}
     </article>
   );

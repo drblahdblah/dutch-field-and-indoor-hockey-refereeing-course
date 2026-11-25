@@ -49,6 +49,15 @@ export const SVG_LABELS = {
   height: { nl: "hoogte", en: "height" },
   umpire: { nl: "scheidsrechter", en: "umpire" },
   scan: { nl: "scan", en: "scan" },
+  advantage: { nl: "voordeel", en: "advantage" },
+  space: { nl: "ruimte", en: "space" },
+  calm: { nl: "calm", en: "calm" },
+  brief: { nl: "kort", en: "brief" },
+  visible: { nl: "zichtbaar", en: "visible" },
+  tempo: { nl: "tempo", en: "tempo" },
+  presence: { nl: "aanwezigheid", en: "presence" },
+  posture: { nl: "houding", en: "posture" },
+  voice: { nl: "stem", en: "voice" },
 } as const;
 
 export function label(

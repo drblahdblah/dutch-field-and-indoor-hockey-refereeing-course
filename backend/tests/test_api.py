@@ -63,16 +63,28 @@ def test_full_intro_module_has_sections_and_visuals(client):
     module = res.json()
     assert module["content_status"] == "full"
     assert module["quiz_id"] == "quiz-intro-umpire-role"
-    assert len(module["sections"]) >= 4
-    assert len(module["visuals"]) >= 2
+    assert len(module["sections"]) >= 6
+    assert len(module["visuals"]) >= 5
     assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
     assert all(len(s["paragraphs"]) >= 1 for s in module["sections"])
     visual_ids = {v["id"] for v in module["visuals"]}
     for section in module["sections"]:
         if section["visual_id"]:
             assert section["visual_id"] in visual_ids
+    anim_keys = {
+        v["animation_key"] for v in module["visuals"] if v["kind"] == "svg_animation"
+    }
+    assert {
+        "safety-triangle",
+        "scan-cycle",
+        "calm-signal",
+        "context-split",
+        "presence-arc",
+        "call-clarity",
+    } <= anim_keys
     assert any(v["kind"] == "svg_animation" for v in module["visuals"])
-    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    assert not any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    assert all(v["kind"] == "svg_animation" for v in module["visuals"])
 
 
 def test_intro_quiz_grades_mc_and_written_with_explanations(client):
@@ -84,13 +96,14 @@ def test_intro_quiz_grades_mc_and_written_with_explanations(client):
                 {"question_id": "q2-scan-partner", "selected_option_id": "b"},
                 {"question_id": "q3-safety-keyword", "written_answer": "safety"},
                 {"question_id": "q4-calm-communication", "written_answer": "loud"},
+                {"question_id": "q5-context-cadence", "selected_option_id": "b"},
             ]
         },
     )
     assert res.status_code == 200
     body = res.json()
-    assert body["total"] == 4
-    assert body["score"] == 2
+    assert body["total"] == 5
+    assert body["score"] == 3
     by_id = {r["question_id"]: r for r in body["results"]}
     assert by_id["q1-priority-order"]["correct"] is False
     assert by_id["q1-priority-order"]["explanation"]["nl"]
@@ -100,6 +113,8 @@ def test_intro_quiz_grades_mc_and_written_with_explanations(client):
     assert by_id["q2-scan-partner"]["correct"] is True
     assert by_id["q3-safety-keyword"]["correct"] is True
     assert by_id["q4-calm-communication"]["correct"] is False
+    assert by_id["q5-context-cadence"]["correct"] is True
+    assert by_id["q5-context-cadence"]["visualization_hint"] == "context-split"
 
 
 def test_intro_quiz_progress_save_and_resume(client):
@@ -124,19 +139,20 @@ def test_intro_quiz_progress_save_and_resume(client):
                 {"question_id": "q2-scan-partner", "selected_option_id": "b"},
                 {"question_id": "q3-safety-keyword", "written_answer": "Safety"},
                 {"question_id": "q4-calm-communication", "written_answer": "calm"},
+                {"question_id": "q5-context-cadence", "selected_option_id": "b"},
             ],
         },
     )
     assert submit.status_code == 200
     assert submit.json()["progress_saved"] is True
-    assert submit.json()["score"] == 4
+    assert submit.json()["score"] == 5
 
     progress = client.get("/api/progress/session", headers=headers)
     assert progress.status_code == 200
     row = next(p for p in progress.json()["progress"] if p["module_id"] == "mod-intro-role")
     assert row["status"] == "completed"
-    assert row["quiz_score"] == 4
-    assert row["quiz_total"] == 4
+    assert row["quiz_score"] == 5
+    assert row["quiz_total"] == 5
 
 
 def test_full_field_module_has_sections_and_visuals(client):
@@ -225,7 +241,7 @@ def test_intro_quiz_get_hides_answers(client):
     res = client.get("/api/course/quizzes/quiz-intro-umpire-role")
     assert res.status_code == 200
     quiz = res.json()
-    assert len(quiz["questions"]) == 4
+    assert len(quiz["questions"]) == 5
     for q in quiz["questions"]:
         assert "correct_option_id" not in q
         assert "accepted_answers" not in q
@@ -673,6 +689,10 @@ _SPA_ANIMATION_KEYS = frozenset(
         "field-attack",
         "indoor-rebound",
         "match-pressure",
+        "calm-signal",
+        "context-split",
+        "presence-arc",
+        "call-clarity",
     }
 )
 
