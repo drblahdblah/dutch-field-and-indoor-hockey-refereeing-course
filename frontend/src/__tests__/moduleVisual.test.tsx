@@ -294,9 +294,14 @@ describe("ModuleVisual", () => {
       "pathLength",
       "1",
     );
+    expect(tempoSvg?.querySelector(".viz-tempo-partner")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("closer")).toBeInTheDocument();
     expect(screen.getByText("tempo")).toBeInTheDocument();
     expect(screen.getByText("partner")).toBeInTheDocument();
+    expect(screen.getByText("communicate")).toBeInTheDocument();
   });
 
   it("renders pathway match-cadence, partner-handoff, and consistency-loop SVGs", () => {

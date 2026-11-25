@@ -627,11 +627,17 @@ def test_full_indoor_module_has_sections_and_visuals(client):
         "indoor-rebound",
         "tempo-proximity",
     }
+    assert len(module["sections"]) >= 6
     assert "sec-tempo-proximity" in {s["id"] for s in module["sections"]}
     tempo = next(s for s in module["sections"] if s["id"] == "sec-tempo-proximity")
     assert tempo["visual_id"] == "viz-tempo-proximity"
+    board_sec = next(s for s in module["sections"] if s["id"] == "sec-board-play")
+    assert board_sec["visual_id"] == "viz-board-play"
     assert not any(v["kind"] == "official_link_slot" for v in module["visuals"])
     assert not any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    reading_urls = {r["url"] for r in module["further_reading"]}
+    assert any("fih.hockey" in u for u in reading_urls)
+    assert any("knhb.nl" in u for u in reading_urls)
 
 
 def test_indoor_quiz_grades_mc_and_written_with_explanations(client):

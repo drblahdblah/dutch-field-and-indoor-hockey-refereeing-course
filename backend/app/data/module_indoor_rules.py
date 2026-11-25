@@ -706,7 +706,7 @@ INDOOR_MODULE = ModuleStub(
                     ),
                 ),
             ],
-            visual_id="viz-indoor-rebound",
+            visual_id="viz-board-play",
         ),
         LearningSection(
             id="sec-tempo-proximity",
