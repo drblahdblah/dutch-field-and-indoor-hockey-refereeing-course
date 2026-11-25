@@ -68,7 +68,9 @@ export function QuizPanel({
 
   return (
     <section className="panel" aria-labelledby="quiz-heading">
-      <h2 id="quiz-heading">{t(quiz.title, locale)}</h2>
+      <h2 id="quiz-heading" tabIndex={-1}>
+        {t(quiz.title, locale)}
+      </h2>
       {quiz.questions.map((q, index) => {
         const feedback = byQuestion[q.id];
         const promptText = t(q.prompt, locale);

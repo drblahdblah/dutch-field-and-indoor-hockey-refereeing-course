@@ -28,6 +28,20 @@ describe("courseHash", () => {
     expect(courseHashFor({ kind: "overview" })).toBe("#/");
   });
 
+  it("parses module quiz hashes and prefers /quiz over the lesson path", () => {
+    expect(parseCourseHash("#/modules/mod-intro-role/quiz")).toEqual({
+      kind: "module-quiz",
+      moduleId: "mod-intro-role",
+    });
+    expect(parseCourseHash("#modules/field%2Frules/quiz")).toEqual({
+      kind: "module-quiz",
+      moduleId: "field/rules",
+    });
+    expect(
+      courseHashFor({ kind: "module-quiz", moduleId: "mod-intro-role" }),
+    ).toBe("#/modules/mod-intro-role/quiz");
+  });
+
   it("falls back to overview for unknown paths", () => {
     expect(parseCourseHash("#/nope")).toEqual({ kind: "overview" });
     expect(parseCourseHash("#/modules/")).toEqual({ kind: "overview" });

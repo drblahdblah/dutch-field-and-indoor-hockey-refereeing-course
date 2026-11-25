@@ -1,21 +1,16 @@
 import type {
   InterpretationReference,
   ModuleStub,
-  Quiz,
   VisualPlaceholder,
 } from "../api/types";
 import { safeHttpUrl } from "../api/urls";
 import { t, uiT, type Locale } from "../i18n/messages";
 import { ModuleVisual } from "./ModuleVisual";
-import { QuizPanel } from "./QuizPanel";
 
 type Props = {
   module: ModuleStub;
-  quiz: Quiz | null;
   locale: Locale;
-  accessToken: string | null;
-  hasSession: boolean;
-  onGraded?: () => void;
+  onOpenQuiz?: () => void;
 };
 
 function kindLabel(kind: ModuleStub["kind"], locale: Locale): string {
@@ -74,19 +69,11 @@ function InterpretationCard({
   );
 }
 
-export function ModuleDetail({
-  module,
-  quiz,
-  locale,
-  accessToken,
-  hasSession,
-  onGraded,
-}: Props) {
+export function ModuleDetail({ module, locale, onOpenQuiz }: Props) {
   const isFull = module.content_status === "full";
   const byVisualId = visualMap(module);
-  const matchedQuiz =
-    quiz && module.quiz_id && quiz.id === module.quiz_id ? quiz : null;
   const refs = module.interpretation_references ?? [];
+  const hasQuiz = Boolean(module.quiz_id);
 
   return (
     <article className="panel" aria-labelledby="module-heading">
@@ -191,15 +178,18 @@ export function ModuleDetail({
         </>
       )}
 
-      {matchedQuiz && (
-        <QuizPanel
-          key={matchedQuiz.id}
-          quiz={matchedQuiz}
-          locale={locale}
-          accessToken={accessToken}
-          hasSession={hasSession}
-          onGraded={onGraded}
-        />
+      {hasQuiz && onOpenQuiz && (
+        <aside className="quiz-cta" aria-labelledby="quiz-cta-heading">
+          <h3 id="quiz-cta-heading">{uiT("quizReadyHeading", locale)}</h3>
+          <p className="muted">{uiT("quizReadyBody", locale)}</p>
+          <button
+            type="button"
+            className="btn btn-primary quiz-cta-btn"
+            onClick={onOpenQuiz}
+          >
+            {uiT("openModuleQuiz", locale)}
+          </button>
+        </aside>
       )}
     </article>
   );

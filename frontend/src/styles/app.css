@@ -528,6 +528,34 @@ main:focus-visible {
   margin-top: 1.5rem;
 }
 
+.quiz-cta {
+  margin-top: 1.75rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid rgba(200, 245, 66, 0.35);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(145deg, rgba(200, 245, 66, 0.12), transparent 60%),
+    rgba(12, 31, 26, 0.55);
+}
+
+.quiz-cta h3 {
+  font-family: var(--font-display);
+  margin: 0 0 0.45rem;
+  font-size: 1.2rem;
+}
+
+.quiz-cta p {
+  margin: 0 0 1rem;
+}
+
+.quiz-cta-btn {
+  min-height: 44px;
+}
+
+.quiz-view .panel {
+  animation: rise 0.45s ease both;
+}
+
 .btn-back {
   background: transparent;
   border: 1px solid var(--line);
@@ -1272,6 +1300,94 @@ main:focus-visible {
   }
 }
 
+@keyframes calm-wave {
+  from {
+    stroke-dashoffset: 80;
+    opacity: 0.2;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes presence-sweep {
+  from {
+    stroke-dashoffset: 160;
+    opacity: 0.25;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.viz-calm-wave {
+  stroke: currentColor;
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  opacity: 0.2;
+}
+
+.viz-calm-wave-a {
+  animation: calm-wave 0.9s ease 0.15s forwards;
+}
+
+.viz-calm-wave-b {
+  animation: calm-wave 0.9s ease 0.35s forwards;
+}
+
+.viz-calm-wave-c {
+  animation: calm-wave 0.9s ease 0.55s forwards;
+}
+
+.viz-calm-glow {
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+.viz-split-divider {
+  stroke: currentColor;
+  opacity: 0.35;
+}
+
+.viz-split-tempo {
+  stroke: currentColor;
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  animation: draw-arc 1s ease 0.2s forwards;
+}
+
+.viz-split-tempo-indoor {
+  animation-delay: 0.45s;
+}
+
+.viz-ball-split-a {
+  offset-path: path("M 36 128 Q 70 88 118 72");
+  animation: ball-slide 2.2s ease-in-out infinite alternate;
+}
+
+.viz-ball-split-b {
+  offset-path: path("M 164 128 Q 190 70 244 52");
+  animation: ball-slide 1.4s ease-in-out infinite alternate;
+}
+
+.viz-presence-ring,
+.viz-presence-sweep {
+  stroke: currentColor;
+  stroke-dasharray: 180;
+  stroke-dashoffset: 180;
+  animation: presence-sweep 1.1s ease 0.2s forwards;
+}
+
+.viz-presence-sweep {
+  opacity: 0.55;
+  animation-delay: 0.45s;
+}
+
+.viz-presence-glow {
+  animation: glow-pulse 2.6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .viz-tri,
   .viz-cone,
@@ -1307,6 +1423,12 @@ main:focus-visible {
   .viz-scenario-path,
   .viz-scenario-focus,
   .viz-pressure-bar,
+  .viz-calm-wave,
+  .viz-calm-glow,
+  .viz-split-tempo,
+  .viz-presence-ring,
+  .viz-presence-sweep,
+  .viz-presence-glow,
   .viz-label-fade,
   .viz-glow,
   .viz-ball-travel,
@@ -1318,6 +1440,7 @@ main:focus-visible {
   .viz-actor,
   .quiz-viz-hook,
   .module-visual,
+  .quiz-view .panel,
   .brand,
   .tagline,
   .hero-actions,
@@ -1363,7 +1486,11 @@ main:focus-visible {
   .viz-weave-link,
   .viz-weave-diag,
   .viz-scenario-path,
-  .viz-stack-flow {
+  .viz-stack-flow,
+  .viz-calm-wave,
+  .viz-split-tempo,
+  .viz-presence-ring,
+  .viz-presence-sweep {
     stroke-dashoffset: 0;
   }
 
@@ -1373,7 +1500,9 @@ main:focus-visible {
   .viz-weave-core,
   .viz-label-fade,
   .viz-pressure-bar,
-  .viz-cone-fill {
+  .viz-cone-fill,
+  .viz-calm-wave,
+  .viz-presence-sweep {
     opacity: 1;
   }
 

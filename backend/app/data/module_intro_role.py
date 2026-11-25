@@ -61,6 +61,63 @@ INTRO_VISUALS: list[VisualPlaceholder] = [
         animation_key="scan-cycle",
     ),
     VisualPlaceholder(
+        id="viz-calm-signal",
+        kind="svg_animation",
+        title=LocalizedText(
+            nl="Calm-signaal na een beslissing",
+            en="Calm signal after a decision",
+        ),
+        caption=LocalizedText(
+            nl=(
+                "Originele cursusillustratie: calm → kort → zichtbaar. "
+                "Geen KNHB-gebarenplaat."
+            ),
+            en=(
+                "Original course illustration: calm → brief → visible. "
+                "Not a KNHB signals chart."
+            ),
+        ),
+        animation_key="calm-signal",
+    ),
+    VisualPlaceholder(
+        id="viz-context-split",
+        kind="svg_animation",
+        title=LocalizedText(
+            nl="Veld versus zaal — zelfde kader, ander tempo",
+            en="Field versus indoor — same frame, different tempo",
+        ),
+        caption=LocalizedText(
+            nl=(
+                "Originele split-view: meer ruimte buiten, snellere cadans "
+                "binnen. Pedagogisch — geen officiële veldtekening."
+            ),
+            en=(
+                "Original split view: more space outdoors, faster cadence "
+                "indoors. Pedagogical — not an official pitch diagram."
+            ),
+        ),
+        animation_key="context-split",
+    ),
+    VisualPlaceholder(
+        id="viz-presence-arc",
+        kind="svg_animation",
+        title=LocalizedText(
+            nl="Professionele aanwezigheid",
+            en="Professional presence",
+        ),
+        caption=LocalizedText(
+            nl=(
+                "Originele animatie: houding → scan → stem. Helpt je zichtbaar "
+                "en leesbaar te blijven zonder ‘theater’."
+            ),
+            en=(
+                "Original animation: posture → scan → voice. Helps you stay "
+                "visible and readable without theatrics."
+            ),
+        ),
+        animation_key="presence-arc",
+    ),
+    VisualPlaceholder(
         id="viz-knhb-signals-slot",
         kind="official_link_slot",
         title=LocalizedText(
@@ -342,12 +399,113 @@ INTRO_QUIZ = Quiz(
                     nl="Juist — calm: kort, duidelijk, zonder discussie te voeden.",
                     en="Correct — calm: brief, clear, without feeding an argument.",
                 ),
+                visualization_hint="calm-signal",
             ),
             feedback_incorrect_default=QuizFeedback(
                 explanation=LocalizedText(
                     nl="Verwacht antwoord: calm.",
                     en="Expected answer: calm.",
                 ),
+                visualization_hint="calm-signal",
+            ),
+        ),
+        QuizQuestion(
+            id="q5-context-cadence",
+            type="multiple_choice",
+            prompt=LocalizedText(
+                nl=(
+                    "Wat blijft gelijk tussen veld en zaal in dit cursusmodel, "
+                    "terwijl de cadans verandert?"
+                ),
+                en=(
+                    "What stays the same between field and indoor in this course "
+                    "model, while the cadence changes?"
+                ),
+            ),
+            options=[
+                QuizOption(
+                    id="a",
+                    text=LocalizedText(
+                        nl="Alleen de kleur van de ballen.",
+                        en="Only the colour of the balls.",
+                    ),
+                ),
+                QuizOption(
+                    id="b",
+                    text=LocalizedText(
+                        nl=(
+                            "Het gedeelde besliskader (veiligheid → eerlijkheid "
+                            "→ flow) en de scan-logica."
+                        ),
+                        en=(
+                            "The shared decision frame (safety → fairness → flow) "
+                            "and the scan logic."
+                        ),
+                    ),
+                ),
+                QuizOption(
+                    id="c",
+                    text=LocalizedText(
+                        nl="De exacte afstanden op het veld.",
+                        en="The exact distances on the pitch.",
+                    ),
+                ),
+                QuizOption(
+                    id="d",
+                    text=LocalizedText(
+                        nl="Alleen de menigte op de tribune.",
+                        en="Only the crowd in the stands.",
+                    ),
+                ),
+            ],
+            correct_option_id="b",
+            feedback_correct=QuizFeedback(
+                explanation=LocalizedText(
+                    nl=(
+                        "Juist. Context verandert tempo en dichtheid; het "
+                        "denkkader blijft herbruikbaar."
+                    ),
+                    en=(
+                        "Correct. Context changes tempo and density; the "
+                        "thinking frame stays reusable."
+                    ),
+                ),
+                visualization_hint="context-split",
+            ),
+            feedback_incorrect={
+                "a": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl="Irrelevant voor het cursusmodel.",
+                        en="Irrelevant to the course model.",
+                    ),
+                ),
+                "c": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl=(
+                            "Afstanden verschillen juist — daarom verandert de "
+                            "cadans, niet het kader."
+                        ),
+                        en=(
+                            "Distances differ — that is why cadence changes, "
+                            "not the frame."
+                        ),
+                    ),
+                    visualization_hint="context-split",
+                ),
+                "d": QuizFeedback(
+                    explanation=LocalizedText(
+                        nl="Publiek kan druk geven, maar is niet het gedeelde model.",
+                        en="Crowds can add pressure, but are not the shared model.",
+                    ),
+                    visualization_hint="presence-arc",
+                ),
+            },
+            feedback_incorrect_default=QuizFeedback(
+                explanation=LocalizedText(
+                    nl="Herlees veld versus zaal: zelfde kader, ander tempo.",
+                    en="Revisit field versus indoor: same frame, different tempo.",
+                ),
+                visualization_hint="context-split",
             ),
         ),
     ],
@@ -362,12 +520,14 @@ INTRO_MODULE = ModuleStub(
     ),
     summary=LocalizedText(
         nl=(
-            "Volledige module: veiligheid, eerlijkheid en flow als professioneel "
-            "besliskader — met visuals, oefenquiz en officiële bronlinks."
+            "Showcase-module: rijke NL/EN-lesstof, originele animaties en een "
+            "aparte nagekeken quiz — veiligheid, eerlijkheid en flow als "
+            "professioneel besliskader."
         ),
         en=(
-            "Full module: safety, fairness and flow as a professional decision "
-            "frame — with visuals, practice quiz and official source links."
+            "Showcase module: rich NL/EN reading, original animations and a "
+            "separate graded quiz — safety, fairness and flow as a professional "
+            "decision frame."
         ),
     ),
     learning_objectives=[
@@ -380,12 +540,16 @@ INTRO_MODULE = ModuleStub(
             en="Apply a simple scan cycle including a partner check.",
         ),
         LocalizedText(
-            nl="Rustige, korte communicatie beschrijven na een beslissing.",
-            en="Describe calm, brief communication after a decision.",
+            nl="Rustige, korte, zichtbare communicatie beschrijven na een beslissing.",
+            en="Describe calm, brief, visible communication after a decision.",
         ),
         LocalizedText(
             nl="Veld- versus zaalcontext op hoog niveau onderscheiden zonder regeltekst te citeren.",
             en="Distinguish field vs indoor context at a high level without quoting rule text.",
+        ),
+        LocalizedText(
+            nl="Professionele aanwezigheid (houding, scan, stem) in één zin samenvatten.",
+            en="Summarise professional presence (posture, scan, voice) in one sentence.",
         ),
     ],
     instruction_outline=[
@@ -568,7 +732,45 @@ INTRO_MODULE = ModuleStub(
                     ),
                 ),
             ],
-            visual_id="viz-knhb-signals-slot",
+            visual_id="viz-calm-signal",
+        ),
+        LearningSection(
+            id="sec-presence",
+            title=LocalizedText(
+                nl="Aanwezigheid: houding, scan, stem",
+                en="Presence: posture, scan, voice",
+            ),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Professioneel niveau is niet alleen ‘juiste fluiten’. "
+                        "Spelers lezen je lichaam: open houding, stabiele "
+                        "positie, en een stem die kort blijft. Zo blijf je "
+                        "zichtbaar zonder het middelpunt van de discussie te "
+                        "worden."
+                    ),
+                    en=(
+                        "Professional standard is not only ‘correct whistles’. "
+                        "Players read your body: open posture, stable position, "
+                        "and a voice that stays brief. That keeps you visible "
+                        "without becoming the centre of every debate."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Koppel aanwezigheid aan je scan: als je al weet waar "
+                        "je partner staat, kun je sneller beslissen en rustiger "
+                        "uitleggen. Aanwezigheid is dus geen show — het is "
+                        "leesbaarheid."
+                    ),
+                    en=(
+                        "Tie presence to your scan: when you already know where "
+                        "your partner is, you decide faster and explain more "
+                        "calmly. Presence is not a show — it is readability."
+                    ),
+                ),
+            ],
+            visual_id="viz-presence-arc",
         ),
         LearningSection(
             id="sec-field-vs-indoor",
@@ -593,7 +795,44 @@ INTRO_MODULE = ModuleStub(
                         "you first lock the shared thinking frame."
                     ),
                 ),
+                LocalizedText(
+                    nl=(
+                        "Onthoud: het model blijft veiligheid → eerlijkheid → "
+                        "flow. Alleen de cadans van kijken en beslissen "
+                        "versnelt of vertraagt met de context."
+                    ),
+                    en=(
+                        "Remember: the model stays safety → fairness → flow. "
+                        "Only the cadence of seeing and deciding speeds up or "
+                        "slows down with the context."
+                    ),
+                ),
             ],
+            visual_id="viz-context-split",
+        ),
+        LearningSection(
+            id="sec-official-signals",
+            title=LocalizedText(
+                nl="Officiële bronnen (geen gekopieerde kunst)",
+                en="Official sources (no copied artwork)",
+            ),
+            paragraphs=[
+                LocalizedText(
+                    nl=(
+                        "Gebaren, interpretaties en wedstrijdvoorschriften horen "
+                        "bij FIH/KNHB. Deze cursus toont alleen originele "
+                        "pedagogische visuals en linkt naar officiële pagina’s "
+                        "— nooit KNHB-illustraties in de repo."
+                    ),
+                    en=(
+                        "Signals, interpretations and match prescriptions belong "
+                        "with FIH/KNHB. This course only shows original "
+                        "pedagogical visuals and links to official pages — "
+                        "never KNHB illustrations in the repo."
+                    ),
+                ),
+            ],
+            visual_id="viz-knhb-signals-slot",
         ),
         LearningSection(
             id="sec-practice-next",
@@ -604,17 +843,22 @@ INTRO_MODULE = ModuleStub(
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Maak de quiz hieronder. Sla voortgang op via je cursus-"
-                        "sessie zodat je later kunt hervatten. Gebruik daarna "
-                        "de veld- en zaalmodules; houd officiële FIH/KNHB-bronnen "
-                        "bij de hand wanneer je een concrete regelvraag hebt."
+                        "Als je de lesstof hebt gelezen, open je de modulequiz "
+                        "via de knop onderaan — op een aparte pagina, met "
+                        "meerkeuze én open vragen, uitleg en visuals. Sla "
+                        "voortgang op via je cursussessie zodat je later kunt "
+                        "hervatten. Ga daarna door naar veld- en zaalmodules; "
+                        "houd officiële FIH/KNHB-bronnen bij de hand voor "
+                        "concrete regelvragen."
                     ),
                     en=(
-                        "Take the quiz below. Save progress via your course "
-                        "session so you can resume later. Then continue into "
-                        "the field and indoor modules; keep official FIH/KNHB "
-                        "sources handy whenever you have a concrete rules "
-                        "question."
+                        "When you have finished the reading, open the module "
+                        "quiz via the button below — on a separate page, with "
+                        "multiple-choice and written items, explanations and "
+                        "visuals. Save progress via your course session so you "
+                        "can resume later. Then continue into field and indoor "
+                        "modules; keep official FIH/KNHB sources handy for "
+                        "concrete rules questions."
                     ),
                 ),
             ],
