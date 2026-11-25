@@ -21,6 +21,7 @@ export const KNOWN_ANIMATION_KEYS = [
   "calm-signal",
   "context-split",
   "presence-arc",
+  "call-clarity",
 ] as const;
 
 export type AnimationKey = (typeof KNOWN_ANIMATION_KEYS)[number];

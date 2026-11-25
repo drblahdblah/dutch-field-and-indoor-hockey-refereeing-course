@@ -556,6 +556,55 @@ main:focus-visible {
   animation: rise 0.45s ease both;
 }
 
+.lesson-step-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.lesson-step-head h3 {
+  margin: 0;
+}
+
+.lesson-step-head .module-step {
+  margin: 0;
+}
+
+.learning-section.is-active-step {
+  animation: rise 0.35s ease both;
+}
+
+.lesson-step-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.lesson-step-nav .btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.viz-call-arc,
+.viz-call-arm {
+  stroke: currentColor;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.1s ease 0.15s forwards;
+}
+
+.viz-call-arm {
+  animation-delay: 0.4s;
+}
+
+.viz-call-glow {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
 .btn-back {
   background: transparent;
   border: 1px solid var(--line);
@@ -835,8 +884,9 @@ main:focus-visible {
 }
 
 .viz-tri {
-  stroke-dasharray: 420;
-  stroke-dashoffset: 420;
+  /* Unit pathLength on the polygon — dash of 1 draws the full closed triangle. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
   animation: draw-tri 1.6s ease forwards;
 }
 
@@ -1429,6 +1479,9 @@ main:focus-visible {
   .viz-presence-ring,
   .viz-presence-sweep,
   .viz-presence-glow,
+  .viz-call-arc,
+  .viz-call-arm,
+  .viz-call-glow,
   .viz-label-fade,
   .viz-glow,
   .viz-ball-travel,
@@ -1441,6 +1494,7 @@ main:focus-visible {
   .quiz-viz-hook,
   .module-visual,
   .quiz-view .panel,
+  .learning-section.is-active-step,
   .brand,
   .tagline,
   .hero-actions,
@@ -1490,7 +1544,9 @@ main:focus-visible {
   .viz-calm-wave,
   .viz-split-tempo,
   .viz-presence-ring,
-  .viz-presence-sweep {
+  .viz-presence-sweep,
+  .viz-call-arc,
+  .viz-call-arm {
     stroke-dashoffset: 0;
   }
 

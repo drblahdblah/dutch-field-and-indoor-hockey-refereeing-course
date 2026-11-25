@@ -92,7 +92,27 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("herstart")).toBeInTheDocument();
   });
 
-  it("renders intro calm-signal, context-split, and presence-arc SVGs", () => {
+  it("renders a complete safety-triangle pathLength for the draw animation", () => {
+    const visual: VisualPlaceholder = {
+      id: "viz-safety-triangle",
+      kind: "svg_animation",
+      title: { nl: "Driehoek", en: "Triangle" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "safety-triangle",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    render(<ModuleVisual visual={visual} locale="en" />);
+    const tri = document.querySelector("polygon.viz-tri");
+    expect(tri).toBeTruthy();
+    expect(tri).toHaveAttribute("pathLength", "1");
+    expect(screen.getByText("safety")).toBeInTheDocument();
+    expect(screen.getByText("fairness")).toBeInTheDocument();
+    expect(screen.getByText("flow")).toBeInTheDocument();
+  });
+
+  it("renders intro calm-signal, context-split, presence-arc, and call-clarity SVGs", () => {
     const calm: VisualPlaceholder = {
       id: "viz-calm-signal",
       kind: "svg_animation",
@@ -138,6 +158,21 @@ describe("ModuleVisual", () => {
     expect(document.querySelector("svg.viz-presence-arc")).toBeTruthy();
     expect(screen.getByText("posture")).toBeInTheDocument();
     expect(screen.getByText("presence")).toBeInTheDocument();
+
+    const call: VisualPlaceholder = {
+      id: "viz-call-clarity",
+      kind: "svg_animation",
+      title: { nl: "Leesbaar", en: "Readable" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "call-clarity",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={call} locale="en" />);
+    expect(document.querySelector("svg.viz-call-clarity")).toBeTruthy();
+    expect(screen.getByText("decide")).toBeInTheDocument();
+    expect(screen.getByText("communicate")).toBeInTheDocument();
   });
 
   it("renders indoor court-boards, lift-limit, and board-play SVGs", () => {

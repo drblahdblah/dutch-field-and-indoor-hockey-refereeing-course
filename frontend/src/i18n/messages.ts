@@ -66,6 +66,22 @@ const ui = {
   statusInProgress: { nl: "bezig", en: "in progress" },
   statusCompleted: { nl: "voltooid", en: "completed" },
   quiz: { nl: "Quiz", en: "Quiz" },
+  lessonPart: {
+    nl: "Deel {current} van {total}",
+    en: "Part {current} of {total}",
+  },
+  lessonPrev: {
+    nl: "Vorige",
+    en: "Previous",
+  },
+  lessonNext: {
+    nl: "Volgende",
+    en: "Next",
+  },
+  lessonPartsNav: {
+    nl: "Lesdelen",
+    en: "Lesson parts",
+  },
   quizReadyHeading: {
     nl: "Klaar om te oefenen?",
     en: "Ready to practise?",
@@ -257,6 +273,10 @@ export const QUIZ_VIZ_TITLES = {
   "presence-arc": {
     nl: "Visualisatie: professionele aanwezigheid",
     en: "Visualization: professional presence",
+  },
+  "call-clarity": {
+    nl: "Visualisatie: leesbare beslissing",
+    en: "Visualization: readable call",
   },
 } as const satisfies Record<string, Localized>;
 

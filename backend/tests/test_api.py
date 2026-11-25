@@ -80,9 +80,11 @@ def test_full_intro_module_has_sections_and_visuals(client):
         "calm-signal",
         "context-split",
         "presence-arc",
+        "call-clarity",
     } <= anim_keys
     assert any(v["kind"] == "svg_animation" for v in module["visuals"])
-    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    assert not any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    assert all(v["kind"] == "svg_animation" for v in module["visuals"])
 
 
 def test_intro_quiz_grades_mc_and_written_with_explanations(client):
@@ -690,6 +692,7 @@ _SPA_ANIMATION_KEYS = frozenset(
         "calm-signal",
         "context-split",
         "presence-arc",
+        "call-clarity",
     }
 )
 

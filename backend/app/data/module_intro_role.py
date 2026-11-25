@@ -118,25 +118,25 @@ INTRO_VISUALS: list[VisualPlaceholder] = [
         animation_key="presence-arc",
     ),
     VisualPlaceholder(
-        id="viz-knhb-signals-slot",
-        kind="official_link_slot",
+        id="viz-call-clarity",
+        kind="svg_animation",
         title=LocalizedText(
-            nl="Officiële gebaren / interpretaties (plaatshouder)",
-            en="Official signals / interpretations (placeholder)",
+            nl="Leesbare beslissing (origineel)",
+            en="Readable call (original)",
         ),
         caption=LocalizedText(
             nl=(
-                "Link naar KNHB/FIH-materiaal. Geen KNHB-illustratie in deze "
-                "repo. EN-vertaling van NL-interpretaties: volgt later."
+                "Originele cursusillustratie: besluit → communiceer → zichtbaar "
+                "herstarten. Geen KNHB-/FIH-gebarenplaat — officiële bronnen "
+                "staan onder Verder lezen."
             ),
             en=(
-                "Link to KNHB/FIH materials. No KNHB illustration ships in this "
-                "repo. EN translation of NL interpretations: TBD."
+                "Original course illustration: decide → communicate → restart "
+                "visibly. Not a KNHB/FIH signals chart — official sources are "
+                "under Further reading."
             ),
         ),
-        official_source_url=KNHB_HOME_URL,
-        official_source_name="KNHB",
-        knhb_illustration_placeholder=True,
+        animation_key="call-clarity",
     ),
 ]
 
@@ -811,28 +811,41 @@ INTRO_MODULE = ModuleStub(
             visual_id="viz-context-split",
         ),
         LearningSection(
-            id="sec-official-signals",
+            id="sec-call-clarity",
             title=LocalizedText(
-                nl="Officiële bronnen (geen gekopieerde kunst)",
-                en="Official sources (no copied artwork)",
+                nl="Maak je beslissing leesbaar",
+                en="Make your call readable",
             ),
             paragraphs=[
                 LocalizedText(
                     nl=(
-                        "Gebaren, interpretaties en wedstrijdvoorschriften horen "
-                        "bij FIH/KNHB. Deze cursus toont alleen originele "
-                        "pedagogische visuals en linkt naar officiële pagina’s "
-                        "— nooit KNHB-illustraties in de repo."
+                        "Na het kader (veiligheid → eerlijkheid → flow) volgt "
+                        "uitvoering: besluit intern, maak één korte, zichtbare "
+                        "communicatie, en laat het spel duidelijk herstarten. "
+                        "Dit is een cursusmodel — geen kopie van officiële "
+                        "gebarenkaarten."
                     ),
                     en=(
-                        "Signals, interpretations and match prescriptions belong "
-                        "with FIH/KNHB. This course only shows original "
-                        "pedagogical visuals and links to official pages — "
-                        "never KNHB illustrations in the repo."
+                        "After the frame (safety → fairness → flow) comes "
+                        "delivery: decide internally, make one short visible "
+                        "communication, and let play restart clearly. This is "
+                        "a course model — not a copy of official signal charts."
+                    ),
+                ),
+                LocalizedText(
+                    nl=(
+                        "Officiële FIH-/KNHB-voorschriften en interpretaties "
+                        "blijven bij hun bronnen (zie Verder lezen). Hier "
+                        "oefen je alleen de leesbaarheid van jouw aanwezigheid."
+                    ),
+                    en=(
+                        "Official FIH/KNHB prescriptions and interpretations "
+                        "stay with their sources (see Further reading). Here "
+                        "you practise only the readability of your presence."
                     ),
                 ),
             ],
-            visual_id="viz-knhb-signals-slot",
+            visual_id="viz-call-clarity",
         ),
         LearningSection(
             id="sec-practice-next",

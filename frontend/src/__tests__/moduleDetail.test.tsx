@@ -49,10 +49,47 @@ describe("ModuleDetail", () => {
     expect(screen.getByText("Triangle")).toBeInTheDocument();
     expect(document.querySelector("svg.viz-svg")).toBeTruthy();
     expect(screen.queryByRole("heading", { name: /Quiz/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/Part 1 of 1/i)).toBeInTheDocument();
     fireEvent.click(
       screen.getByRole("button", { name: /Go to the module quiz/i }),
     );
     expect(onOpenQuiz).toHaveBeenCalledTimes(1);
+  });
+
+  it("advances lesson parts by click instead of showing all sections at once", () => {
+    const multi: ModuleStub = {
+      ...fullModule,
+      sections: [
+        {
+          id: "sec-one",
+          title: { nl: "Eén", en: "One" },
+          paragraphs: [{ nl: "A", en: "A" }],
+          visual_id: null,
+        },
+        {
+          id: "sec-two",
+          title: { nl: "Twee", en: "Two" },
+          paragraphs: [{ nl: "B", en: "B" }],
+          visual_id: null,
+        },
+      ],
+    };
+    const onOpenQuiz = vi.fn();
+    render(<ModuleDetail module={multi} locale="en" onOpenQuiz={onOpenQuiz} />);
+
+    expect(screen.getByText("One")).toBeInTheDocument();
+    expect(screen.queryByText("Two")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Go to the module quiz/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/Part 1 of 2/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Next/i }));
+
+    expect(screen.getByText("Two")).toBeInTheDocument();
+    expect(screen.queryByText("One")).not.toBeInTheDocument();
+    expect(screen.getByText(/Part 2 of 2/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Go to the module quiz/i }),
+    ).toBeInTheDocument();
   });
 
   it("hides the quiz CTA when the module has no quiz", () => {

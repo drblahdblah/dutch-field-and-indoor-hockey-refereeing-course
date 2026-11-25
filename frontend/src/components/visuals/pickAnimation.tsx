@@ -21,6 +21,7 @@ import {
   TranslationSlotSvg,
 } from "./pathwaySvgs";
 import {
+  CallClaritySvg,
   CalmSignalSvg,
   ContextSplitSvg,
   PresenceArcSvg,
@@ -55,6 +56,7 @@ const ANIMATIONS = {
   "calm-signal": CalmSignalSvg,
   "context-split": ContextSplitSvg,
   "presence-arc": PresenceArcSvg,
+  "call-clarity": CallClaritySvg,
 } as const satisfies Record<AnimationKey, ComponentType<SvgProps>>;
 
 export function pickAnimation(

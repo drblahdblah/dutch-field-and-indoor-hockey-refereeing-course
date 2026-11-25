@@ -128,3 +128,50 @@ export function PresenceArcSvg({ locale }: { locale: Locale }) {
     </svg>
   );
 }
+
+/** Original course art — make a call readable without copying official signal charts. */
+export function CallClaritySvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg viz-call-clarity" viewBox="0 0 280 190" aria-hidden="true">
+      <rect className="viz-canvas" x="8" y="8" width="264" height="174" rx="10" />
+      <circle className="viz-glow viz-call-glow" cx="140" cy="100" r="58" />
+      <path
+        className="viz-call-arc"
+        d="M 64 128 Q 140 48 216 128"
+        fill="none"
+        strokeWidth="2.5"
+        pathLength={1}
+      />
+      <line
+        className="viz-call-arm"
+        x1="140"
+        y1="108"
+        x2="188"
+        y2="64"
+        strokeWidth="2.5"
+        pathLength={1}
+      />
+      <UmpireMarker x={140} y={118} />
+      <PlayerMarker x={64} y={132} className="viz-actor viz-player viz-player-a" />
+      <PlayerMarker x={216} y={132} className="viz-actor viz-player viz-player-b" />
+      <StepBadge x={140} y={108} n={1} />
+      <StepBadge x={188} y={64} n={2} />
+      <StepBadge x={140} y={48} n={3} />
+      <circle className="viz-node viz-node-a" cx={140} cy={108} r="6" />
+      <circle className="viz-node viz-node-b" cx={188} cy={64} r="6" />
+      <circle className="viz-node viz-node-c" cx={140} cy={48} r="6" />
+      <text x="140" y="156" textAnchor="middle" className="viz-label viz-label-fade">
+        {label("decide", locale)}
+      </text>
+      <text x="210" y="58" textAnchor="start" className="viz-label viz-label-fade">
+        {label("communicate", locale)}
+      </text>
+      <text x="140" y="34" textAnchor="middle" className="viz-label viz-label-fade">
+        {label("visible", locale)}
+      </text>
+      <text x="140" y="176" textAnchor="middle" className="viz-label viz-caption">
+        {label("restart", locale)}
+      </text>
+    </svg>
+  );
+}
