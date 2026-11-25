@@ -42,6 +42,26 @@ const ui = {
     nl: "Ga naar volgende module",
     en: "Go to next module",
   },
+  backToCourse: {
+    nl: "Terug naar cursusoverzicht",
+    en: "Back to course overview",
+  },
+  openModule: {
+    nl: "Open module",
+    en: "Open module",
+  },
+  moduleStep: {
+    nl: "Module {current} van {total}",
+    en: "Module {current} of {total}",
+  },
+  goToNextModule: {
+    nl: "Volgende module",
+    en: "Next module",
+  },
+  courseOverview: {
+    nl: "Cursusoverzicht",
+    en: "Course overview",
+  },
   statusNotStarted: { nl: "niet gestart", en: "not started" },
   statusInProgress: { nl: "bezig", en: "in progress" },
   statusCompleted: { nl: "voltooid", en: "completed" },
