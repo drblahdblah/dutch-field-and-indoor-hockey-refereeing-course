@@ -2,23 +2,24 @@
 
 Browser-based course for Netherlands referees (field + indoor), bilingual **NL / EN** from day one, building toward professional standard (e.g. Hoofdklasse).
 
-This repository ships **full bilingual learning modules** (umpire role + field rules core + indoor rules core + professional / Hoofdklasse pathway + KNHB interpretation layer + **capstone assessment**): graded quizzes with explanations, original CSS/SVG visuals (no copyrighted KNHB art), course-path progress overview, session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
+This repository ships **full bilingual learning modules** (umpire role + field rules core + indoor rules core + professional / Hoofdklasse pathway + KNHB interpretation layer + **capstone assessment**) plus a separate **practice scenario bank** (`#/practice`): field and indoor decision scenarios with MC + written grading and explanations, original CSS/SVG visuals (no copyrighted KNHB art), course-path progress overview, session progress API (SQLite), and clean package layout. It does **not** reproduce copyrighted FIH/KNHB rule text or illustrations.
 
 ## Architecture
 
 ```
-frontend/          React + Vite SPA (i18n UI, modules, quiz, SVG viz)
+frontend/          React + Vite SPA (i18n UI, modules, practice bank, quiz, SVG viz)
 backend/           FastAPI + SQLAlchemy + SQLite
-  app/data/        Bilingual course seed (intro + field + indoor + pathway + interpretations + capstone)
-  app/routers/     /api/course, /api/progress, /api/quizzes
+  app/data/        Bilingual course seed + practice scenarios
+  app/routers/     /api/course, /api/practice, /api/progress, /api/quizzes
   app/services/    Quiz grading
   app/security.py  Bearer/cookie session tokens for progress
 docker-compose.yml Optional local stack
 ```
 
 - **Course content** is seeded in Python (`backend/app/data/`) and served via `GET /api/course` with **answer keys stripped**. Full modules include `sections` + `visuals` (`content_status: full`).
+- **Practice bank** is a separate flow (`GET /api/practice`, SPA `#/practice`) — not module lessons — with field/indoor decision scenarios.
 - **Quizzes** expose prompts on GET; grading + bilingual feedback via `POST /api/quizzes/{id}/submit` (solutions only after submit). Feedback may include visualization hooks rendered as original SVG animations.
-- **Progress** requires a bearer `access_token` issued once at `POST /api/progress/sessions` (or the httpOnly cookie). The SPA can resume with cookie/session auth.
+- **Progress** requires a bearer `access_token` issued once at `POST /api/progress/sessions` (or the httpOnly cookie). The SPA can resume with cookie/session auth (modules + optional practice scenario ids).
 
 ## Requirements
 
