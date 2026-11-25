@@ -12,7 +12,10 @@ class Settings(BaseSettings):
 
     app_name: str = "Dutch Field & Indoor Hockey Umpiring Course"
     database_url: str = f"sqlite:///{Path(__file__).resolve().parent.parent / 'data' / 'course.db'}"
-    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000"
+    cors_origins: str = (
+        "http://localhost:5174,http://127.0.0.1:5174,"
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000"
+    )
     default_locale: str = "nl"
 
     # development | production — drives secure cookie defaults and token exposure.

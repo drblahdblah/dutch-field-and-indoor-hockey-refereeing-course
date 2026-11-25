@@ -9,11 +9,11 @@ services:
   api:
     command: >
       sh -c "pip install --no-cache-dir -r requirements.txt
-      && uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1"
+      && uvicorn app.main:app --host 0.0.0.0 --port 8010 --workers 1"
     environment:
       COURSE_DATABASE_URL: sqlite:////app/data/course.db
       # Replace with the public SPA origin(s) in real deploys — never "*"
-      COURSE_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      COURSE_CORS_ORIGINS: http://localhost:5174,http://127.0.0.1:5174
       COURSE_ENVIRONMENT: production
       COURSE_EXPOSE_ACCESS_TOKEN: "false"
       # Cookie Secure must be true when serving over HTTPS; false only for local HTTP demo.
@@ -23,8 +23,8 @@ services:
       # SQLite + in-process rate limits: stay on workers=1 (or put limits at the edge).
 
   web:
-    # Reuses host port 5173 from the base file; preview serves the production build.
-    command: sh -c "npm ci && npm run build && npm run preview -- --host 0.0.0.0 --port 5173"
+    # Reuses host port 5174 from the base file; preview serves the production build.
+    command: sh -c "npm ci && npm run build && npm run preview -- --host 0.0.0.0 --port 5174"
     environment:
       # Baked into the Vite build; browser calls the host-mapped API origin.
-      VITE_API_BASE: http://localhost:8000
+      VITE_API_BASE: http://localhost:8010
