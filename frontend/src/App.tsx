@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   api,
   clearAccessToken,
@@ -12,6 +12,24 @@ import type { CourseOutline, ProgressOut, Quiz } from "./api/types";
 import { CourseProgressOverview } from "./components/CourseProgressOverview";
 import { ModuleDetail } from "./components/ModuleDetail";
 import { t, uiT, type Locale } from "./i18n/messages";
+import {
+  courseHashFor,
+  isKnownModuleId,
+  parseCourseHash,
+  type CourseView,
+} from "./nav/courseHash";
+
+function readViewFromLocation(): CourseView {
+  if (typeof window === "undefined") return { kind: "overview" };
+  return parseCourseHash(window.location.hash);
+}
+
+function focusById(id: string) {
+  const el = document.getElementById(id);
+  if (el && "focus" in el) {
+    (el as HTMLElement).focus();
+  }
+}
 
 export default function App() {
   const [locale, setLocale] = useState<Locale>("nl");
@@ -21,10 +39,25 @@ export default function App() {
   );
   const [hasSession, setHasSession] = useState<boolean>(() => hasStoredSessionFlag());
   const [progress, setProgress] = useState<ProgressOut[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [view, setView] = useState<CourseView>(() => readViewFromLocation());
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const progressGenRef = useRef(0);
+  const lastModuleIdRef = useRef<string | null>(null);
+
+  const selectedId = view.kind === "module" ? view.moduleId : null;
+
+  function navigate(next: CourseView, replace = false) {
+    setView(next);
+    const hash = courseHashFor(next);
+    if (typeof window === "undefined") return;
+    if (replace) {
+      window.history.replaceState(null, "", hash);
+    } else if (window.location.hash !== hash) {
+      window.location.hash = hash;
+    }
+  }
 
   function handleApiFailure(err: unknown) {
     if (err instanceof ApiError && err.isUnauthorized) {
@@ -60,7 +93,6 @@ export default function App() {
               setHasSession(false);
             }
           } else if (!cancelled) {
-            // Keep token on transient errors; show safe message.
             setError(uiT("error", locale));
           }
         }
@@ -80,6 +112,23 @@ export default function App() {
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
+
+  useEffect(() => {
+    function onHashChange() {
+      setView(readViewFromLocation());
+    }
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  useEffect(() => {
+    if (!course || view.kind !== "module") return;
+    const ids = course.modules.map((m) => m.id);
+    if (!isKnownModuleId(view.moduleId, ids)) {
+      setView({ kind: "overview" });
+      window.history.replaceState(null, "", courseHashFor({ kind: "overview" }));
+    }
+  }, [course, view]);
 
   useEffect(() => {
     setQuiz(null);
@@ -119,33 +168,54 @@ export default function App() {
             (m) =>
               latest.find((p) => p.module_id === m.id)?.status !== "completed",
           ) ?? modules[0];
-        setSelectedId(firstIncomplete?.id ?? null);
+        if (firstIncomplete) {
+          await openModule(firstIncomplete.id);
+        }
         return;
       }
       const session = await api.createSession(undefined, locale);
-      // Cookie is primary. Only persist bearer when the API returns one (dev expose).
       storeAccessToken(session.access_token);
       setAccessToken(session.access_token);
       setHasSession(true);
       setProgress([]);
-      setSelectedId(modules[0]?.id ?? null);
+      if (modules[0]) {
+        await openModule(modules[0].id, {
+          token: session.access_token,
+          trackProgress: true,
+        });
+      }
     } catch (err) {
       handleApiFailure(err);
     }
   }
 
-  async function openModule(moduleId: string) {
-    setSelectedId(moduleId);
-    if (!hasSession) return;
+  async function openModule(
+    moduleId: string,
+    opts?: { token?: string | null; trackProgress?: boolean },
+  ) {
+    navigate({ kind: "module", moduleId });
+    const token = opts?.token ?? accessToken;
+    const track = opts?.trackProgress ?? hasSession;
+    if (!track) return;
+    const gen = ++progressGenRef.current;
     try {
       await api.updateProgress(
         { module_id: moduleId, status: "in_progress" },
-        accessToken,
+        token,
       );
-      await refreshProgress(accessToken);
+      if (gen !== progressGenRef.current) return;
+      const data = await api.getProgress(token);
+      if (gen !== progressGenRef.current) return;
+      setProgress(data.progress);
+      setHasSession(true);
     } catch (err) {
+      if (gen !== progressGenRef.current) return;
       handleApiFailure(err);
     }
+  }
+
+  function backToCourse() {
+    navigate({ kind: "overview" });
   }
 
   async function endSession() {
@@ -155,7 +225,6 @@ export default function App() {
         await api.revokeSession(accessToken);
       }
     } catch (err) {
-      // Still clear local state even if revoke fails (e.g. already expired).
       if (!(err instanceof ApiError && err.isUnauthorized)) {
         setError(uiT("error", locale));
       }
@@ -164,12 +233,34 @@ export default function App() {
       setAccessToken(null);
       setHasSession(false);
       setProgress([]);
-      setSelectedId(null);
       setQuiz(null);
+      navigate({ kind: "overview" }, true);
     }
   }
 
-  const selected = course?.modules.find((m) => m.id === selectedId) ?? null;
+  const modules = orderedModules();
+  const selected = modules.find((m) => m.id === selectedId) ?? null;
+  const selectedIndex = selected
+    ? modules.findIndex((m) => m.id === selected.id)
+    : -1;
+  const nextModule =
+    selectedIndex >= 0 && selectedIndex < modules.length - 1
+      ? modules[selectedIndex + 1]
+      : null;
+  const showingModule = view.kind === "module" && selected != null;
+
+  useLayoutEffect(() => {
+    if (loading || !course) return;
+    if (showingModule && selectedId) {
+      lastModuleIdRef.current = selectedId;
+      focusById("module-heading");
+      return;
+    }
+    if (lastModuleIdRef.current) {
+      lastModuleIdRef.current = null;
+      focusById("course-progress-heading");
+    }
+  }, [showingModule, selectedId, loading, course]);
 
   return (
     <div className="app">
@@ -209,7 +300,7 @@ export default function App() {
           </p>
         )}
 
-        {course && (
+        {course && !showingModule && (
           <>
             <p className="muted">{t(course.description, locale)}</p>
             <div className="hero-actions">
@@ -229,26 +320,13 @@ export default function App() {
             <CourseProgressOverview
               modules={course.modules}
               progress={progress}
-              selectedId={selectedId}
+              selectedId={null}
               locale={locale}
               hasSession={hasSession}
               onSelectModule={(id) => {
                 void openModule(id);
               }}
             />
-
-            {selected && (
-              <ModuleDetail
-                module={selected}
-                quiz={quiz}
-                locale={locale}
-                accessToken={accessToken}
-                hasSession={hasSession}
-                onGraded={() => {
-                  void refreshProgress(accessToken).catch((err) => handleApiFailure(err));
-                }}
-              />
-            )}
 
             <section className="panel" aria-labelledby="attr-heading">
               <h2 id="attr-heading">{uiT("attribution", locale)}</h2>
@@ -281,6 +359,58 @@ export default function App() {
               </ul>
             </section>
           </>
+        )}
+
+        {course && showingModule && selected && (
+          <div className="module-view">
+            <nav
+              className="module-view-nav"
+              aria-label={uiT("moduleChrome", locale)}
+            >
+              <button
+                type="button"
+                className="btn btn-back"
+                onClick={backToCourse}
+              >
+                ← {uiT("backToCourse", locale)}
+              </button>
+              <p className="module-step muted" aria-live="polite">
+                {uiT("moduleStep", locale)
+                  .replace("{current}", String(selectedIndex + 1))
+                  .replace("{total}", String(modules.length))}
+              </p>
+              {hasSession && (
+                <button className="btn" type="button" onClick={endSession}>
+                  {uiT("endSession", locale)}
+                </button>
+              )}
+            </nav>
+
+            <ModuleDetail
+              module={selected}
+              quiz={quiz}
+              locale={locale}
+              accessToken={accessToken}
+              hasSession={hasSession}
+              onGraded={() => {
+                void refreshProgress(accessToken).catch((err) => handleApiFailure(err));
+              }}
+            />
+
+            <div className="module-view-footer">
+              {nextModule && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    void openModule(nextModule.id);
+                  }}
+                >
+                  {uiT("goToNextModule", locale)}: {t(nextModule.title, locale)}
+                </button>
+              )}
+            </div>
+          </div>
         )}
       </main>
     </div>

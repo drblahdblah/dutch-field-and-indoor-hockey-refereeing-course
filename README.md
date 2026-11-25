@@ -35,11 +35,13 @@ cd backend
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8010
 ```
 
-API docs: http://127.0.0.1:8000/docs  
-Health: http://127.0.0.1:8000/api/health
+API docs: http://127.0.0.1:8010/docs  
+Health: http://127.0.0.1:8010/api/health
+
+Default local ports are **8010** (API) and **5174** (Vite) to avoid clashes with other apps on 8000/5173.
 
 ### Frontend
 
@@ -49,7 +51,7 @@ npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173 — Vite proxies `/api` to the backend.
+Open http://127.0.0.1:5174 — Vite proxies `/api` to http://127.0.0.1:8010.
 
 ### Docker Compose (optional)
 
@@ -59,8 +61,8 @@ Local hot-reload stack:
 docker compose up
 ```
 
-- Web: http://localhost:5173  
-- API: http://localhost:8000  
+- Web: http://localhost:5174  
+- API: http://localhost:8010  
 
 Prod-ish single-host demo (no API reload, `COURSE_ENVIRONMENT=production`, Vite production build + preview, one uvicorn worker for SQLite). The overlay keeps `COURSE_COOKIE_SECURE=false` so httpOnly cookies work on local HTTP — set `COURSE_COOKIE_SECURE=true` (and HTTPS) for a real deploy. First boot installs deps into bind mounts and may take longer than the API health `start_period`.
 

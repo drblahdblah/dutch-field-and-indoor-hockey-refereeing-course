@@ -47,6 +47,8 @@ export const SVG_LABELS = {
   danger: { nl: "gevaar", en: "danger" },
   pressure: { nl: "druk", en: "pressure" },
   height: { nl: "hoogte", en: "height" },
+  umpire: { nl: "scheidsrechter", en: "umpire" },
+  scan: { nl: "scan", en: "scan" },
 } as const;
 
 export function label(

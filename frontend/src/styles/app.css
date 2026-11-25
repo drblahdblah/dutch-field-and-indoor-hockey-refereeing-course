@@ -84,6 +84,14 @@ main:focus-visible {
   outline-offset: 4px;
 }
 
+#module-heading:focus,
+#module-heading:focus-visible,
+#course-progress-heading:focus,
+#course-progress-heading:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
 .app {
   max-width: 1080px;
   margin: 0 auto;
@@ -500,12 +508,41 @@ main:focus-visible {
   font-size: 1.15rem;
 }
 
+.module-view-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.module-view-nav .module-step {
+  margin: 0;
+  flex: 1 1 auto;
+}
+
+.module-view-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-back {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
 .module-visual {
   margin: 1rem 0 0.25rem;
-  padding: 0.9rem 1rem;
-  border: 1px dashed var(--line);
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(200, 245, 66, 0.04);
+  background:
+    linear-gradient(165deg, rgba(200, 245, 66, 0.07), transparent 55%),
+    rgba(12, 31, 26, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(200, 245, 66, 0.06);
   transition: border-color 0.25s ease, background 0.25s ease;
 }
 
@@ -547,15 +584,82 @@ main:focus-visible {
 }
 
 .viz-svg {
-  width: min(100%, 280px);
+  width: min(100%, 320px);
   height: auto;
   color: var(--accent);
   display: block;
 }
 
+.viz-canvas {
+  fill: rgba(8, 22, 18, 0.55);
+  stroke: rgba(242, 247, 244, 0.08);
+  stroke-width: 1;
+}
+
+.viz-surface {
+  opacity: 0.92;
+}
+
+.viz-turf {
+  fill: rgba(34, 110, 72, 0.55);
+}
+
+.viz-floor {
+  fill: rgba(56, 72, 88, 0.45);
+}
+
 .viz-label {
   fill: var(--ink-muted);
   font-size: 11px;
+  font-family: var(--font-body);
+}
+
+.viz-caption {
+  fill: var(--ink);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+
+.viz-actor-head {
+  fill: var(--ink);
+  stroke: var(--accent);
+  stroke-width: 1;
+}
+
+.viz-actor-body {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.viz-umpire-badge {
+  fill: var(--warn);
+  stroke: none;
+}
+
+.viz-player .viz-actor-head {
+  fill: rgba(242, 247, 244, 0.85);
+}
+
+.viz-ball-mark {
+  fill: var(--ink);
+  stroke: var(--accent);
+  stroke-width: 1.25;
+}
+
+.viz-step-disc {
+  fill: var(--accent-ink);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.viz-step-num {
+  fill: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
   font-family: var(--font-body);
 }
 
@@ -628,73 +732,73 @@ main:focus-visible {
 }
 
 .viz-orbit-dot-b {
-  transform-origin: 130px 80px;
+  transform-origin: 140px 90px;
   animation: orbit-spin 4.5s linear infinite reverse;
   opacity: 0.65;
 }
 
 .viz-ball-pitch {
-  offset-path: path("M 100 80 L 200 80");
+  offset-path: path("M 110 90 L 200 90");
   animation: ball-slide 2.8s ease-in-out infinite alternate;
 }
 
 .viz-ball-cone {
-  offset-path: path("M 48 140 L 200 94");
+  offset-path: path("M 56 150 L 220 100");
   animation: ball-slide 2.4s ease-in-out infinite alternate;
 }
 
 .viz-ball-court {
-  offset-path: path("M 80 80 L 180 80");
+  offset-path: path("M 90 90 L 190 90");
   animation: ball-slide 2.6s ease-in-out infinite alternate;
 }
 
 .viz-ball-lift {
-  offset-path: path("M 150 130 Q 185 70 220 50");
+  offset-path: path("M 150 140 Q 188 78 230 56");
   animation: ball-slide 2.5s ease-in-out infinite alternate;
 }
 
 .viz-ball-board {
-  offset-path: path("M 200 120 L 48 80 L 160 40");
+  offset-path: path("M 210 130 L 54 90 L 170 44");
   animation: ball-slide 2.8s linear infinite alternate;
 }
 
 .viz-ball-cadence {
-  offset-path: path("M 52 80 L 208 80");
+  offset-path: path("M 56 90 L 224 90");
   animation: ball-slide 3s ease-in-out infinite alternate;
 }
 
 .viz-ball-handoff {
-  offset-path: path("M 90 70 Q 130 36 170 70");
+  offset-path: path("M 98 78 Q 140 40 182 78");
   animation: ball-slide 2.4s ease-in-out infinite alternate;
 }
 
 .viz-ball-slot {
-  offset-path: path("M 128 75 L 148 75");
+  offset-path: path("M 138 86 L 158 86");
   animation: ball-slide 1.6s ease-in-out infinite alternate;
 }
 
 .viz-ball-attr {
-  offset-path: path("M 64 75 L 194 75");
+  offset-path: path("M 72 86 L 208 86");
   animation: ball-slide 2.8s ease-in-out infinite alternate;
 }
 
 .viz-ball-weave {
-  offset-path: path("M 82 48 L 178 48 L 178 132 L 82 132 Z");
+  offset-path: path("M 90 56 L 190 56 L 190 144 L 90 144 Z");
   animation: ball-slide 4s linear infinite;
 }
 
 .viz-ball-attack {
-  offset-path: path("M 60 120 Q 140 100 220 96");
+  offset-path: path("M 70 132 Q 150 112 240 108");
   animation: ball-slide 2.6s ease-in-out infinite alternate;
 }
 
 .viz-ball-indoor {
-  offset-path: path("M 220 130 L 42 90 L 170 48");
+  offset-path: path("M 230 140 L 52 100 L 180 56");
   animation: ball-slide 2.8s linear infinite alternate;
 }
 
 .viz-ball-pressure {
-  offset-path: path("M 61 120 L 209 120");
+  offset-path: path("M 70 128 L 230 128");
   animation: ball-slide 3s ease-in-out infinite alternate;
 }
 
@@ -732,7 +836,7 @@ main:focus-visible {
 }
 
 .viz-orbit-dot {
-  transform-origin: 130px 80px;
+  transform-origin: 140px 90px;
   animation: orbit-spin 4.5s linear infinite;
 }
 
@@ -1210,6 +1314,8 @@ main:focus-visible {
   .viz-orbit-dot,
   .viz-orbit-dot-b,
   .viz-pulse,
+  .viz-step,
+  .viz-actor,
   .quiz-viz-hook,
   .module-visual,
   .brand,
