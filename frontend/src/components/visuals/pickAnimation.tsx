@@ -27,6 +27,7 @@ import {
   PresenceArcSvg,
 } from "./introSvgs";
 import { AdvantageLensSvg } from "./fieldSvgs";
+import { TempoProximitySvg } from "./indoorSvgs";
 import {
   FieldAttackSvg,
   IndoorReboundSvg,
@@ -59,6 +60,7 @@ const ANIMATIONS = {
   "presence-arc": PresenceArcSvg,
   "call-clarity": CallClaritySvg,
   "advantage-lens": AdvantageLensSvg,
+  "tempo-proximity": TempoProximitySvg,
 } as const satisfies Record<AnimationKey, ComponentType<SvgProps>>;
 
 export function pickAnimation(

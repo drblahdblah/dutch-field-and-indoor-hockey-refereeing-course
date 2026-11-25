@@ -55,6 +55,7 @@ export const SVG_LABELS = {
   brief: { nl: "kort", en: "brief" },
   visible: { nl: "zichtbaar", en: "visible" },
   tempo: { nl: "tempo", en: "tempo" },
+  closer: { nl: "dichterbij", en: "closer" },
   presence: { nl: "aanwezigheid", en: "presence" },
   posture: { nl: "houding", en: "posture" },
   voice: { nl: "stem", en: "voice" },

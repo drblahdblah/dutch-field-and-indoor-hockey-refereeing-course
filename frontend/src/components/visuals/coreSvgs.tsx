@@ -258,13 +258,16 @@ export function CourtBoardsSvg({ locale }: { locale: Locale }) {
         d="M 60 56 A 30 30 0 0 1 60 124"
         fill="none"
         strokeWidth="2"
+        pathLength={1}
       />
       <path
         className="viz-court-circle viz-court-circle-b"
         d="M 220 56 A 30 30 0 0 0 220 124"
         fill="none"
         strokeWidth="2"
+        pathLength={1}
       />
+
       <circle className="viz-ball-travel viz-ball-court" cx="90" cy="90" r="5" />
       <UmpireMarker x={140} y={90} />
       <text x="140" y="22" textAnchor="middle" className="viz-label viz-label-fade">
@@ -298,6 +301,7 @@ export function LiftLimitSvg({ locale }: { locale: Locale }) {
         d="M 150 140 Q 188 78 230 56"
         fill="none"
         strokeWidth="2.5"
+        pathLength={1}
       />
       <circle className="viz-node viz-node-b viz-lift-raised" cx="230" cy="56" r="8" />
       <circle className="viz-ball-travel viz-ball-lift" cx="150" cy="140" r="5" />
@@ -332,6 +336,7 @@ export function BoardPlaySvg({ locale }: { locale: Locale }) {
         d="M 210 130 L 54 90 L 170 44"
         fill="none"
         strokeWidth="2.5"
+        pathLength={1}
       />
       <circle className="viz-node viz-node-a" cx="210" cy="130" r="7" />
       <circle className="viz-core viz-board-impact" cx="54" cy="90" r="9" />

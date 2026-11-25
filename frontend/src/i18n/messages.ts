@@ -282,6 +282,10 @@ export const QUIZ_VIZ_TITLES = {
     nl: "Visualisatie: voordeellens",
     en: "Visualization: advantage lens",
   },
+  "tempo-proximity": {
+    nl: "Visualisatie: tempo & nabijheid",
+    en: "Visualization: tempo & proximity",
+  },
 } as const satisfies Record<string, Localized>;
 
 export type UiKey = keyof typeof ui;

@@ -609,19 +609,29 @@ def test_full_indoor_module_has_sections_and_visuals(client):
     assert module["content_status"] == "full"
     assert module["kind"] == "indoor"
     assert module["quiz_id"] == "quiz-indoor-rules-core"
-    assert len(module["sections"]) >= 4
-    assert len(module["visuals"]) >= 3
+    assert len(module["sections"]) >= 5
+    assert len(module["visuals"]) >= 5
     assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
     visual_ids = {v["id"] for v in module["visuals"]}
     for section in module["sections"]:
         if section["visual_id"]:
             assert section["visual_id"] in visual_ids
     assert any(v["kind"] == "svg_animation" for v in module["visuals"])
-    assert any(v["animation_key"] == "court-boards" for v in module["visuals"])
-    assert any(v["animation_key"] == "lift-limit" for v in module["visuals"])
-    assert any(v["animation_key"] == "board-play" for v in module["visuals"])
-    assert any(v["animation_key"] == "indoor-rebound" for v in module["visuals"])
-    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    keys = {
+        v["animation_key"] for v in module["visuals"] if v["kind"] == "svg_animation"
+    }
+    assert keys >= {
+        "court-boards",
+        "lift-limit",
+        "board-play",
+        "indoor-rebound",
+        "tempo-proximity",
+    }
+    assert "sec-tempo-proximity" in {s["id"] for s in module["sections"]}
+    tempo = next(s for s in module["sections"] if s["id"] == "sec-tempo-proximity")
+    assert tempo["visual_id"] == "viz-tempo-proximity"
+    assert not any(v["kind"] == "official_link_slot" for v in module["visuals"])
+    assert not any(v["knhb_illustration_placeholder"] for v in module["visuals"])
 
 
 def test_indoor_quiz_grades_mc_and_written_with_explanations(client):
@@ -633,13 +643,14 @@ def test_indoor_quiz_grades_mc_and_written_with_explanations(client):
                 {"question_id": "q2-lift-emphasis", "selected_option_id": "d"},
                 {"question_id": "q3-boards-keyword", "written_answer": "boards"},
                 {"question_id": "q4-indoor-keyword", "written_answer": "nope"},
+                {"question_id": "q5-tempo-when", "selected_option_id": "b"},
             ]
         },
     )
     assert res.status_code == 200
     body = res.json()
-    assert body["total"] == 4
-    assert body["score"] == 2
+    assert body["total"] == 5
+    assert body["score"] == 3
     by_id = {r["question_id"]: r for r in body["results"]}
     assert by_id["q1-board-anticipation"]["correct"] is False
     assert by_id["q1-board-anticipation"]["explanation"]["nl"]
@@ -650,6 +661,8 @@ def test_indoor_quiz_grades_mc_and_written_with_explanations(client):
     assert by_id["q2-lift-emphasis"]["correct_option_id"] == "d"
     assert by_id["q3-boards-keyword"]["correct"] is True
     assert by_id["q4-indoor-keyword"]["correct"] is False
+    assert by_id["q5-tempo-when"]["correct"] is True
+    assert by_id["q5-tempo-when"]["visualization_hint"] == "tempo-proximity"
 
 
 def test_indoor_quiz_progress_save_and_resume(client):
@@ -674,12 +687,13 @@ def test_indoor_quiz_progress_save_and_resume(client):
                 {"question_id": "q2-lift-emphasis", "selected_option_id": "d"},
                 {"question_id": "q3-boards-keyword", "written_answer": "Boards"},
                 {"question_id": "q4-indoor-keyword", "written_answer": "Indoor!"},
+                {"question_id": "q5-tempo-when", "selected_option_id": "b"},
             ],
         },
     )
     assert submit.status_code == 200
     assert submit.json()["progress_saved"] is True
-    assert submit.json()["score"] == 4
+    assert submit.json()["score"] == 5
 
     progress = client.get("/api/progress/session", headers=headers)
     assert progress.status_code == 200
@@ -687,8 +701,8 @@ def test_indoor_quiz_progress_save_and_resume(client):
         p for p in progress.json()["progress"] if p["module_id"] == "mod-indoor-rules-core"
     )
     assert row["status"] == "completed"
-    assert row["quiz_score"] == 4
-    assert row["quiz_total"] == 4
+    assert row["quiz_score"] == 5
+    assert row["quiz_total"] == 5
 
 
 # Keep in sync with frontend visuals/animationKeys.ts KNOWN_ANIMATION_KEYS.
@@ -717,6 +731,7 @@ _SPA_ANIMATION_KEYS = frozenset(
         "presence-arc",
         "call-clarity",
         "advantage-lens",
+        "tempo-proximity",
     }
 )
 
