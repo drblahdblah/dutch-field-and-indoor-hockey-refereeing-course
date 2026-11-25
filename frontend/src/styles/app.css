@@ -1086,8 +1086,9 @@ main:focus-visible {
 
 .viz-cadence-arrow {
   stroke: var(--accent);
-  stroke-dasharray: 60;
-  stroke-dashoffset: 60;
+  /* Unit pathLength on the path — dash of 1 draws the full arrow. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
   animation: draw-tri 1.2s ease forwards;
 }
 
@@ -1109,8 +1110,8 @@ main:focus-visible {
 
 .viz-handoff-arc {
   stroke: var(--accent);
-  stroke-dasharray: 140;
-  stroke-dashoffset: 140;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
   animation: draw-tri 1.4s ease forwards;
 }
 
@@ -1128,8 +1129,8 @@ main:focus-visible {
 
 .viz-consistency-ring {
   stroke: var(--accent);
-  stroke-dasharray: 330;
-  stroke-dashoffset: 330;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
   animation: draw-tri 1.5s ease forwards;
 }
 
@@ -1544,6 +1545,41 @@ main:focus-visible {
   animation: ball-slide 2s ease-in-out infinite alternate;
 }
 
+.viz-ladder-rail,
+.viz-ladder-rung {
+  stroke: currentColor;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-tri 1.1s ease 0.15s forwards;
+}
+
+.viz-ladder-rail-b {
+  animation-delay: 0.25s;
+}
+
+.viz-ladder-rung {
+  stroke: var(--accent);
+  animation-delay: 0.35s;
+}
+
+.viz-ladder-rung-b {
+  animation-delay: 0.5s;
+}
+
+.viz-ladder-rung-c {
+  animation-delay: 0.65s;
+}
+
+.viz-ladder-glow {
+  fill: rgba(200, 245, 66, 0.12);
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+.viz-ball-ladder {
+  offset-path: path("M 140 128 L 140 52");
+  animation: ball-slide 2.2s ease-in-out infinite alternate;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .viz-tri,
   .viz-cone,
@@ -1597,6 +1633,9 @@ main:focus-visible {
   .viz-tempo-path,
   .viz-tempo-partner,
   .viz-tempo-glow,
+  .viz-ladder-rail,
+  .viz-ladder-rung,
+  .viz-ladder-glow,
   .viz-label-fade,
   .viz-glow,
   .viz-ball-travel,
@@ -1666,7 +1705,9 @@ main:focus-visible {
   .viz-advantage-path,
   .viz-tempo-ring,
   .viz-tempo-path,
-  .viz-tempo-partner {
+  .viz-tempo-partner,
+  .viz-ladder-rail,
+  .viz-ladder-rung {
     stroke-dashoffset: 0;
   }
 

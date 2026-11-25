@@ -304,7 +304,7 @@ describe("ModuleVisual", () => {
     expect(screen.getByText("communicate")).toBeInTheDocument();
   });
 
-  it("renders pathway match-cadence, partner-handoff, and consistency-loop SVGs", () => {
+  it("renders pathway match-cadence, partner-handoff, consistency-loop, and standard-ladder SVGs", () => {
     const cadence: VisualPlaceholder = {
       id: "viz-match-cadence",
       kind: "svg_animation",
@@ -319,6 +319,10 @@ describe("ModuleVisual", () => {
     const svg = document.querySelector("svg.viz-cadence");
     expect(svg).toBeTruthy();
     expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(svg?.querySelector(".viz-cadence-arrow")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("vóór")).toBeInTheDocument();
     expect(screen.getByText("tijdens")).toBeInTheDocument();
     expect(screen.getByText("ná")).toBeInTheDocument();
@@ -334,6 +338,10 @@ describe("ModuleVisual", () => {
       knhb_illustration_placeholder: false,
     };
     rerender(<ModuleVisual visual={handoff} locale="en" />);
+    expect(document.querySelector(".viz-handoff-arc")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("lead")).toBeInTheDocument();
     expect(screen.getByText("support")).toBeInTheDocument();
     expect(screen.getByText("handoff")).toBeInTheDocument();
@@ -349,10 +357,40 @@ describe("ModuleVisual", () => {
       knhb_illustration_placeholder: false,
     };
     rerender(<ModuleVisual visual={loop} locale="nl" />);
+    expect(document.querySelector(".viz-consistency-ring")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
     expect(screen.getByText("observeer")).toBeInTheDocument();
     expect(screen.getByText("besluit")).toBeInTheDocument();
     expect(screen.getByText("communiceer")).toBeInTheDocument();
     expect(screen.getByText("nabespreking")).toBeInTheDocument();
+
+    const ladder: VisualPlaceholder = {
+      id: "viz-standard-ladder",
+      kind: "svg_animation",
+      title: { nl: "Ladder", en: "Ladder" },
+      caption: { nl: "Origineel", en: "Original" },
+      animation_key: "standard-ladder",
+      official_source_url: null,
+      official_source_name: null,
+      knhb_illustration_placeholder: false,
+    };
+    rerender(<ModuleVisual visual={ladder} locale="en" />);
+    const ladderSvg = document.querySelector("svg.viz-standard-ladder");
+    expect(ladderSvg).toBeTruthy();
+    expect(ladderSvg?.querySelector(".viz-ladder-rail")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(ladderSvg?.querySelector(".viz-ladder-rung")).toHaveAttribute(
+      "pathLength",
+      "1",
+    );
+    expect(screen.getByText("club")).toBeInTheDocument();
+    expect(screen.getByText("competition")).toBeInTheDocument();
+    expect(screen.getByText("top")).toBeInTheDocument();
+    expect(screen.getByText("standard")).toBeInTheDocument();
   });
 
   it("renders official link slot without inventing KNHB art", () => {

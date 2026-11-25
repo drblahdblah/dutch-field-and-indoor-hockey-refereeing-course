@@ -10,12 +10,19 @@ export function MatchCadenceSvg({ locale }: { locale: Locale }) {
       <circle className="viz-node viz-node-a viz-cadence-node" cx="56" cy="90" r="10" />
       <circle className="viz-node viz-node-b viz-cadence-node" cx="140" cy="90" r="10" />
       <circle className="viz-node viz-node-c viz-cadence-node" cx="224" cy="90" r="10" />
-      <path className="viz-cadence-arrow" d="M 72 90 L 122 90" fill="none" strokeWidth="2" />
+      <path
+        className="viz-cadence-arrow"
+        d="M 72 90 L 122 90"
+        fill="none"
+        strokeWidth="2"
+        pathLength={1}
+      />
       <path
         className="viz-cadence-arrow viz-cadence-arrow-b"
         d="M 158 90 L 206 90"
         fill="none"
         strokeWidth="2"
+        pathLength={1}
       />
       <circle className="viz-ball-travel viz-ball-cadence" cx="56" cy="90" r="4" />
       <StepBadge x={56} y={90} n={1} />
@@ -47,12 +54,14 @@ export function PartnerHandoffSvg({ locale }: { locale: Locale }) {
         d="M 98 78 Q 140 40 182 78"
         fill="none"
         strokeWidth="2.5"
+        pathLength={1}
       />
       <path
         className="viz-handoff-arc viz-handoff-arc-b"
         d="M 182 102 Q 140 138 98 102"
         fill="none"
         strokeWidth="2.5"
+        pathLength={1}
       />
       <circle className="viz-ball-travel viz-ball-handoff" cx="98" cy="78" r="4" />
       <UmpireMarker x={78} y={96} className="viz-actor viz-umpire viz-umpire-lead" />
@@ -83,6 +92,7 @@ export function ConsistencyLoopSvg({ locale }: { locale: Locale }) {
         r="54"
         fill="none"
         strokeWidth="2.5"
+        pathLength={1}
       />
       <g className="viz-consistency-dot">
         <circle cx="140" cy="41" r="7" />
@@ -104,6 +114,71 @@ export function ConsistencyLoopSvg({ locale }: { locale: Locale }) {
       </text>
       <text x="28" y="99" textAnchor="start" className="viz-label viz-label-fade">
         {label("review", locale)}
+      </text>
+    </svg>
+  );
+}
+
+/** Original course art — climb club → competition → top standard. */
+export function StandardLadderSvg({ locale }: { locale: Locale }) {
+  return (
+    <svg className="viz-svg viz-standard-ladder" viewBox="0 0 280 190" aria-hidden="true">
+      <rect className="viz-canvas" x="8" y="8" width="264" height="174" rx="10" />
+      <ellipse className="viz-ladder-glow" cx="140" cy="100" rx="88" ry="58" />
+      <path
+        className="viz-ladder-rail"
+        d="M 72 148 L 112 48"
+        fill="none"
+        strokeWidth="2.5"
+        pathLength={1}
+      />
+      <path
+        className="viz-ladder-rail viz-ladder-rail-b"
+        d="M 208 148 L 168 48"
+        fill="none"
+        strokeWidth="2.5"
+        pathLength={1}
+      />
+      <path
+        className="viz-ladder-rung"
+        d="M 78 128 L 202 128"
+        fill="none"
+        strokeWidth="2.5"
+        pathLength={1}
+      />
+      <path
+        className="viz-ladder-rung viz-ladder-rung-b"
+        d="M 96 88 L 184 88"
+        fill="none"
+        strokeWidth="2.5"
+        pathLength={1}
+      />
+      <path
+        className="viz-ladder-rung viz-ladder-rung-c"
+        d="M 114 52 L 166 52"
+        fill="none"
+        strokeWidth="2.5"
+        pathLength={1}
+      />
+      <circle className="viz-ball-travel viz-ball-ladder" cx="140" cy="128" r="5" />
+      <UmpireMarker x={140} y={148} />
+      <StepBadge x={140} y={128} n={1} />
+      <StepBadge x={140} y={88} n={2} />
+      <StepBadge x={140} y={52} n={3} />
+      <circle className="viz-node viz-node-a" cx={140} cy={128} r="6" />
+      <circle className="viz-node viz-node-b" cx={140} cy={88} r="6" />
+      <circle className="viz-node viz-node-c" cx={140} cy={52} r="6" />
+      <text x="48" y="132" textAnchor="middle" className="viz-label viz-label-fade">
+        {label("club", locale)}
+      </text>
+      <text x="40" y="92" textAnchor="middle" className="viz-label viz-label-fade">
+        {label("competition", locale)}
+      </text>
+      <text x="48" y="56" textAnchor="middle" className="viz-label viz-label-fade">
+        {label("top", locale)}
+      </text>
+      <text x="140" y="176" textAnchor="middle" className="viz-label viz-caption">
+        {label("standard", locale)}
       </text>
     </svg>
   );

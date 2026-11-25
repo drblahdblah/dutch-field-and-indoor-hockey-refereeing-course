@@ -333,6 +333,10 @@ export const QUIZ_VIZ_TITLES = {
     nl: "Visualisatie: tempo & nabijheid",
     en: "Visualization: tempo & proximity",
   },
+  "standard-ladder": {
+    nl: "Visualisatie: standaardladder",
+    en: "Visualization: standard ladder",
+  },
   "practice-circle-entry": {
     nl: "Visualisatie: cirkelaanloop",
     en: "Visualization: circle entry",

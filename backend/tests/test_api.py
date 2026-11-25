@@ -738,6 +738,7 @@ _SPA_ANIMATION_KEYS = frozenset(
         "call-clarity",
         "advantage-lens",
         "tempo-proximity",
+        "standard-ladder",
         "practice-circle-entry",
         "practice-freehit-23",
         "practice-advantage-wave",
@@ -781,19 +782,33 @@ def test_full_pathway_module_has_sections_and_visuals(client):
     assert module["content_status"] == "full"
     assert module["kind"] == "shared"
     assert module["quiz_id"] == "quiz-pathway-professional"
-    assert len(module["sections"]) >= 4
-    assert len(module["visuals"]) >= 3
+    assert len(module["sections"]) >= 5
+    assert len(module["visuals"]) >= 5
     assert all(s["title"]["nl"] and s["title"]["en"] for s in module["sections"])
     visual_ids = {v["id"] for v in module["visuals"]}
     for section in module["sections"]:
         if section["visual_id"]:
             assert section["visual_id"] in visual_ids
     assert any(v["kind"] == "svg_animation" for v in module["visuals"])
-    assert any(v["animation_key"] == "match-cadence" for v in module["visuals"])
-    assert any(v["animation_key"] == "match-pressure" for v in module["visuals"])
-    assert any(v["animation_key"] == "partner-handoff" for v in module["visuals"])
-    assert any(v["animation_key"] == "consistency-loop" for v in module["visuals"])
-    assert any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    keys = {
+        v["animation_key"] for v in module["visuals"] if v["kind"] == "svg_animation"
+    }
+    assert keys >= {
+        "match-cadence",
+        "match-pressure",
+        "partner-handoff",
+        "consistency-loop",
+        "standard-ladder",
+    }
+    assert "sec-standard-ladder" in {s["id"] for s in module["sections"]}
+    ladder = next(s for s in module["sections"] if s["id"] == "sec-standard-ladder")
+    assert ladder["visual_id"] == "viz-standard-ladder"
+    why = next(s for s in module["sections"] if s["id"] == "sec-pathway-why")
+    assert why["visual_id"] == "viz-match-cadence"
+    assert not any(v["kind"] == "official_link_slot" for v in module["visuals"])
+    assert not any(v["knhb_illustration_placeholder"] for v in module["visuals"])
+    assert module["further_reading"]
+    assert any("knhb.nl" in fr["url"] for fr in module["further_reading"])
 
 
 def test_pathway_quiz_grades_mc_and_written_with_explanations(client):
@@ -805,13 +820,14 @@ def test_pathway_quiz_grades_mc_and_written_with_explanations(client):
                 {"question_id": "q2-collaboration", "selected_option_id": "d"},
                 {"question_id": "q3-consistency-keyword", "written_answer": "consistency"},
                 {"question_id": "q4-pathway-keyword", "written_answer": "nope"},
+                {"question_id": "q5-standard-when", "selected_option_id": "b"},
             ]
         },
     )
     assert res.status_code == 200
     body = res.json()
-    assert body["total"] == 4
-    assert body["score"] == 2
+    assert body["total"] == 5
+    assert body["score"] == 3
     by_id = {r["question_id"]: r for r in body["results"]}
     assert by_id["q1-match-management"]["correct"] is False
     assert by_id["q1-match-management"]["explanation"]["nl"]
@@ -822,6 +838,8 @@ def test_pathway_quiz_grades_mc_and_written_with_explanations(client):
     assert by_id["q2-collaboration"]["correct_option_id"] == "d"
     assert by_id["q3-consistency-keyword"]["correct"] is True
     assert by_id["q4-pathway-keyword"]["correct"] is False
+    assert by_id["q5-standard-when"]["correct"] is True
+    assert by_id["q5-standard-when"]["visualization_hint"] == "standard-ladder"
 
 
 def test_pathway_quiz_progress_save_and_resume(client):
@@ -846,12 +864,13 @@ def test_pathway_quiz_progress_save_and_resume(client):
                 {"question_id": "q2-collaboration", "selected_option_id": "d"},
                 {"question_id": "q3-consistency-keyword", "written_answer": "Consistency"},
                 {"question_id": "q4-pathway-keyword", "written_answer": "Pathway!"},
+                {"question_id": "q5-standard-when", "selected_option_id": "b"},
             ],
         },
     )
     assert submit.status_code == 200
     assert submit.json()["progress_saved"] is True
-    assert submit.json()["score"] == 4
+    assert submit.json()["score"] == 5
 
     progress = client.get("/api/progress/session", headers=headers)
     assert progress.status_code == 200
@@ -859,8 +878,8 @@ def test_pathway_quiz_progress_save_and_resume(client):
         p for p in progress.json()["progress"] if p["module_id"] == "mod-pathway-hoofdklasse"
     )
     assert row["status"] == "completed"
-    assert row["quiz_score"] == 4
-    assert row["quiz_total"] == 4
+    assert row["quiz_score"] == 5
+    assert row["quiz_total"] == 5
 
 
 def test_full_interpretation_module_has_refs_and_visuals(client):
